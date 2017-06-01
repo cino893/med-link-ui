@@ -4,11 +4,10 @@
 @import '~nativescript-theme-core/scss/light';
 
 // Start custom common variables
-@import '../sass/app-variables';
+@import 'sass/app-variables';
+@import 'sass/app-classes';
 // End custom common variables
 
-TabView {
-    font-family: "FontAwesome";
-    selected-tab-text-color: $item-active-color;
-    android-selected-tab-text-color: $item-active-color;
-}
+@import '~nativescript-theme-core/scss/platforms/index.ios';
+
+// Place any CSS rules you want to apply only on iOS here

@@ -4,15 +4,15 @@
 @import '~nativescript-theme-core/scss/light';
 
 // Start custom common variables
-@import 'app-variables';
-@import 'app-classes';
+@import 'sass/app-variables';
+@import 'sass/app-classes';
 // End custom common variables
 
 // Customize any of the theme’s variables here, for instance $btn-color: red;
+// https://github.com/NativeScript/theme/blob/master/app/scss/_variables.scss
 
 // Import the theme’s main ruleset.
+@import url('~/platform.css');
 @import '~nativescript-theme-core/scss/index';
-
 // Place any CSS rules you want to apply on both iOS and Android here.
 // This is where the vast majority of your CSS code goes.
-
