@@ -2,7 +2,21 @@
    font-family: "FontAwesome";
 }
 
-.page-icon {
-   font-size: 75%;
-   color: $blue-20;
+.pageIcon {
+    width: 100%;
+    height: 100%;
+
+    StackLayout {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        vertical-align: center;
+        text-align: center; 
+    }
+
+    .fa {
+        font-size: 75%;
+        color: $blue-20; 
+    }
 }
