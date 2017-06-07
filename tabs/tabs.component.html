@@ -3,19 +3,19 @@
 </ActionBar>
 
 <TabView #tabview sdkExampleTitle sdkToggleNavButton>
-    <StackLayout *tabItem="{title: '\uf015\n Home'}">
+    <StackLayout *tabItem="{title: 'Home', iconSource: 'res://tabvIcons/home'}" >
         <Home></Home>
     </StackLayout>
-    <StackLayout *tabItem="{title: '\uf1ea\n Browse'}">
+    <StackLayout *tabItem="{title: 'Browse', iconSource: 'res://tabvIcons/browse'}">
         <Browse></Browse>
     </StackLayout>
-    <StackLayout *tabItem="{title: '\uf002\n Search'}">
+    <StackLayout *tabItem="{title: 'Search', iconSource: 'res://tabvIcons/search'}">
         <Search></Search>
     </StackLayout>
-    <StackLayout *tabItem="{title: '\uf005\n Featured'}">
+    <StackLayout *tabItem="{title: 'Featured', iconSource: 'res://tabvIcons/favorites'}">
         <Featured></Featured>
     </StackLayout>
-    <StackLayout *tabItem="{title: '\uf013 Settings'}">
+    <StackLayout *tabItem="{title: 'Settings', iconSource: 'res://tabvIcons/settings'}">
         <Settings></Settings>
     </StackLayout>
 </TabView>
