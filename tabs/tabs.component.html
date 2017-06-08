@@ -3,19 +3,24 @@
 </ActionBar>
 
 <TabView #tabview sdkExampleTitle sdkToggleNavButton>
-    <StackLayout *tabItem="{title: 'Home', iconSource: 'res://tabvIcons/home'}" >
+    <StackLayout *tabItem="{title: 'Home'}"
+        iconSource="{{getIconSource('home')}}">
         <Home></Home>
     </StackLayout>
-    <StackLayout *tabItem="{title: 'Browse', iconSource: 'res://tabvIcons/browse'}">
+    <StackLayout *tabItem="{title: 'Browse'}"
+        iconSource="{{getIconSource('browse')}}">
         <Browse></Browse>
     </StackLayout>
-    <StackLayout *tabItem="{title: 'Search', iconSource: 'res://tabvIcons/search'}">
+    <StackLayout *tabItem="{title: 'Search'}"
+        iconSource="{{getIconSource('search')}}">
         <Search></Search>
     </StackLayout>
-    <StackLayout *tabItem="{title: 'Featured', iconSource: 'res://tabvIcons/favorites'}">
+    <StackLayout *tabItem="{title: 'Featured'" 
+        iconSource="{{getIconSource('favorites')}}">
         <Featured></Featured>
     </StackLayout>
-    <StackLayout *tabItem="{title: 'Settings', iconSource: 'res://tabvIcons/settings'}">
+    <StackLayout *tabItem="{title: 'Settings'}" 
+        iconSource="{{getIconSource('settings')}}">
         <Settings></Settings>
     </StackLayout>
 </TabView>

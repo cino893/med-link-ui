@@ -11,3 +11,23 @@
 @import '~nativescript-theme-core/scss/platforms/index.ios';
 
 // Place any CSS rules you want to apply only on iOS here
+
+.homePage {
+    background-image: url("res://pageIcons/home");
+}
+
+.searchPage {
+    background-image: url("res://pageIcons/search");
+}
+
+.settingsPage {
+    background-image: url("res://pageIcons/settings");
+}
+
+.browsePage {
+    background-image: url("res://pageIcons/browse");
+}
+
+.featuredPage {
+    background-image: url("res://pageIcons/favorites");
+}
