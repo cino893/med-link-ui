@@ -4,10 +4,3 @@
 @import '~nativescript-theme-core/scss/light';
 // Custom common variables
 @import '../app-variables';
-
-TabView {
-    font-family: "FontAwesome";
-    selected-tab-text-color: $item-active-color;
-    android-selected-tab-text-color: $item-active-color;
-    android-selected-tab-highlight-color: $item-active-color;
-}
