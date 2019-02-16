@@ -1,8 +1,12 @@
 <ActionBar class="action-bar">
     <NavigationButton (tap)="onBackTap()" android.systemIcon="ic_menu_back"></NavigationButton>
-    <Label class="action-bar-title" [text]="item.name"></Label>
+    <Label class="action-bar-title" text="Szczegóły"></Label>
 </ActionBar>
 
-<GridLayout>
-    <Label class="m-10 h3" verticalAlignment="top" [text]="item.description"></Label>
-</GridLayout>
+<StackLayout>
+    <Label class="m-10 h3" verticalAlignment="top" [text]="'Węglowodany: '+ item.carbs || 'brak danych'"></Label>
+    <Label class="m-10 h3" verticalAlignment="top" [text]="'Dodał: ' + item.enteredBy || 'brak danych'"></Label>
+    <Label class="m-10 h3" verticalAlignment="top" [text]="'Insulina: ' + item.insulin || 'brak danych'"></Label>
+    <Label class="m-10 h3" verticalAlignment="top" [text]="'Powód: ' + item.reason || 'brak danych'"></Label>
+    <Label class="m-10 h3" verticalAlignment="top" [text]="'Utworzono o: '+ item.created_at || 'brak danych'"></Label>
+</StackLayout>

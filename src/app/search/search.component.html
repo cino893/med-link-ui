@@ -1,8 +1,20 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="Search"></Label>
+    <Label class="action-bar-title" text="Wyślij"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content">
-    <Label class="page-icon fa" text="&#xf002;"></Label>
-    <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
+    <StackLayout class="input-field">
+        <TextField hint="Węglowodany w gramach"
+                   secure="false"
+                   [text]="carbs"
+                   (textChange)="changeText($event)"
+                   keyboardType="number"
+                   returnKeyType="done"
+                   autocorrect="false"
+                   textAlignment="center"
+                   maxLength="4"
+                   class="input input-border"></TextField>
+        <Button class="btn btn-primary btn-active" text="Wyślij" [isEnabled]="shouldButtonBeEnabled()"
+                (tap)="sendNewTreatment()"></Button>
+    </StackLayout>
 </GridLayout>

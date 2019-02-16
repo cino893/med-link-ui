@@ -1,9 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core';
+import bluetooth = require('nativescript-bluetooth');
 
 @Component({
-    selector: "Browse",
+    selector: 'Browse',
     moduleId: module.id,
-    templateUrl: "./browse.component.html"
+    templateUrl: './browse.component.html',
 })
 export class BrowseComponent implements OnInit {
     constructor() {
@@ -11,6 +12,8 @@ export class BrowseComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        bluetooth.enable();
+        bluetooth.startScanning({onDiscovered: (asd) => console.log(asd), skipPermissionCheck: false});
         // Use the "ngOnInit" handler to initialize data for the view.
     }
 }

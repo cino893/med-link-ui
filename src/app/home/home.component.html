@@ -1,11 +1,11 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="Home"></Label>
+    <Label class="action-bar-title" text="Pobierz"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content">
-    <ListView [items]="items" class="list-group">
+    <ListView *ngIf="dataService.items.length > 0" [items]="dataService.items" class="list-group">
         <ng-template let-item="item">
-            <Label [nsRouterLink]="['../item', item.id]" [text]="item.name" class="list-group-item"></Label>
+            <Label [nsRouterLink]="['../item', item.id]" [text]="item.id" class="list-group-item"></Label>
         </ng-template>
     </ListView>
 </GridLayout>
