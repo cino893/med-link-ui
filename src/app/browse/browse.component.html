@@ -4,5 +4,30 @@
 
 <GridLayout class="page page-content">
     <Label class="page-icon fa" text="&#xf1ea;"></Label>
-    <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
+
+    <StackLayout class="input-field">
+        <Button text="Skanuj i połącz" (tap)="scanAndConnect()"></Button>
+        <TextView
+                style="margin-top: 15"
+                borderColor="#DEDEDE"
+                borderWidth="1"
+                height="160"
+                hint="Wierszyk dla UART"
+                secure="false"
+                [text]="text"
+                (textChange)="changeText($event.object.text)"
+                returnKeyType="send"
+                class="input input-border"></TextView>
+        <Button class="btn btn-primary btn-active" text="Wyślij"
+                (tap)="sendCommand()"></Button>
+        <TextView
+                style="margin-top: 15"
+                borderColor="#DEDEDE"
+                borderWidth="1"
+                height="110"
+                hint="Wynik czytania"
+                [editable]="false"
+                [text]="output"
+                class="input input-border"></TextView>
+    </StackLayout>
 </GridLayout>

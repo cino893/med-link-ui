@@ -1,4 +1,4 @@
-<TabView androidTabsPosition="bottom">
+<TabView androidTabsPosition="bottom" (selectedIndexChanged)="onSelectedIndexChanged($event)">
 
     <page-router-outlet
         *tabItem="{title: 'Pobierz', iconSource: getIconSource('home')}"

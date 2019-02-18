@@ -1,6 +1,4 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { nightScoutPath } from '~/app/env';
 import { DataService } from '../shared/data.service';
 
 @Component({
@@ -9,17 +7,11 @@ import { DataService } from '../shared/data.service';
     templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
-    items: Array<any>;
 
-    constructor(public dataService: DataService, public httpClient: HttpClient) {
+    constructor(public dataService: DataService) {
     }
 
     ngOnInit(): void {
-        this.httpClient
-            .get(nightScoutPath + 'treatments.json')
-            .subscribe(items => {
-                this.dataService.items = (items as any);
-                this.dataService.items.forEach(item => item.id = item._id);
-            });
+        this.dataService.reloadData();
     }
 }
