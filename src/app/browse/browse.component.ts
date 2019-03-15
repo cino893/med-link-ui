@@ -52,16 +52,17 @@ export class BrowseComponent implements OnInit {
     }
 
     sendCommand() {
-        const buffer = [0x0A, 0x0D];
+        const buffer = [];
         for (const char of this.text) {
             const charCode = char.charCodeAt(0);
             buffer.push(charCode);
-            if (charCode === 0x0A) //LF
-            {
-                buffer.push(0x0D); //CR
+            if (charCode === 0x0A/*LF*/) {
+                buffer.push(0x0D/*CR*/);
             }
         }
-        this.recursiveWrite(buffer);
+        if (buffer.length) {
+            this.recursiveWrite(buffer);
+        }
     }
 
     private recursiveWrite(array: Array<number>, startByte = 0, chunkLength = 20) {
