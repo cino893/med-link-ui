@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
 import bluetooth = require('nativescript-bluetooth');
+import Sqlite = require('nativescript-sqlite');
 
 @Component({
     selector: 'Browse',
@@ -90,5 +91,9 @@ export class BrowseComponent implements OnInit {
             characteristicUUID: 'ffe1',
             serviceUUID: 'ffe0',
         });
+    }
+
+    testingAdama() {
+        const db = new Sqlite('test-adam.db');
     }
 }
