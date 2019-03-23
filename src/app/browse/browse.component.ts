@@ -14,6 +14,7 @@ export class BrowseComponent implements OnInit {
     targetBluDeviceUUID = '';
     text = '';
     output = '';
+    database;
 
     constructor(private cdr: ChangeDetectorRef) {
         // Use the component constructor to inject providers.
@@ -96,6 +97,54 @@ export class BrowseComponent implements OnInit {
     }
 
     testingAdama(data: IBasicSettings) {
-        const db = new Sqlite('test-adam.db');
+        const adamDb = new Sqlite('test-adam.db');
+
+        const createMyTable =
+
+            adamDb.then(db => {
+                db.execSQL(`
+            CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose NUMBER, dateString TEXT, isSend INTEGER DEFAULT 0); 
+            CREATE TABLE IF NOT EXISTS treatments (id INTEGER, duration NUMBER, type TEXT, basalValue TEXT, isSend INTEGER DEFAULT 0);
+            `).then(id => {
+                    this.database = db;
+                }, error => {
+                    console.log('CREATE TABLE ERROR', error);
+                });
+            }, error => {
+                console.log('OPEN DB ERROR', error);
+            });
+        this.insertBG(data);
+    }
+
+    public insertBG(data: IBasicSettings) {
+        this.database.execSQL('INSERT INTO entries (glucose, dateString) VALUES (?, ?)', [data.bloodGlucose.value.toString(), data.bloodGlucose.date).then(id => {
+            console.log('INSERT RESULT', id);
+            this.fetch();
+        }, error => {
+            console.log('INSERT ERROR', error);
+        });
+
+        this.insertTreatments(data);
+    }
+
+    public insertTreatments(data: IBasicSettings) {
+        this.database.execSQL('INSERT INTO treatments (duration, type, basalValue) VALUES (?, ?, ?)', [data.temporaryBasalMethodUnitsPerHour.progress.minutesTarget, 'absolute', data.temporaryBasalMethodUnitsPerHour.currentValueConfig]).then(id => {
+            console.log('INSERT RESULT', id);
+            this.fetch();
+        }, error => {
+            console.log('INSERT ERROR', error);
+        });
+    }
+    public getBG() {
+        this.database.all("SELECT glucose FROM entries").then(rows => {
+            this.people = [];
+            for(var row in rows) {
+                this.people.push({
+                    "glucose": rows[row][1]
+                });
+            }
+        }, error => {
+            console.log("SELECT ERROR", error);
+        });
     }
 }
