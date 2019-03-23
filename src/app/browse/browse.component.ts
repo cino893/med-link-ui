@@ -1,7 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
+import { IBasicSettings } from '~/app/model/med-link.model';
 import bluetooth = require('nativescript-bluetooth');
-import Sqlite = require('nativescript-sqlite');
+// tslint:disable-next-line:variable-name
+const Sqlite = require('nativescript-sqlite');
 
 @Component({
     selector: 'Browse',
@@ -93,7 +95,7 @@ export class BrowseComponent implements OnInit {
         });
     }
 
-    testingAdama() {
+    testingAdama(data: IBasicSettings) {
         const db = new Sqlite('test-adam.db');
     }
 }
