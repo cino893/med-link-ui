@@ -33,7 +33,7 @@ export interface IBasicSettings {
     totalInsulinGivenYesterday: number;
     maximumBolusSetting: number;
     incrementStepSetting: number;
-    maximumBasalSeeings: number;
+    maximumBasalSettings: number;
     insulinWorkTime: number;
     insulinSensitiveFactor: {
         value: number;

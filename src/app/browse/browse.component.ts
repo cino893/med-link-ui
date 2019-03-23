@@ -1,9 +1,33 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
 import { IBasicSettings } from '~/app/model/med-link.model';
+import { RawDataService } from '~/app/shared/raw-data-parse.service';
 import bluetooth = require('nativescript-bluetooth');
 // tslint:disable-next-line:variable-name
 const Sqlite = require('nativescript-sqlite');
+
+const myData = `18-03-2019 22 04
+BG:130 21:59 18-03-19
+BL:0.6 21:37 18-03-19
+PD:0.0 Podano: 0.000
+Czas PD: 0m / 0m
+ISIG:28.26nA
+Wsp.kalibracji: 4.946
+Nastepna kalib: 9:40
+Czas sensora: 2953min
+Cel BG sensor: 80-140
+Bateria: dobra(1.27V)
+Zbiorniczek: 234.275J
+Baza: 1.150J/h
+TDP: 100% 0h:00m
+Dawka dziasiaj:11.850J
+Dawka wczoraj: 2.725J
+Max bolud: 5.0U
+Krok bolusa: 0.1U
+Max. baza: 1.750J/h
+Czas insuliny: 3h
+Wsp.insulin: 101mg/dl
+Wsp.weglowod: 17g/J`;
 
 @Component({
     selector: 'Browse',
@@ -16,12 +40,12 @@ export class BrowseComponent implements OnInit {
     output = '';
     database;
 
-    constructor(private cdr: ChangeDetectorRef) {
+    constructor(private cdr: ChangeDetectorRef, private rawDataParse: RawDataService) {
         // Use the component constructor to inject providers.
     }
 
     ngOnInit(): void {
-
+        this.testingAdama(this.rawDataParse.parseData(myData));
     }
 
     scanAndConnect() {
@@ -119,7 +143,6 @@ export class BrowseComponent implements OnInit {
     public insertBG(data: IBasicSettings) {
         this.database.execSQL('INSERT INTO entries (glucose, dateString) VALUES (?, ?)', [data.bloodGlucose.value.toString(), data.bloodGlucose.date).then(id => {
             console.log('INSERT RESULT', id);
-            this.fetch();
         }, error => {
             console.log('INSERT ERROR', error);
         });
@@ -130,21 +153,21 @@ export class BrowseComponent implements OnInit {
     public insertTreatments(data: IBasicSettings) {
         this.database.execSQL('INSERT INTO treatments (duration, type, basalValue) VALUES (?, ?, ?)', [data.temporaryBasalMethodUnitsPerHour.progress.minutesTarget, 'absolute', data.temporaryBasalMethodUnitsPerHour.currentValueConfig]).then(id => {
             console.log('INSERT RESULT', id);
-            this.fetch();
         }, error => {
             console.log('INSERT ERROR', error);
         });
     }
+
     public getBG() {
-        this.database.all("SELECT glucose FROM entries").then(rows => {
-            this.people = [];
-            for(var row in rows) {
-                this.people.push({
-                    "glucose": rows[row][1]
+        this.database.all('SELECT glucose FROM entries').then(rows => {
+            const people = [];
+            for (const row in rows) {
+                people.push({
+                    glucose: rows[row][1],
                 });
             }
         }, error => {
-            console.log("SELECT ERROR", error);
+            console.log('SELECT ERROR', error);
         });
     }
 }
