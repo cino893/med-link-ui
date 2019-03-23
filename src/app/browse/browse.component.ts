@@ -131,27 +131,30 @@ export class BrowseComponent implements OnInit {
             CREATE TABLE IF NOT EXISTS treatments (id INTEGER, duration NUMBER, type TEXT, basalValue TEXT, isSend INTEGER DEFAULT 0);
             `).then(id => {
                     this.database = db;
+                    this.insertBG(data);
                 }, error => {
                     console.log('CREATE TABLE ERROR', error);
                 });
             }, error => {
                 console.log('OPEN DB ERROR', error);
             });
-        this.insertBG(data);
     }
 
     public insertBG(data: IBasicSettings) {
-        this.database.execSQL('INSERT INTO entries (glucose, dateString) VALUES (?, ?)', [data.bloodGlucose.value.toString(), data.bloodGlucose.date).then(id => {
+        this.database.execSQL('INSERT INTO entries (glucose, dateString) VALUES (?, ?)',
+            [data.bloodGlucose.value, data.bloodGlucose.date]).then(id => {
             console.log('INSERT RESULT', id);
         }, error => {
             console.log('INSERT ERROR', error);
         });
 
-        this.insertTreatments(data);
+        // this.insertTreatments(data);
     }
 
     public insertTreatments(data: IBasicSettings) {
-        this.database.execSQL('INSERT INTO treatments (duration, type, basalValue) VALUES (?, ?, ?)', [data.temporaryBasalMethodUnitsPerHour.progress.minutesTarget, 'absolute', data.temporaryBasalMethodUnitsPerHour.currentValueConfig]).then(id => {
+        this.database.execSQL('INSERT INTO treatments (duration, type, basalValue) VALUES (?, ?, ?)',
+            [data.temporaryBasalMethodUnitsPerHour.progress.minutesTarget, 'absolute',
+                data.temporaryBasalMethodUnitsPerHour.currentValueConfig]).then(id => {
             console.log('INSERT RESULT', id);
         }, error => {
             console.log('INSERT ERROR', error);
@@ -171,3 +174,4 @@ export class BrowseComponent implements OnInit {
         });
     }
 }
+
