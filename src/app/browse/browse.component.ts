@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
+import { nightScoutPath } from '~/app/env';
 import { IBasicSettings } from '~/app/model/med-link.model';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
 import bluetooth = require('nativescript-bluetooth');
@@ -40,12 +42,13 @@ export class BrowseComponent implements OnInit {
     output = '';
     database;
 
-    constructor(private cdr: ChangeDetectorRef, private rawDataParse: RawDataService) {
+    constructor(private cdr: ChangeDetectorRef, private rawDataParse: RawDataService, private httpClient: HttpClient) {
         // Use the component constructor to inject providers.
     }
 
     ngOnInit(): void {
         this.testingAdama(this.rawDataParse.parseData(myData));
+        setTimeout(() => console.log('>>>>>>>>>>>>>>>>>', this.getBG()), 5000);
     }
 
     scanAndConnect() {
@@ -142,8 +145,8 @@ export class BrowseComponent implements OnInit {
 
     public insertBG(data: IBasicSettings) {
         this.database.execSQL('INSERT INTO entries (glucose, dateString) VALUES (?, ?)',
-            [data.bloodGlucose.value, data.bloodGlucose.date]).then(id => {
-            console.log('INSERT RESULT', id);
+            [+data.bloodGlucose.value, data.bloodGlucose.date.toString()]).then(id => {
+            console.log('>>' + data.bloodGlucose.value.toString() + '>>>>>>>-->>>>>>INSERT RESULT', id, data.bloodGlucose.date.toString(), data.bloodGlucose.value);
         }, error => {
             console.log('INSERT ERROR', error);
         });
@@ -162,16 +165,28 @@ export class BrowseComponent implements OnInit {
     }
 
     public getBG() {
-        this.database.all('SELECT glucose FROM entries').then(rows => {
-            const people = [];
-            for (const row in rows) {
-                people.push({
-                    glucose: rows[row][1],
-                });
-            }
+        this.database.all('SELECT glucose, dateString FROM entries').then(rows => {
+            const people = rows.map(a => ({
+                glucose: a[0],
+                dateString: a[1],
+            }));
+            people.forEach(a => {
+                this.sendNewBG(a.glucose, a.dateString);
+            });
+            console.log(people);
         }, error => {
             console.log('SELECT ERROR', error);
         });
+    }
+
+    sendNewBG(glucose, data) {
+        this.httpClient.post(nightScoutPath + 'entries.json', {
+            device: 'FakeTaxi2',
+            date: data,
+            glucose,
+            secret: '258628a55f1370569738e7da6d135c61dcaea7c9',
+        }).subscribe(
+        );
     }
 }
 
