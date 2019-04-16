@@ -1,25 +1,25 @@
-import { Injectable } from "@angular/core";
-import { Peripheral } from "nativescript-bluetooth";
-import { Observable } from "rxjs";
-import { toArray } from "rxjs/internal/operators";
-import { reduce } from "rxjs/internal/operators/reduce";
-import bluetooth = require("nativescript-bluetooth");
+import { Injectable } from '@angular/core';
+import { Peripheral } from 'nativescript-bluetooth';
+import { Observable } from 'rxjs';
+import { toArray } from 'rxjs/internal/operators';
+import { reduce } from 'rxjs/internal/operators/reduce';
+import bluetooth = require('nativescript-bluetooth');
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class PumpBluetoothApiService {
   targetBluDeviceUUID;
 
   scanAndConnect() {
     return new Promise((resolve, reject) => {
-      this.targetBluDeviceUUID = "";
+      this.targetBluDeviceUUID = '';
       bluetooth.enable();
       bluetooth
         .startScanning({
           onDiscovered: (peripheral: Peripheral) => {
             console.log(peripheral.name);
-            if (peripheral.name && peripheral.name.toLowerCase() === "hmsoft") {
+            if (peripheral.name && peripheral.name.toLowerCase() === 'hmsoft') {
               this.targetBluDeviceUUID = peripheral.UUID;
             }
           },
@@ -34,10 +34,10 @@ export class PumpBluetoothApiService {
             bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
-                alert("Połączono");
+                alert('Połączono');
                 resolve();
               },
-              onDisconnected: (peripheral: Peripheral) => alert("Rozłączono")
+              onDisconnected: (peripheral: Peripheral) => alert('Rozłączono')
             });
           },
           () => {
@@ -70,8 +70,8 @@ export class PumpBluetoothApiService {
     bluetooth
       .writeWithoutResponse({
         peripheralUUID: this.targetBluDeviceUUID,
-        characteristicUUID: "ffe1",
-        serviceUUID: "ffe0",
+        characteristicUUID: 'ffe1',
+        serviceUUID: 'ffe0',
         value: new Uint8Array(array.slice(startByte, nextByte))
       })
       .then(() => {
@@ -87,17 +87,17 @@ export class PumpBluetoothApiService {
         onNotify: ({ value }) => {
           const result = new Uint8Array(value).reduce(
             (o, byte) => (o += String.fromCharCode(byte)),
-            ""
+            ''
           );
-          if (result === "EomEomEom") {
+
+          observer.next(result);
+          if (result.includes('EomEomEom')) {
             observer.complete();
-          } else {
-            observer.next(result);
           }
         },
         peripheralUUID: this.targetBluDeviceUUID,
-        characteristicUUID: "ffe1",
-        serviceUUID: "ffe0"
+        characteristicUUID: 'ffe1',
+        serviceUUID: 'ffe0'
       });
     }).pipe(reduce((acc, val) => acc + val));
   }

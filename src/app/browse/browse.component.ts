@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DataFacadeService } from '~/app/shared/data-facade.service';
-import { RawDataService } from '~/app/shared/raw-data-parse.service';
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { DataFacadeService } from "~/app/shared/data-facade.service";
+import { RawDataService } from "~/app/shared/raw-data-parse.service";
 
 @Component({
-  selector: 'Browse',
+  selector: "Browse",
   moduleId: module.id,
-  templateUrl: './browse.component.html'
+  templateUrl: "./browse.component.html"
 })
 export class BrowseComponent implements OnInit {
-  targetBluDeviceUUID = '';
-  text = '';
-  output = '';
+  targetBluDeviceUUID = "";
+  text = "";
+  output = "";
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -21,6 +21,6 @@ export class BrowseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fa.establishConnectionWithPump();
+    setTimeout(() => this.fa.establishConnectionWithPump(), 1000);
   }
 }

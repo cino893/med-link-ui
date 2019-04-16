@@ -37,12 +37,21 @@ export class DataFacadeService {
 
   sendDatatoNightscout() {
     this.getDatafromLocalDb().subscribe(glucoses => {
+      console.log('sendNewBG');
       this.nightscoutApiService.sendNewBG(glucoses);
     });
   }
 
   // hujnia z grzybnią
   establishConnectionWithPump() {
+    this.pumpBluetoothApiService.scanAndConnect();
+    setTimeout(
+      () =>
+        this.pumpBluetoothApiService
+          .scanAndConnect()
+          .then(() => this.transferDataFromPumpThenToApi()),
+      30 * 1000
+    );
     setInterval(() => {
       this.pumpBluetoothApiService.scanAndConnect();
       setTimeout(
@@ -50,7 +59,7 @@ export class DataFacadeService {
           this.pumpBluetoothApiService
             .scanAndConnect()
             .then(() => this.transferDataFromPumpThenToApi()),
-        30 * 1000
+        21 * 1000
       );
     }, 5 * 60 * 1000);
   }
@@ -60,11 +69,14 @@ export class DataFacadeService {
     setTimeout(() => {
       this.pumpBluetoothApiService.read().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
-        this.sendDataToLocalDb(parsedDate).subscribe(() =>
-          this.sendDatatoNightscout()
+        console.log('sendDataToLocalDb');
+        this.sendDataToLocalDb(parsedDate).subscribe(() => {
+            console.log('sendDatatoNightscout');
+            this.sendDatatoNightscout();
+          }
         );
       });
-      this.pumpBluetoothApiService.sendCommand('s');
+      setTimeout(() => this.pumpBluetoothApiService.sendCommand('s'), 1000);
     }, 3000);
   }
 }

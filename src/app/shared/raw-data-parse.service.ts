@@ -13,7 +13,7 @@ export class RawDataService {
     const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
     if (!bloodGlucoseMatch) {
       parsedData.bloodGlucose = {
-        value: 0,
+        value: 39,
         date: new Date()
       };
     } else {
