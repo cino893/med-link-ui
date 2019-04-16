@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { from } from "rxjs";
+import { from, Observable } from 'rxjs';
 import { IBasicSettings } from "~/app/model/med-link.model";
 
 const Sqlite = require("nativescript-sqlite");
@@ -16,8 +16,7 @@ export class DatabaseService {
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
-          `
-            CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose NUMBER, dateString TEXT, isSend INTEGER DEFAULT 0); 
+          `CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); 
             CREATE TABLE IF NOT EXISTS treatments (id INTEGER, duration NUMBER, type TEXT, basalValue TEXT, isSend INTEGER DEFAULT 0);
             `
         ).then(
@@ -35,11 +34,11 @@ export class DatabaseService {
     );
   }
 
-  public insertBG(data: IBasicSettings) {
+  public insertBG(bloodGlucose: { value: number; date: Date }) {
     return from(
       this.database.execSQL(
         "INSERT INTO entries (glucose, dateString) VALUES (?, ?)",
-        [+data.bloodGlucose.value, data.bloodGlucose.date.toString()]
+        [+bloodGlucose.value, bloodGlucose.date.toString()]
       )
     );
   }
@@ -57,8 +56,12 @@ export class DatabaseService {
     );
   }
 
-  public getBG() {
-    return from(this.database.all("SELECT glucose, dateString FROM entries"));
+  public getBG(): Observable<Array<Array<string>>>  {
+    return from(
+      this.database.all(
+        "SELECT glucose, dateString FROM entries WHERE isSend = 0"
+      )
+    );
 
     //
     //     .then(rows => {
