@@ -14,22 +14,11 @@ export class SearchComponent {
     carbs: string;
     pending = false;
 
-    constructor(private httpClient: HttpClient, private changeDetectorRef: ChangeDetectorRef) {
+    constructor(private changeDetectorRef: ChangeDetectorRef) {
         // Use the constructor to inject services.
     }
 
-    sendNewTreatment() {
-        this.pending = true;
-        this.httpClient.post(nightScoutPath + 'treatments.json', {
-            enteredBy: 'FakeTaxi',
-            reason: 'low treatment',
-            carbs: +this.carbs,
-            secret: '258628a55f1370569738e7da6d135c61dcaea7c9',
-        }).subscribe(
-            success => this.showFeedBack(true, success),
-            error => this.showFeedBack(false, error),
-        );
-    }
+
 
     shouldButtonBeEnabled() {
         return !!this.carbs && !this.pending;
