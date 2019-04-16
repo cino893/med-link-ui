@@ -4,17 +4,5 @@
 
 <GridLayout class="page page-content">
     <StackLayout class="input-field">
-        <TextField hint="Węglowodany w gramach"
-                   secure="false"
-                   [text]="carbs"
-                   (textChange)="changeText($event)"
-                   keyboardType="number"
-                   returnKeyType="done"
-                   autocorrect="false"
-                   textAlignment="center"
-                   maxLength="4"
-                   class="input input-border"></TextField>
-        <Button class="btn btn-primary btn-active" text="Wyślij" [isEnabled]="shouldButtonBeEnabled()"
-                (tap)="sendNewTreatment()"></Button>
     </StackLayout>
 </GridLayout>

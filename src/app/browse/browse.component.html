@@ -1,33 +1,9 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="Bluetooth"></Label>
+  <Label class="action-bar-title" text="Bluetooth"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content">
-    <Label class="page-icon fa" text="&#xf1ea;"></Label>
+  <Label class="page-icon fa" text="&#xf1ea;"></Label>
 
-    <StackLayout class="input-field">
-        <Button text="Skanuj i połącz" (tap)="scanAndConnect()"></Button>
-        <TextView
-                style="margin-top: 15"
-                borderColor="#DEDEDE"
-                borderWidth="1"
-                height="160"
-                hint="Wierszyk dla UART"
-                secure="false"
-                [text]="text"
-                (textChange)="changeText($event.object.text)"
-                returnKeyType="send"
-                class="input input-border"></TextView>
-        <Button class="btn btn-primary btn-active" text="Testing Adama"
-                (tap)="testingAdama()"></Button>
-        <TextView
-                style="margin-top: 15"
-                borderColor="#DEDEDE"
-                borderWidth="1"
-                height="110"
-                hint="Wynik czytania"
-                [editable]="false"
-                [text]="output"
-                class="input input-border"></TextView>
-    </StackLayout>
+  <StackLayout class="input-field"> </StackLayout>
 </GridLayout>

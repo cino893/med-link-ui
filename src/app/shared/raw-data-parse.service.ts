@@ -9,15 +9,37 @@ export class RawDataService {
 
   parseData(rawData: string): IBasicSettings {
     const parsedData = {} as IBasicSettings;
-    parsedData.bloodGlucose = {
-      value: +rawData.match(this.bloodGlucoseRegex)[1],
-      date: new Date()
-    };
+
+    const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
+    if (!bloodGlucoseMatch) {
+      parsedData.bloodGlucose = {
+        value: 0,
+        date: new Date()
+      };
+    } else {
+      parsedData.bloodGlucose = {
+        value: +bloodGlucoseMatch[1],
+        date: this.parseDate(bloodGlucoseMatch[2])
+      };
+    }
+
     return parsedData;
   }
 
+  private parseDate(date: string): Date {
+    const lintedDate = (date.trim() + ":00").split(" ");
+    return new Date(
+      lintedDate[0]
+        .split("‑")
+        .reverse()
+        .join("-") +
+        "T" +
+        lintedDate[1]
+    );
+  }
+
   pumpDataRegex = /^(\d{2})-(\d{2})-(\d{4})\s(\d{2})\s(\d{2})/;
-  bloodGlucoseRegex = /BG:([\d\.]+?)\s(\d{2}):(\d{2})\s(\d{2})-(\d{2})-(\d{2})/;
+  bloodGlucoseRegex = /BG:([\d\.]+?)\s(\d{2}‑\d{2}‑\d{2}\s\d{2}:\d{2})/;
   lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}):(\d{2})\s(\d{2})-(\d{2})-(\d{2})/;
   temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;
   nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
