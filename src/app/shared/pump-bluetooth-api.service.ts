@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
 import { Observable } from 'rxjs';
-import { toArray } from 'rxjs/internal/operators';
 import { reduce } from 'rxjs/internal/operators/reduce';
 import bluetooth = require('nativescript-bluetooth');
 
@@ -34,10 +33,10 @@ export class PumpBluetoothApiService {
             bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
-                alert('Połączono');
+                console.log('Połączono');
                 resolve();
               },
-              onDisconnected: (peripheral: Peripheral) => alert('Rozłączono')
+              onDisconnected: (peripheral: Peripheral) => console.log('Rozłączono')
             });
           },
           () => {
@@ -79,6 +78,10 @@ export class PumpBluetoothApiService {
           this.recursiveWrite(array, nextByte);
         }
       });
+  }
+
+  disconnect() {
+    bluetooth.disconnect({UUID: this.targetBluDeviceUUID});
   }
 
   read() {

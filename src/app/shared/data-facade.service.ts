@@ -44,16 +44,16 @@ export class DataFacadeService {
 
   // hujnia z grzybnią
   establishConnectionWithPump() {
-    this.pumpBluetoothApiService.scanAndConnect();
+    this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.disconnect());
     setTimeout(
       () =>
         this.pumpBluetoothApiService
           .scanAndConnect()
           .then(() => this.transferDataFromPumpThenToApi()),
-      30 * 1000
+      21 * 1000
     );
     setInterval(() => {
-      this.pumpBluetoothApiService.scanAndConnect();
+      this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.disconnect());
       setTimeout(
         () =>
           this.pumpBluetoothApiService
