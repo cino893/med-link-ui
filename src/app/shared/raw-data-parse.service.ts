@@ -11,15 +11,17 @@ export class RawDataService {
     const parsedData = {} as IBasicSettings;
 
     const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
+    console.log(rawData.toString());
     if (!bloodGlucoseMatch) {
       parsedData.bloodGlucose = {
         value: 39,
         date: new Date()
       };
     } else {
+      console.log("AAAAAAAAAAAAA" + +bloodGlucoseMatch[1] + " X " + this.parseDate(bloodGlucoseMatch[2]))
       parsedData.bloodGlucose = {
         value: +bloodGlucoseMatch[1],
-        date: this.parseDate(bloodGlucoseMatch[2])
+        date: new Date() //this.parseDate(bloodGlucoseMatch[2])
       };
     }
 
@@ -37,9 +39,8 @@ export class RawDataService {
         lintedDate[1]
     );
   }
-
   pumpDataRegex = /^(\d{2})-(\d{2})-(\d{4})\s(\d{2})\s(\d{2})/;
-  bloodGlucoseRegex = /BG:([\d\.]+?)\s(\d{2}‑\d{2}‑\d{2}\s\d{2}:\d{2})/;
+  bloodGlucoseRegex = /BG:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
   lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}):(\d{2})\s(\d{2})-(\d{2})-(\d{2})/;
   temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;
   nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
