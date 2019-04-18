@@ -1,27 +1,26 @@
-import { Injectable } from "@angular/core";
-import { IBasicSettings } from "~/app/model/med-link.model";
+import { Injectable } from '@angular/core';
+import { IBasicSettings } from '~/app/model/med-link.model';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class RawDataService {
-  constructor() {}
+  constructor() {
+  }
 
   parseData(rawData: string): IBasicSettings {
     const parsedData = {} as IBasicSettings;
 
     const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
-    console.log(rawData.toString());
     if (!bloodGlucoseMatch) {
       parsedData.bloodGlucose = {
         value: 39,
         date: new Date()
       };
     } else {
-      console.log("AAAAAAAAAAAAA" + +bloodGlucoseMatch[1] + " X " + this.parseDate(bloodGlucoseMatch[2]))
       parsedData.bloodGlucose = {
         value: +bloodGlucoseMatch[1],
-        date: new Date() //this.parseDate(bloodGlucoseMatch[2])
+        date: new Date() //this.dateHax(bloodGlucoseMatch[2])
       };
     }
 
@@ -29,18 +28,27 @@ export class RawDataService {
   }
 
   private parseDate(date: string): Date {
-    const lintedDate = (date.trim() + ":00").split(" ");
+    const lintedDate = (date.trim() + ':00').split(' ');
     return new Date(
       lintedDate[0]
-        .split("‑")
+        .split('-')
         .reverse()
-        .join("-") +
-        "T" +
-        lintedDate[1]
+        .join('-') +
+      'T' +
+      lintedDate[1]
     );
   }
+
+  private dateHax(date: string) {
+    const lintedDate = (date.trim() + ':00').split(' ');
+    const dateDay = lintedDate[0].split('‑').reverse();
+    dateDay[0] = '20' + dateDay[0];
+
+    return new Date(dateDay.join('-') + 'T' + lintedDate[1]);
+  }
+
   pumpDataRegex = /^(\d{2})-(\d{2})-(\d{4})\s(\d{2})\s(\d{2})/;
-  bloodGlucoseRegex = /BG:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
+  bloodGlucoseRegex = /BG:(\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
   lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}):(\d{2})\s(\d{2})-(\d{2})-(\d{2})/;
   temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;
   nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
