@@ -14,7 +14,6 @@ export class NightscoutApiService {
   constructor(private httpClient: HttpClient) {}
 
   sendNewBG(glucoses: Array<{ value: number; date: Date }>) {
-      console.log('to chce wyslaa');
       this.httpClient
       .post(
         nightScoutPath + 'entries',
@@ -25,4 +24,14 @@ export class NightscoutApiService {
           date: +glucose.date,
         }))).subscribe();
   }
+  sendNewBol(treatments: Array<{ value: number; date: Date }>) {
+        this.httpClient
+            .post(
+                nightScoutPath + 'treatments',
+                treatments.map(bol => ({
+                    enteredBy: this.device,
+                    secret: this.secret,
+                    insulin: bol.value,
+                }))).subscribe();
+    }
 }

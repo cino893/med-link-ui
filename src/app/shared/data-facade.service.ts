@@ -23,6 +23,9 @@ export class DataFacadeService {
   sendDataToLocalDb(pumpStatus: IBasicSettings) {
     return this.databaseService.insertBG(pumpStatus.bloodGlucose);
   }
+  sendDataToLocalDb2(pumpStatus: IBasicSettings) {
+    return this.databaseService.insertTreatments(pumpStatus.lastBolus);
+  }
 
   getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getBG().pipe(
@@ -35,6 +38,16 @@ export class DataFacadeService {
     );
   }
 
+  getDatafromLocalDb2(): Observable<Array<{ value: number; date: Date }>> {
+    return this.databaseService.getTreatments().pipe(
+        map(rows => {
+          return rows.map(a => ({
+            value: +a[0],
+            date: new Date(a[1])
+          }));
+        })
+    );
+  }
   sendDatatoNightscout() {
     this.getDatafromLocalDb().subscribe(glucoses => {
       console.log('sendNewBG');
@@ -42,6 +55,12 @@ export class DataFacadeService {
     });
   }
 
+  sendDatatoNightscout2() {
+    this.getDatafromLocalDb2().subscribe(treatments => {
+      console.log('send new treasdat')
+      this.nightscoutApiService.sendNewBol(treatments);
+    });
+  }
   // hujnia z grzybnią
   establishConnectionWithPump() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.disconnect());
@@ -71,8 +90,10 @@ export class DataFacadeService {
         const parsedDate = this.rawDataService.parseData(data);
         console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-            console.log('sendDatatoNightscout');
+            console.log('sendDatatoNightscout i 2');
             this.sendDatatoNightscout();
+            this.sendDataToLocalDb2(parsedDate);
+            this.sendDatatoNightscout2();
           }
         );
       });

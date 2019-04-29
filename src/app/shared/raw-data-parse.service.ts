@@ -13,6 +13,7 @@ export class RawDataService {
     parseData(rawData: string): IBasicSettings {
         const parsedData = {} as IBasicSettings;
         const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
+        const lastBolusMatch = rawData.match(this.lastBolusRegex);
         if (!bloodGlucoseMatch) {
             console.log(rawData.toString())
             parsedData.bloodGlucose = {
@@ -21,10 +22,22 @@ export class RawDataService {
             };
         } else {
             console.log(rawData.toString())
-            console.log('aAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
+            console.log('AAaaAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),
+            };
+        }
+        if (!lastBolusMatch) {
+            parsedData.lastBolus = {
+                value: 1,
+                date: new Date(),
+            };
+        } else {
+            console.log('BBBBBBBBBBBBB' + +lastBolusMatch[1].trim() + ' X ' + this.dateHax(lastBolusMatch[2]))
+            parsedData.lastBolus = {
+                value: +lastBolusMatch[1].trim(),
+                date: this.dateHax(lastBolusMatch[2]),
             };
         }
         return parsedData;
@@ -33,7 +46,6 @@ export class RawDataService {
         const lintedDate = (date.trim() + ':0').split(' ');
         const dateDay = lintedDate[0].split('-').reverse();
         dateDay[0] = '20' + dateDay[0];
-        //tylko do pazdziernika
         if (dateDay[1].substring(0,1) === '0'){
             dateDay[1] = dateDay[1].substring(1,2);
         }
@@ -45,7 +57,7 @@ export class RawDataService {
     }
     pumpDataRegex = /^(\d{2})-(\d{2})-(\d{4})\s(\d{2})\s(\d{2})/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
-    lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}):(\d{2})\s(\d{2})-(\d{2})-(\d{2})/;
+    lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
     temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;
     nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
     uptimeSensorInMinutesRegex = /Czas\ssensora:\s(\d+?)min/;

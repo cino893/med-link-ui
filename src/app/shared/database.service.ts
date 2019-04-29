@@ -12,13 +12,12 @@ export class DatabaseService {
 
   createTable() {
     const adamDb = new Sqlite("test-adam.db");
-
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
-          `CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); 
-            CREATE TABLE IF NOT EXISTS treatments (id INTEGER, duration NUMBER, type TEXT, basalValue TEXT, isSend INTEGER DEFAULT 0);
-            `
+          `CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
+           CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
+           `
         ).then(
           id => {
             this.database = db;
@@ -43,15 +42,11 @@ export class DatabaseService {
     );
   }
 
-  public insertTreatments(data: IBasicSettings) {
+  public insertTreatments(lastBolus: {value: number; date: Date }) {
     return from(
       this.database.execSQL(
-        "INSERT INTO treatments (duration, type, basalValue) VALUES (?, ?, ?)",
-        [
-          data.temporaryBasalMethodUnitsPerHour.progress.minutesTarget,
-          "absolute",
-          data.temporaryBasalMethodUnitsPerHour.currentValueConfig
-        ]
+        "INSERT INTO treatments (basalValue, dateString) VALUES (?, ?)",
+        [+lastBolus.value, lastBolus.date.toString()]
       )
     );
   }
@@ -62,19 +57,12 @@ export class DatabaseService {
         "SELECT glucose, dateString FROM entries WHERE isSend = 0"
       )
     );
-
-    //
-    //     .then(rows => {
-    //     const people = rows.map(a => ({
-    //         glucose: a[0],
-    //         dateString: a[1],
-    //     }));
-    //     people.forEach(a => {
-    //         this.sendNewBG(a.glucose, a.dateString);
-    //     });
-    //     console.log(people);
-    // }, error => {
-    //     console.log('SELECT ERROR', error);
-    // });
   }
+    public getTreatments(): Observable<Array<Array<string>>>  {
+        return from(
+            this.database.all(
+                "SELECT basalValue, dateString FROM treatments WHERE isSend = 0"
+            )
+        );
+    }
 }
