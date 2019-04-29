@@ -77,6 +77,6 @@ export class DataFacadeService {
         );
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand('s'), 1000);
-    }, 3000);
+    }, 5000);
   }
 }
