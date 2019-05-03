@@ -22,7 +22,7 @@ export class RawDataService {
             };
         } else {
             console.log(rawData.toString())
-            console.log('AAaaAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
+            console.log('AAAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),

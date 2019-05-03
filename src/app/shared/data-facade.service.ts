@@ -57,7 +57,7 @@ export class DataFacadeService {
 
   sendDatatoNightscout2() {
     this.getDatafromLocalDb2().subscribe(treatments => {
-      console.log('send new treasdat')
+      console.log('send new treatm')
       this.nightscoutApiService.sendNewBol(treatments);
     });
   }
@@ -94,6 +94,8 @@ export class DataFacadeService {
             this.sendDatatoNightscout();
             this.sendDataToLocalDb2(parsedDate);
             this.sendDatatoNightscout2();
+            this.databaseService.updateBG();
+            this.databaseService.updateTreatments();
           }
         );
       });

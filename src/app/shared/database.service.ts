@@ -42,12 +42,28 @@ export class DatabaseService {
     );
   }
 
+  public updateBG() {
+    return from(
+        this.database.execSQL(
+            "UPDATE entries SET isSend = 1 WHERE isSend = 0"
+        )
+    );
+  }
+
   public insertTreatments(lastBolus: {value: number; date: Date }) {
     return from(
       this.database.execSQL(
         "INSERT INTO treatments (basalValue, dateString) VALUES (?, ?)",
         [+lastBolus.value, lastBolus.date.toString()]
       )
+    );
+  }
+
+  public updateTreatments() {
+    return from(
+        this.database.execSQL(
+            "UPDATE treatments SET isSend = 1 WHERE isSend = 0"
+        )
     );
   }
 
@@ -61,7 +77,7 @@ export class DatabaseService {
     public getTreatments(): Observable<Array<Array<string>>>  {
         return from(
             this.database.all(
-                "SELECT basalValue, dateString FROM treatments WHERE isSend = 0"
+                "SELECT basalValue, dateString FROM treatments WHERE isSend = 0 GROUP BY basalValue, dateString"
             )
         );
     }
