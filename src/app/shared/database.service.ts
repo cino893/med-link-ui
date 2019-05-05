@@ -15,15 +15,16 @@ export class DatabaseService {
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
-          `CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
-           CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
+          `CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage Number, isSend INTEGER DEFAULT 0);
+          CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
+          CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
            `
         ).then(
           id => {
             this.database = db;
           },
           error => {
-            console.log("CREATE TABLE ERROR", error);
+            console.log("CREATE TABLEa ERROR", error);
           }
         );
       },
@@ -66,7 +67,21 @@ export class DatabaseService {
         )
     );
   }
-
+  public insertDeviceStatus(insulinInPompLeft ,batteryVoltage) {
+    return from(
+        this.database.execSQL(
+            "INSERT INTO devicestatus (reservoir, voltage) VALUES (?, ?)",
+            [insulinInPompLeft, batteryVoltage]
+        )
+    );
+  }
+  public updateDS() {
+    return from(
+        this.database.execSQL(
+            "UPDATE devicestatus SET isSend = 1 WHERE isSend = 0"
+        )
+    );
+  }
   public getBG(): Observable<Array<Array<string>>>  {
     return from(
       this.database.all(
@@ -81,4 +96,11 @@ export class DatabaseService {
             )
         );
     }
+  public getDS(): Observable<Array<Array<string>>>  {
+    return from(
+        this.database.all(
+            "SELECT reservoir, voltage FROM devicestatus WHERE isSend = 0"
+        )
+    );
+  }
 }

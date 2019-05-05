@@ -26,7 +26,9 @@ export class DataFacadeService {
   sendDataToLocalDb2(pumpStatus: IBasicSettings) {
     return this.databaseService.insertTreatments(pumpStatus.lastBolus);
   }
-
+  sendDataToLocalDb3(pumpStatus: IBasicSettings) {
+    return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage);
+  }
   getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getBG().pipe(
       map(rows => {
@@ -37,13 +39,22 @@ export class DataFacadeService {
       })
     );
   }
-
   getDatafromLocalDb2(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getTreatments().pipe(
         map(rows => {
           return rows.map(a => ({
             value: +a[0],
             date: new Date(a[1])
+          }));
+        })
+    );
+  }
+  getDatafromLocalDb3(): Observable<Array<{ reservoir: number; voltage: number }>> {
+    return this.databaseService.getDS().pipe(
+        map(rows => {
+          return rows.map(a => ({
+            reservoir: +a[0],
+            voltage: +a[1],
           }));
         })
     );
@@ -59,6 +70,12 @@ export class DataFacadeService {
     this.getDatafromLocalDb2().subscribe(treatments => {
       console.log('send new treatm')
       this.nightscoutApiService.sendNewBol(treatments);
+    });
+  }
+  sendDatatoNightscout3() {
+    this.getDatafromLocalDb3().subscribe(deviceStatus => {
+      console.log('send new DS')
+      this.nightscoutApiService.sendNewDevicestatus(deviceStatus);
     });
   }
   // hujnia z grzybnią
@@ -94,8 +111,11 @@ export class DataFacadeService {
             this.sendDatatoNightscout();
             this.sendDataToLocalDb2(parsedDate);
             this.sendDatatoNightscout2();
+            this.sendDataToLocalDb3(parsedDate);
+            this.sendDatatoNightscout3();
             this.databaseService.updateBG();
             this.databaseService.updateTreatments();
+            this.databaseService.updateDS();
           }
         );
       });

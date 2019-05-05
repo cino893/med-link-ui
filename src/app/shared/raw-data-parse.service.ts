@@ -14,6 +14,18 @@ export class RawDataService {
         const parsedData = {} as IBasicSettings;
         const bloodGlucoseMatch = rawData.match(this.bloodGlucoseRegex);
         const lastBolusMatch = rawData.match(this.lastBolusRegex);
+        const insulinInPompLeftMatch = rawData.match(this.insulinInPompLeftRegex);
+        const batteryVoltageMatch = rawData.match(this.batteryVoltageRegex);
+        if (!insulinInPompLeftMatch && !batteryVoltageMatch) {
+            console.log(rawData.toString())
+            parsedData.batteryVoltage = 1.25;
+            parsedData.insulinInPompLeft = 199;
+        } else {
+            console.log(rawData.toString())
+            console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]))
+            parsedData.batteryVoltage = Number(batteryVoltageMatch[1]);
+            parsedData.insulinInPompLeft = Number(insulinInPompLeftMatch[1]);
+        }
         if (!bloodGlucoseMatch) {
             console.log(rawData.toString())
             parsedData.bloodGlucose = {
@@ -22,7 +34,7 @@ export class RawDataService {
             };
         } else {
             console.log(rawData.toString())
-            console.log('AAAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
+            console.log('AAAAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),
@@ -34,7 +46,7 @@ export class RawDataService {
                 date: new Date(),
             };
         } else {
-            console.log('BBBBBBBBBBBBB' + +lastBolusMatch[1].trim() + ' X ' + this.dateHax(lastBolusMatch[2]))
+            console.log('BBBBBbBBBBBBBB' + +lastBolusMatch[1].trim() + ' X ' + this.dateHax(lastBolusMatch[2]))
             parsedData.lastBolus = {
                 value: +lastBolusMatch[1].trim(),
                 date: this.dateHax(lastBolusMatch[2]),
@@ -62,8 +74,8 @@ export class RawDataService {
     nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
     uptimeSensorInMinutesRegex = /Czas\ssensora:\s(\d+?)min/;
     expectedBloodGlucoseRegex = /Cel\sBG\ssensor:\s(\d+)-(\d+)\n/;
-    batteryVoltageRegex = /Bateria:.+?\(([\.\d]+)V\)\n/;
-    insulinInPompLeftRegex = /Zbiorniczek:\s([\d\.]+)J\n/;
+    batteryVoltageRegex = /Bateria pompy:\s(\d.+?)V/;
+    insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{3}J/;
     baseBasalRegex = /Baza:\s([\d\.]+).J\/h\n/;
     temporaryBasalMethodPercentage = /TDP:\s(\d+)%\s(\d+).+?(\d+)m\n/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;

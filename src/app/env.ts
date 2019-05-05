@@ -1,1 +1,1 @@
-export const nightScoutPath = 'https://testowycgm.azurewebsites.net/api/v1/';
+export const nightScoutPath = 'https://lenka.herokuapp.com/api/v1/';
