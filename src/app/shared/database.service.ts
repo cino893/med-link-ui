@@ -15,16 +15,18 @@ export class DatabaseService {
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
-          `CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage Number, isSend INTEGER DEFAULT 0);
-          CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
-          CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);
-           `
+        'CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); ' +
+        'COMMIT;' +
+        'CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); ' +
+        'COMMIT; ' +
+        'CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage Number, isSend INTEGER DEFAULT 0); ' +
+        'COMMIT;',
         ).then(
           id => {
             this.database = db;
           },
           error => {
-            console.log("CREATE TABLEa ERROR", error);
+            console.log("CREATE TABLE ERROR", error);
           }
         );
       },
