@@ -34,8 +34,23 @@ export class NightscoutApiService {
                     insulin: bol.value,
                     created_at: bol.date + this.timezone,
                 }))).subscribe();
-    }
-    sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number }>) {
+  }
+  sendNewTempBaza(treatments: Array<{ value: number; date: Date }>) {
+        this.httpClient
+            .post(
+                nightScoutPath + 'treatments',
+                treatments.map(bol => ({
+                    enteredBy: this.device,
+                    secret: this.secret,
+                    duration: bol.value,
+                    created_at: bol.date + this.timezone,
+                    absolute: 0.35,
+                    rate: 0.7,
+                    eventType: 'Temp Basal',
+                    timestamp: new Date(),
+                }))).subscribe();
+  }
+  sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number }>) {
         this.httpClient
             .post(
                 nightScoutPath + 'devicestatus',

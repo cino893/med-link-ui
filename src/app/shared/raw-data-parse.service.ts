@@ -39,14 +39,11 @@ export class RawDataService {
             };
         }
         if (!bloodGlucoseMatch) {
-            console.log(rawData.toString())
             parsedData.bloodGlucose = {
                 value: 55,
                 date: new Date(),
             };
         } else {
-            console.log(rawData.toString())
-            console.log('AAAAAAA' + +bloodGlucoseMatch[1].trim() + ' X ' + this.dateHax(bloodGlucoseMatch[2]))
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),
@@ -58,7 +55,6 @@ export class RawDataService {
                 date: new Date(),
             };
         } else {
-            console.log('BBBBBbBBBBBBBB' + +lastBolusMatch[1].trim() + ' X ' + this.dateHax(lastBolusMatch[2]))
             parsedData.lastBolus = {
                 value: +lastBolusMatch[1].trim(),
                 date: this.dateHax(lastBolusMatch[2]),
@@ -90,7 +86,7 @@ export class RawDataService {
     batteryVoltageRegex = /Bateria pompy:\s(\d.+?)V/;
     insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{3}J/;
     baseBasalRegex = /Baza:\s([\d\.]+).J\/h\n/;
-    temporaryBasalMethodPercentage = /TDP:\s(\d+)%\s(\d+).+?(\d+)m\n/;
+    temporaryBasalMethodPercentage = /TDP:\s(\d+)%\s+?(\d+).+?(\d+)m/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;
     totalInsulinGivenYesterdayRegex = /Dawka\swczoraj:\s([\d\.]+)J\n/;
     maximumBolusSettingRegex = /Max\sbolus:\s([\d\.]+)U\n/;
