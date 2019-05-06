@@ -15,12 +15,12 @@ export class DatabaseService {
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
+        'CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, isSend INTEGER DEFAULT 0); ' +
+        'COMMIT; ' +
         'CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); ' +
         'COMMIT;' +
         'CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0); ' +
-        'COMMIT; ' +
-        'CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage Number, isSend INTEGER DEFAULT 0); ' +
-        'COMMIT;',
+        'COMMIT; ',
         ).then(
           id => {
             this.database = db;
@@ -69,11 +69,11 @@ export class DatabaseService {
         )
     );
   }
-  public insertDeviceStatus(insulinInPompLeft ,batteryVoltage) {
+  public insertDeviceStatus(insulinInPompLeft , batteryVoltage, data: {data: Date; percent: number}) {
     return from(
         this.database.execSQL(
-            "INSERT INTO devicestatus (reservoir, voltage) VALUES (?, ?)",
-            [insulinInPompLeft, batteryVoltage]
+            'INSERT INTO devicestatus (reservoir, voltage, dateString, percent) VALUES (?, ?, ?, ?)',
+            [insulinInPompLeft, batteryVoltage, data.data, data.percent]
         )
     );
   }
@@ -101,7 +101,7 @@ export class DatabaseService {
   public getDS(): Observable<Array<Array<string>>>  {
     return from(
         this.database.all(
-            "SELECT reservoir, voltage FROM devicestatus WHERE isSend = 0"
+            "SELECT reservoir, voltage, dateString, percent FROM devicestatus WHERE isSend = 0"
         )
     );
   }

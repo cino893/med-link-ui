@@ -27,7 +27,7 @@ export class DataFacadeService {
     return this.databaseService.insertTreatments(pumpStatus.lastBolus);
   }
   sendDataToLocalDb3(pumpStatus: IBasicSettings) {
-    return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage);
+    return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage, pumpStatus.data);
   }
   getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getBG().pipe(
@@ -49,12 +49,14 @@ export class DataFacadeService {
         })
     );
   }
-  getDatafromLocalDb3(): Observable<Array<{ reservoir: number; voltage: number }>> {
+  getDatafromLocalDb3(): Observable<Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; }>> {
     return this.databaseService.getDS().pipe(
         map(rows => {
           return rows.map(a => ({
             reservoir: +a[0],
             voltage: +a[1],
+            dateString: new Date(a[2]),
+            percent: +a[3],
           }));
         })
     );

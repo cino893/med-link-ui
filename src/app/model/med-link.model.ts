@@ -1,5 +1,8 @@
 export interface IBasicSettings {
-  data: Date;
+  data: {
+    data: Date;
+    percent: number;
+  };
   bloodGlucose: {
     value: number;
     date: Date;

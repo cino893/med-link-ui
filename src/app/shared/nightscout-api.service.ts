@@ -35,7 +35,7 @@ export class NightscoutApiService {
                     created_at: bol.date + this.timezone,
                 }))).subscribe();
     }
-    sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number }>) {
+    sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number }>) {
         this.httpClient
             .post(
                 nightScoutPath + 'devicestatus',
@@ -43,7 +43,8 @@ export class NightscoutApiService {
                     device: this.device,
                     secret: this.secret,
                     created_at: new Date(),
-                    pump: { clock: new Date(), reservoir: bol.reservoir, status: { status: 'W dzialaniu', timestamp: 1557061755 }, extended: { version: '1.0', ActiveProfile: 'medlink' }, battery: { voltage: bol.voltage.toString().substring(0, 4) } },
+                    pump: { clock: bol.dateString, reservoir: bol.reservoir, status: { status: 'normal', timestamp: 1557061755 }, extended: { version: '1.0', ActiveProfile: 'medlink' }, battery: { voltage: bol.voltage.toString().substring(0, 4) } },
+                    uploaderBattery: bol.percent,
                 }))).subscribe();
     }
 }
