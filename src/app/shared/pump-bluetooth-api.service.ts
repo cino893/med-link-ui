@@ -18,7 +18,7 @@ export class PumpBluetoothApiService {
         .startScanning({
           onDiscovered: (peripheral: Peripheral) => {
             console.log(peripheral.name);
-            if (peripheral.name && peripheral.name.toLowerCase() === 'hmsoft') {
+            if (peripheral.name && peripheral.name.toLowerCase() === 'med-link-2') {
               this.targetBluDeviceUUID = peripheral.UUID;
             }
           },
@@ -45,8 +45,17 @@ export class PumpBluetoothApiService {
         );
     });
   }
-
   sendCommand(command) {
+    const buffer = [];
+    for (const char of command) {
+      const charCode = char.charCodeAt(0);
+      buffer.push(charCode);
+    }
+    if (buffer.length) {
+      this.recursiveWrite(buffer);
+    }
+  }
+  sendCommand2(command) {
     const buffer = [];
     for (const char of command) {
       const charCode = char.charCodeAt(0);
@@ -94,7 +103,29 @@ export class PumpBluetoothApiService {
           );
 
           observer.next(result);
-          if (result.includes('EomEomEom')) {
+          console.log(result);
+          if (result.includes('rea')) {
+            observer.complete();
+          }
+        },
+        peripheralUUID: this.targetBluDeviceUUID,
+        characteristicUUID: 'ffe1',
+        serviceUUID: 'ffe0'
+      });
+    }).pipe(reduce((acc, val) => acc + val));
+  }
+  read2() {
+    return new Observable<string>(observer => {
+      bluetooth.startNotifying({
+        onNotify: ({ value }) => {
+          const result = new Uint8Array(value).reduce(
+              (o, byte) => (o += String.fromCharCode(byte)),
+              ''
+          );
+
+          observer.next(result);
+          console.log(result);
+          if (result.includes('EomEomEo')) {
             observer.complete();
           }
         },

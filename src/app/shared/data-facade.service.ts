@@ -63,49 +63,35 @@ export class DataFacadeService {
   }
   sendDatatoNightscout() {
     this.getDatafromLocalDb().subscribe(glucoses => {
-      console.log('sendNewBG');
       this.nightscoutApiService.sendNewBG(glucoses);
     });
   }
 
   sendDatatoNightscout2() {
     this.getDatafromLocalDb2().subscribe(treatments => {
-      console.log('send new treatm')
       this.nightscoutApiService.sendNewBol(treatments);
     });
   }
   sendDatatoNightscout3() {
     this.getDatafromLocalDb3().subscribe(deviceStatus => {
-      console.log('send new DS')
       this.nightscoutApiService.sendNewDevicestatus(deviceStatus);
     });
   }
   // hujnia z grzybnią
   establishConnectionWithPump() {
-    this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.disconnect());
-    setTimeout(
-      () =>
-        this.pumpBluetoothApiService
-          .scanAndConnect()
-          .then(() => this.transferDataFromPumpThenToApi()),
-      21 * 1000
-    );
-    setInterval(() => {
-      this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.disconnect());
-      setTimeout(
-        () =>
-          this.pumpBluetoothApiService
-            .scanAndConnect()
-            .then(() => this.transferDataFromPumpThenToApi()),
-        21 * 1000
-      );
-    }, 5 * 60 * 1000);
+    this.pumpBluetoothApiService.scanAndConnect()
+        .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
+        .then(() => this.waitOnReady());
+  }
+  waitOnReady() {
+    this.pumpBluetoothApiService.read()
+        .subscribe(() => { console.log('bedzie s'); this.transferDataFromPumpThenToApi(); });
   }
 
   // hujnia z grzybnią 2
   transferDataFromPumpThenToApi() {
     setTimeout(() => {
-      this.pumpBluetoothApiService.read().subscribe(data => {
+      this.pumpBluetoothApiService.read2().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
         console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
@@ -121,7 +107,7 @@ export class DataFacadeService {
           }
         );
       });
-      setTimeout(() => this.pumpBluetoothApiService.sendCommand('s'), 1000);
+      setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
     }, 5000);
   }
 }

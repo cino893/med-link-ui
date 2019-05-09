@@ -78,13 +78,13 @@ export class RawDataService {
     }
     pumpDataRegex = /^(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{2,3})%/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
-    lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
+    lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s+?\d{1,2}:\d{2})/;
     temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;
     nextCalibrationRegex = /Nastepna\skalib:\s(\d+?):(\d+?)\n/;
     uptimeSensorInMinutesRegex = /Czas\ssensora:\s(\d+?)min/;
     expectedBloodGlucoseRegex = /Cel\sBG\ssensor:\s(\d+)-(\d+)\n/;
     batteryVoltageRegex = /Bateria pompy:\s(\d.+?)V/;
-    insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{3}J/;
+    insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{2}J/;
     baseBasalRegex = /Baza:\s([\d\.]+).J\/h\n/;
     temporaryBasalMethodPercentage = /TDP:\s(\d+)%\s+?(\d+).+?(\d+)m/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;
