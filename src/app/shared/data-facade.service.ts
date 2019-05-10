@@ -82,6 +82,11 @@ export class DataFacadeService {
     this.pumpBluetoothApiService.scanAndConnect()
         .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
         .then(() => this.waitOnReady());
+    setInterval(() => {
+        this.pumpBluetoothApiService.scanAndConnect()
+            .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
+            .then(() => this.waitOnReady());
+      }, 5 * 60 * 1000);
   }
   waitOnReady() {
     this.pumpBluetoothApiService.read()
@@ -108,6 +113,6 @@ export class DataFacadeService {
         );
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
-    }, 5000);
+    }, 3000);
   }
 }

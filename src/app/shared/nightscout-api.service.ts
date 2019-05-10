@@ -50,7 +50,7 @@ export class NightscoutApiService {
                     timestamp: new Date(),
                 }))).subscribe();
   }
-  sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number }>) {
+  sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number;  }>) {
         this.httpClient
             .post(
                 nightScoutPath + 'devicestatus',
