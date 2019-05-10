@@ -27,7 +27,7 @@ export class DataFacadeService {
     return this.databaseService.insertTreatments(pumpStatus.lastBolus);
   }
   sendDataToLocalDb3(pumpStatus: IBasicSettings) {
-    return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage, pumpStatus.data);
+    return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage, pumpStatus.data, pumpStatus.statusPump);
   }
   getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getBG().pipe(
@@ -49,7 +49,7 @@ export class DataFacadeService {
         })
     );
   }
-  getDatafromLocalDb3(): Observable<Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; }>> {
+  getDatafromLocalDb3(): Observable<Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; status: string }>> {
     return this.databaseService.getDS().pipe(
         map(rows => {
           return rows.map(a => ({
@@ -57,6 +57,7 @@ export class DataFacadeService {
             voltage: +a[1],
             dateString: new Date(a[2]),
             percent: +a[3],
+            status: a[4],
           }));
         })
     );
@@ -113,6 +114,6 @@ export class DataFacadeService {
         );
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
-    }, 3000);
+    }, 12 * 1000);
   }
 }

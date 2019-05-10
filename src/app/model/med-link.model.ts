@@ -46,4 +46,5 @@ export interface IBasicSettings {
     value: number;
     units: number;
   };
+  statusPump: string;
 }

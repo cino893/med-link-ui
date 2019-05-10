@@ -17,7 +17,8 @@ export class DatabaseService {
         db.execSQL(
         `CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);`,
         ).then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);'))
-         .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, isSend INTEGER DEFAULT 0);'))
+            .then(db4 => db.execSQL('DROP TABLE devicestatus'))
+         .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
             .then(
           id => {
             this.database = db;
@@ -66,11 +67,11 @@ export class DatabaseService {
         )
     );
   }
-  public insertDeviceStatus(insulinInPompLeft , batteryVoltage, data: {data: Date; percent: number}) {
+  public insertDeviceStatus(insulinInPompLeft , batteryVoltage, data: {data: Date; percent: number}, status: string) {
     return from(
         this.database.execSQL(
-            'INSERT INTO devicestatus (reservoir, voltage, dateString, percent) VALUES (?, ?, ?, ?)',
-            [insulinInPompLeft, batteryVoltage, data.data, data.percent]
+            'INSERT INTO devicestatus (reservoir, voltage, dateString, percent, status) VALUES (?, ?, ?, ?, ?)',
+            [insulinInPompLeft, batteryVoltage, data.data, data.percent, status]
         )
     );
   }
@@ -98,7 +99,7 @@ export class DatabaseService {
   public getDS(): Observable<Array<Array<string>>>  {
     return from(
         this.database.all(
-            "SELECT reservoir, voltage, dateString, percent FROM devicestatus WHERE isSend = 0"
+            "SELECT reservoir, voltage, dateString, percent, status FROM devicestatus WHERE isSend = 0"
         )
     );
   }

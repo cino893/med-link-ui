@@ -20,7 +20,8 @@ export class RawDataService {
         const insulinInPompLeftMatch = rawData.match(this.insulinInPompLeftRegex);
         const batteryVoltageMatch = rawData.match(this.batteryVoltageRegex);
         const pumpDataMatch = rawData.match(this.pumpDataRegex);
-        if (!insulinInPompLeftMatch && !batteryVoltageMatch && !pumpDataMatch) {
+        const statusPumpMatch = rawData.match(this.stanPumpRegex);
+        if (!insulinInPompLeftMatch && !batteryVoltageMatch && !pumpDataMatch && !statusPumpMatch) {
             console.log(rawData.toString())
             parsedData.batteryVoltage = 1.25;
             parsedData.insulinInPompLeft = 199;
@@ -28,6 +29,7 @@ export class RawDataService {
                 data: new Date(),
                 percent: 69,
             };
+            parsedData.statusPump = 'SUSPEND';
         } else {
             console.log(rawData.toString())
             console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]) + ' Y ' + this.dateHax(pumpDataMatch[1]) + ' Z ' + Number(pumpDataMatch[2]))
@@ -37,6 +39,7 @@ export class RawDataService {
                 data: this.dateHax(pumpDataMatch[1]),
                 percent: Number(pumpDataMatch[2]),
             };
+            parsedData.statusPump = statusPumpMatch[1].toLowerCase();
         }
         if (!bloodGlucoseMatch) {
             parsedData.bloodGlucose = {
@@ -95,4 +98,5 @@ export class RawDataService {
     insulinWorkTimeSettingsRegex = /Czas\sinsuliny:\s(\d+)h\n/;
     insulinSensitiveFactorSettingsRegex = /Wsp\.insulin:\s(\d+?)(\w+\/\w+)\n/;
     insulinToCabRatioRegex = /Wsp\.weglowod:\s(\d+?)(\w+\/\w+)/;
+    stanPumpRegex = /Stan pompy: (\S+)/;
 }
