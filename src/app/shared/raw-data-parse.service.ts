@@ -21,6 +21,7 @@ export class RawDataService {
         const batteryVoltageMatch = rawData.match(this.batteryVoltageRegex);
         const pumpDataMatch = rawData.match(this.pumpDataRegex);
         const statusPumpMatch = rawData.match(this.stanPumpRegex);
+        const temporaryBasalMethodPercentageM = rawData.match(this.temporaryBasalMethodPercentage);
         if (!insulinInPompLeftMatch && !batteryVoltageMatch && !pumpDataMatch && !statusPumpMatch) {
             console.log(rawData.toString())
             parsedData.batteryVoltage = 1.25;
@@ -62,6 +63,11 @@ export class RawDataService {
                 value: +lastBolusMatch[1].trim(),
                 date: this.dateHax(lastBolusMatch[2]),
             };
+            parsedData.temporaryBasalMethodPercentage = {
+                percentsOfBaseBasal: +temporaryBasalMethodPercentageM[1] - 100,
+                timeLeftInMinutes: +temporaryBasalMethodPercentageM[3] + 60 * +temporaryBasalMethodPercentageM[2],
+                timestamp: new Date(),
+            };
         }
         return parsedData;
     }
@@ -89,7 +95,7 @@ export class RawDataService {
     batteryVoltageRegex = /Bateria pompy:\s(\d.+?)V/;
     insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{2}J/;
     baseBasalRegex = /Baza:\s([\d\.]+).J\/h\n/;
-    temporaryBasalMethodPercentage = /TDP:\s(\d+)%\s+?(\d+).+?(\d+)m/;
+    temporaryBasalMethodPercentage = /TDP:\s+?(\d+)%\s+?(\d+).+?(\d+)m/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;
     totalInsulinGivenYesterdayRegex = /Dawka\swczoraj:\s([\d\.]+)J\n/;
     maximumBolusSettingRegex = /Max\sbolus:\s([\d\.]+)U\n/;

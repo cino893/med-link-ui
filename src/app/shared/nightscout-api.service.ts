@@ -1,7 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { knownFolders } from 'tns-core-modules/file-system';
 import { nightScoutPath } from "~/app/env";
 import { DatabaseService } from "~/app/shared/database.service";
+import temp = knownFolders.temp;
 
 @Injectable({
   providedIn: "root"
@@ -35,16 +37,16 @@ export class NightscoutApiService {
                     created_at: bol.date + this.timezone,
                 }))).subscribe();
   }
-  sendNewTempBaza(treatments: Array<{ value: number; date: Date }>) {
+  sendNewTempBasal(tempbasal: Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>) {
         this.httpClient
             .post(
                 nightScoutPath + 'treatments',
-                treatments.map(bol => ({
+                tempbasal.map(bol => ({
                     enteredBy: this.device,
                     secret: this.secret,
-                    duration: bol.value,
-                    created_at: bol.date + this.timezone,
-                    absolute: 0.35,
+                    duration: bol.minutes,
+                    created_at: bol.dateString + this.timezone,
+                    percent: bol.percentsOfBasal,
                     rate: 0.7,
                     eventType: 'Temp Basal',
                     timestamp: new Date(),

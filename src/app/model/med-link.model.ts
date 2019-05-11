@@ -31,6 +31,7 @@ export interface IBasicSettings {
   temporaryBasalMethodPercentage: {
     percentsOfBaseBasal: number;
     timeLeftInMinutes: number;
+    timestamp: Date;
   };
   totalInsulinGivenToday: number;
   totalInsulinGivenYesterday: number;

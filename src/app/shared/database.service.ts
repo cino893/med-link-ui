@@ -17,7 +17,8 @@ export class DatabaseService {
         db.execSQL(
         `CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);`,
         ).then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);'))
-            .then(db4 => db.execSQL('DROP TABLE devicestatus'))
+            .then(db4 => db.execSQL('DROP TABLE tempbasal'))
+            .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);'))
          .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
             .then(
           id => {
@@ -78,7 +79,22 @@ export class DatabaseService {
   public updateDS() {
     return from(
         this.database.execSQL(
-            "UPDATE devicestatus SET isSend = 1 WHERE isSend = 0"
+            'UPDATE devicestatus SET isSend = 1 WHERE isSend = 0'
+        )
+    );
+  }
+  public insertTempBasal(percentsOfBasal , minutes, dateString) {
+    return from(
+        this.database.execSQL(
+            'INSERT INTO tempbasal (percentsOfBasal, minutes, dateString) VALUES (?, ?, ?)',
+            [percentsOfBasal, minutes, dateString]
+        )
+    );
+  }
+  public updateTempBasal() {
+    return from(
+        this.database.execSQL(
+            "UPDATE tempbasal SET isSend = 1 WHERE isSend = 0"
         )
     );
   }
@@ -101,6 +117,13 @@ export class DatabaseService {
         this.database.all(
             "SELECT reservoir, voltage, dateString, percent, status FROM devicestatus WHERE isSend = 0"
         )
+    );
+  }
+  public getTempBasal(): Observable<Array<Array<string>>>  {
+    return from(
+        this.database.all(
+            'SELECT percentsOfBasal, minutes, dateString FROM tempbasal WHERE isSend = 0; ',
+        ),
     );
   }
 }

@@ -29,6 +29,10 @@ export class DataFacadeService {
   sendDataToLocalDb3(pumpStatus: IBasicSettings) {
     return this.databaseService.insertDeviceStatus(pumpStatus.insulinInPompLeft, pumpStatus.batteryVoltage, pumpStatus.data, pumpStatus.statusPump);
   }
+  sendDataToLocalDb4(pumpStatus: IBasicSettings) {
+        return this.databaseService.insertTempBasal(pumpStatus.temporaryBasalMethodPercentage.percentsOfBaseBasal, pumpStatus.temporaryBasalMethodPercentage.timeLeftInMinutes, pumpStatus.temporaryBasalMethodPercentage.timestamp);
+  }
+
   getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
     return this.databaseService.getBG().pipe(
       map(rows => {
@@ -62,6 +66,17 @@ export class DataFacadeService {
         })
     );
   }
+  getDatafromLocalDb4(): Observable<Array<{ percentsOfBasal: number; minutes: number; dateString: Date; }>> {
+        return this.databaseService.getTempBasal().pipe(
+            map(rows => {
+                return rows.map(a => ({
+                    percentsOfBasal: +a[0],
+                    minutes: +a[1],
+                    dateString: new Date(a[2]),
+                }));
+            })
+        );
+    }
   sendDatatoNightscout() {
     this.getDatafromLocalDb().subscribe(glucoses => {
       this.nightscoutApiService.sendNewBG(glucoses);
@@ -78,6 +93,11 @@ export class DataFacadeService {
       this.nightscoutApiService.sendNewDevicestatus(deviceStatus);
     });
   }
+  sendDatatoNightscout4() {
+        this.getDatafromLocalDb4().subscribe(tempbasal => {
+            this.nightscoutApiService.sendNewTempBasal(tempbasal);
+        });
+    }
   // hujnia z grzybnią
   establishConnectionWithPump() {
     this.pumpBluetoothApiService.scanAndConnect()
@@ -101,15 +121,18 @@ export class DataFacadeService {
         const parsedDate = this.rawDataService.parseData(data);
         console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-            console.log('sendDatatoNightscout i 2');
+            console.log('sendDatatoNightscout');
             this.sendDatatoNightscout();
             this.sendDataToLocalDb2(parsedDate);
             this.sendDatatoNightscout2();
             this.sendDataToLocalDb3(parsedDate);
             this.sendDatatoNightscout3();
+            this.sendDataToLocalDb4(parsedDate);
+            this.sendDatatoNightscout4()
             this.databaseService.updateBG();
             this.databaseService.updateTreatments();
             this.databaseService.updateDS();
+            this.databaseService.updateTempBasal();
           }
         );
       });
