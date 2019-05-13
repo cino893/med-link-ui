@@ -40,7 +40,7 @@ export class RawDataService {
                 data: this.dateHax(pumpDataMatch[1]),
                 percent: Number(pumpDataMatch[2]),
             };
-            parsedData.statusPump = statusPumpMatch[1].toLowerCase();
+            parsedData.statusPump = statusPumpMatch[1].toLowerCase().trim();
         }
         if (!bloodGlucoseMatch) {
             parsedData.bloodGlucose = {
@@ -85,7 +85,7 @@ export class RawDataService {
         }
         return new Date(dateDay.join('-') + ' ' + dateHour.join(':'));
     }
-    pumpDataRegex = /^(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{2,3})%/;
+    pumpDataRegex = /^(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{1,2,3})%/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
     lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s+?\d{1,2}:\d{2})/;
     temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;

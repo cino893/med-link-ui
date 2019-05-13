@@ -33,12 +33,12 @@ export class DataFacadeService {
         return this.databaseService.insertTempBasal(pumpStatus.temporaryBasalMethodPercentage.percentsOfBaseBasal, pumpStatus.temporaryBasalMethodPercentage.timeLeftInMinutes, pumpStatus.temporaryBasalMethodPercentage.timestamp);
   }
 
-  getDatafromLocalDb(): Observable<Array<{ value: number; date: Date }>> {
+  getDatafromLocalDb(): Observable<Array<{ value: number; date: Date; }>> {
     return this.databaseService.getBG().pipe(
       map(rows => {
         return rows.map(a => ({
           value: +a[0],
-          date: new Date(a[1])
+          date: new Date(a[1]),
         }));
       })
     );
@@ -111,7 +111,7 @@ export class DataFacadeService {
   }
   waitOnReady() {
     this.pumpBluetoothApiService.read()
-        .subscribe(() => { console.log('bedzie s'); this.transferDataFromPumpThenToApi(); });
+        .subscribe(() => { console.log('bedzie ss'); this.transferDataFromPumpThenToApi(); });
   }
 
   // hujnia z grzybnią 2
@@ -121,7 +121,6 @@ export class DataFacadeService {
         const parsedDate = this.rawDataService.parseData(data);
         console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-            console.log('sendDatatoNightscout');
             this.sendDatatoNightscout();
             this.sendDataToLocalDb2(parsedDate);
             this.sendDatatoNightscout2();
@@ -133,10 +132,11 @@ export class DataFacadeService {
             this.databaseService.updateTreatments();
             this.databaseService.updateDS();
             this.databaseService.updateTempBasal();
+            this.pumpBluetoothApiService.disconnect();
           }
         );
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
-    }, 12 * 1000);
+    }, 8 * 1000);
   }
 }
