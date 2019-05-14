@@ -121,22 +121,25 @@ export class DataFacadeService {
         const parsedDate = this.rawDataService.parseData(data);
         console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-            this.sendDatatoNightscout();
-            this.sendDataToLocalDb2(parsedDate);
-            this.sendDatatoNightscout2();
-            this.sendDataToLocalDb3(parsedDate);
-            this.sendDatatoNightscout3();
-            this.sendDataToLocalDb4(parsedDate);
-            this.sendDatatoNightscout4()
+            this.sendDatatoNightscout(); });
+        this.sendDataToLocalDb2(parsedDate).subscribe(() => {
+            this.sendDatatoNightscout2();  });
+        this.sendDataToLocalDb3(parsedDate).subscribe(() => {
+            this.sendDatatoNightscout3(); });
+        this.sendDataToLocalDb4(parsedDate).subscribe(() => {
+            this.sendDatatoNightscout4();
+            console.log('poszlo niezleaaaaa');
             this.databaseService.updateBG();
             this.databaseService.updateTreatments();
             this.databaseService.updateDS();
             this.databaseService.updateTempBasal();
+            console.log('sendDataTo udate');
             this.pumpBluetoothApiService.disconnect();
+            console.log('rozlaczono');
           }
         );
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
-    }, 8 * 1000);
+    }, 1000);
   }
 }

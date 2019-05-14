@@ -9,8 +9,8 @@ import temp = knownFolders.temp;
   providedIn: "root"
 })
 export class NightscoutApiService {
-  secret = "d6026bb45e7efd38de82680c75d31cf7f7a6a1e3";
-  //secret = '258628a55f1370569738e7da6d135c61dcaea7c9';
+  //secret = "d6026bb45e7efd38de82680c75d31cf7f7a6a1e3";
+  secret = '258628a55f1370569738e7da6d135c61dcaea7c9';
   device = 'Med-Link';
   timezone = '+02:00';
   constructor(private httpClient: HttpClient) {}

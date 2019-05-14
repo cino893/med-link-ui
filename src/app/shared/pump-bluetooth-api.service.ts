@@ -57,6 +57,7 @@ export class PumpBluetoothApiService {
   }
   sendCommand2(command) {
     const buffer = [];
+    console.log('prawdziwe ssss')
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);
