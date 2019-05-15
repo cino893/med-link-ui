@@ -33,12 +33,13 @@ export class DataFacadeService {
         return this.databaseService.insertTempBasal(pumpStatus.temporaryBasalMethodPercentage.percentsOfBaseBasal, pumpStatus.temporaryBasalMethodPercentage.timeLeftInMinutes, pumpStatus.temporaryBasalMethodPercentage.timestamp);
   }
 
-  getDatafromLocalDb(): Observable<Array<{ value: number; date: Date; }>> {
+  getDatafromLocalDb(): Observable<Array<{ value: number; date: Date; old: string }>> {
     return this.databaseService.getBG().pipe(
       map(rows => {
         return rows.map(a => ({
           value: +a[0],
           date: new Date(a[1]),
+          old: this.setArrow(a[3]),
         }));
       })
     );
@@ -141,5 +142,13 @@ export class DataFacadeService {
       });
       setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
     }, 1000);
+  }
+  private setArrow(old: string) {
+      if (Number(old) >= -5 && Number(old) <= 5) { old = 'Flat'; }
+      if (Number(old) > 5 && Number(old) < 10) { old = 'FortyFiveUp'; }
+      if (Number(old) >= 10) { old = 'SingleUp'; }
+      if (Number(old) < -5 && Number(old) > -10) { old = 'FortyFiveDown'; }
+      if (Number(old) <= -10) { old = 'SingleDown'; }
+      return old;
   }
 }

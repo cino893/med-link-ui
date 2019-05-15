@@ -15,7 +15,7 @@ export class NightscoutApiService {
   timezone = '+02:00';
   constructor(private httpClient: HttpClient) {}
 
-  sendNewBG(glucoses: Array<{ value: number; date: Date; }>) {
+  sendNewBG(glucoses: Array<{ value: number; date: Date; old: string }>) {
       this.httpClient
       .post(
         nightScoutPath + 'entries',
@@ -24,7 +24,7 @@ export class NightscoutApiService {
           secret: this.secret,
           sgv: glucose.value,
           date: +glucose.date,
-          direction: 'FortyFiveDown',
+          direction: glucose.old,
         }))).subscribe();
   }
   sendNewBol(treatments: Array<{ value: number; date: Date }>) {
