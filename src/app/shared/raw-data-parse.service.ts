@@ -44,7 +44,7 @@ export class RawDataService {
         }
         if (!bloodGlucoseMatch) {
             parsedData.bloodGlucose = {
-                value: 162,
+                value: Math.floor(Math.random() * 161) + 45,
                 date: new Date(),
             };
         } else {
