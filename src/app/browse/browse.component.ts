@@ -21,6 +21,5 @@ export class BrowseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => this.fa.establishConnectionWithPump(), 1000);
   }
 }
