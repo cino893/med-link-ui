@@ -25,9 +25,12 @@ export class BrowseComponent implements OnInit {
   ngOnInit(): void {
     try {
       this.foregroundUtilService.startForeground();
+      console.log("Foreground Start")
+      setInterval(()=>console.log("interval"),10000)
       this.fa.establishConnectionWithPump()
     } catch (e) {
       console.error(e);
+      this.foregroundUtilService.stopForeground();
     }
   }
 }

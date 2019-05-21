@@ -11,7 +11,7 @@ export class ForegroundUtilService {
     }
     var foregroundNotificationIntent = new android.content.Intent();
     foregroundNotificationIntent.setClassName(app.android.context, "com.tns.ForegroundService");
-    foregroundNotificationIntent.putExtra("title","Tracking...");
+    foregroundNotificationIntent.putExtra("title","Serwis pobierania danych z popmy jest w trakcie działania...");
     app.android.context.startService(foregroundNotificationIntent);
   }
 
