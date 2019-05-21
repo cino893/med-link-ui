@@ -17,8 +17,10 @@
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission-sdk-23
             android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
 
 	<application
 		android:name="com.tns.NativeScriptApplication"

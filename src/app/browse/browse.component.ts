@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { ForegroundUtilService } from '~/app/shared/foreground-facade.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
+import * as Permissions from 'nativescript-permissions';
 
 @Component({
   selector: 'Browse',
@@ -19,6 +20,9 @@ export class BrowseComponent implements OnInit {
     private fa: DataFacadeService,
     private foregroundUtilService: ForegroundUtilService
   ) {
+    Permissions.requestPermission(android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).then(
+      () => Permissions.requestPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+    );
     // Use the component constructor to inject providers.
   }
 
