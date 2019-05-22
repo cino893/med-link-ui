@@ -6,6 +6,7 @@ import { DatabaseService } from '~/app/shared/database.service';
 import { NightscoutApiService } from '~/app/shared/nightscout-api.service';
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
+import { WakeFacadeService } from '~/app/shared/wake-facade.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ export class DataFacadeService {
     private databaseService: DatabaseService,
     private nightscoutApiService: NightscoutApiService,
     private pumpBluetoothApiService: PumpBluetoothApiService,
-    private rawDataService: RawDataService
+    private rawDataService: RawDataService,
+    private wakeFacadeService: WakeFacadeService
   ) {
     this.databaseService.createTable();
   }
@@ -125,19 +127,18 @@ export class DataFacadeService {
   }
 
   private scanAndConnect() {
-    try {
-      this.pumpBluetoothApiService
-        .scanAndConnect()
-        .then(() =>
-          setTimeout(
-            () => this.pumpBluetoothApiService.sendCommand('OK+CONN'),
-            1000
-          )
+    this.wakeFacadeService.wakeScreen();
+    this.pumpBluetoothApiService
+      .scanAndConnect()
+      .then(() =>
+        setTimeout(
+          () => this.pumpBluetoothApiService.sendCommand('OK+CONN'),
+          1000
         )
-        .then(() => this.waitOnReady());
-    } catch (e) {
-      console.log(e);
-    }
+      )
+      .then(() => this.waitOnReady());
+    // TODO: We have to remove thoose TIMEOUT HELL!!
+    setTimeout(() => this.wakeFacadeService.snoozeScreen(), 60 * 1000);
   }
 
   establishConnectionWithPump() {

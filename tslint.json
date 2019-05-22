@@ -48,6 +48,7 @@
     "no-input-rename": true,
     "no-irregular-whitespace": true,
     "no-output-on-prefix": true,
+    "no-bitwise": false,
     "no-output-rename": true,
     "no-submodule-imports": false,
     "no-unnecessary-initializer": true,
