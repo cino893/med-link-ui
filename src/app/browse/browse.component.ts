@@ -1,18 +1,18 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DataFacadeService } from '~/app/shared/data-facade.service';
-import { ForegroundUtilService } from '~/app/shared/foreground-facade.service';
-import { RawDataService } from '~/app/shared/raw-data-parse.service';
-import * as Permissions from 'nativescript-permissions';
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { DataFacadeService } from "~/app/shared/data-facade.service";
+import { ForegroundUtilService } from "~/app/shared/foreground-facade.service";
+import { RawDataService } from "~/app/shared/raw-data-parse.service";
+import * as Permissions from "nativescript-permissions";
 
 @Component({
-  selector: 'Browse',
+  selector: "Browse",
   moduleId: module.id,
-  templateUrl: './browse.component.html'
+  templateUrl: "./browse.component.html"
 })
 export class BrowseComponent implements OnInit {
-  targetBluDeviceUUID = '';
-  text = '';
-  output = '';
+  targetBluDeviceUUID = "";
+  text = "";
+  output = "";
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -20,17 +20,33 @@ export class BrowseComponent implements OnInit {
     private fa: DataFacadeService,
     private foregroundUtilService: ForegroundUtilService
   ) {
-    Permissions.requestPermission(android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).then(
-      () => Permissions.requestPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-    );
-    // Use the component constructor to inject providers.
+
+  }
+
+  setPermissions(){
+    Permissions.requestPermission(
+      android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+    )
+      .then(() =>
+        Permissions.requestPermission(
+          android.Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+      )
+      .then(() =>
+        Permissions.requestPermission(android.Manifest.permission.BLUETOOTH)
+      )
+      .then(() =>
+        Permissions.requestPermission(
+          android.Manifest.permission.BLUETOOTH_ADMIN
+        )
+      );
   }
 
   ngOnInit(): void {
     try {
       this.foregroundUtilService.startForeground();
-      console.log('Foreground Start');
-      setInterval(() => console.log('interval'), 10000);
+      console.log("Foreground Start");
+      setInterval(() => console.log("interval"), 10000);
       this.fa.establishConnectionWithPump();
     } catch (e) {
       console.error(e);
