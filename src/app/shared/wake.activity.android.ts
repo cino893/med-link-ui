@@ -9,6 +9,7 @@ export class CustomWakeActivity extends android.app.Activity {
   onCreate(savedInstanceState: android.os.Bundle) {
     super.onCreate(savedInstanceState);
     this.setContentView(android.R.layout.simple_spinner_item);
+    setTimeout(() => this.moveTaskToBack(true));
   }
 
   onAttachedToWindow() {
