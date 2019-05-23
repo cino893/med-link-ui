@@ -40,7 +40,7 @@ export class ForegroundService extends android.app.Service {
   private disableDozeMode() {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
       const intent = new android.content.Intent();
-      const context = Application.getNativeApplication().getApplicationContext() as android.content.Context;
+      const context = Application.android.context;
       const packageName = context.getPackageName();
       const pm = context.getSystemService(
         android.content.Context.POWER_SERVICE
@@ -55,6 +55,8 @@ export class ForegroundService extends android.app.Service {
         intent.setData(android.net.Uri.parse('package:' + packageName));
         context.startActivity(intent);
       }
+
+      // this.wakeScreenByActivity();
     }
   }
 
@@ -99,9 +101,5 @@ export class ForegroundService extends android.app.Service {
 
   public onStart(intent: android.content.Intent, startId: number) {
     super.onStart(intent, startId);
-  }
-
-  public wakeScreen(){
-
   }
 }
