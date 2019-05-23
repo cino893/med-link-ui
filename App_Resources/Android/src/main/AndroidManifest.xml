@@ -35,14 +35,7 @@
         <service android:name="com.tns.ForegroundService" android:exported="false" />
 
         <activity
-                android:name="com.tns.CustomWakeActivity"
-                android:launchMode="singleTop"
-                android:noHistory="true"
-                android:showOnLockScreen="true"
-                android:showForAllUsers="true" />
-
-        <activity
-                android:name=".call.CallActivity"
+                android:name="com.tns.CustomWakingActivity"
                 android:launchMode="singleTop"
                 android:noHistory="true"
                 android:showOnLockScreen="true"

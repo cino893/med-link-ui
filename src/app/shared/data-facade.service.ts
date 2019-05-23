@@ -127,7 +127,7 @@ export class DataFacadeService {
   }
 
   private scanAndConnect() {
-    this.wakeFacadeService.wakeScreen();
+    this.wakeFacadeService.wakeScreenByCall();
     this.pumpBluetoothApiService
       .scanAndConnect()
       .then(() =>
@@ -138,12 +138,13 @@ export class DataFacadeService {
       )
       .then(() => this.waitOnReady());
     // TODO: We have to remove thoose TIMEOUT HELL!!
-   setTimeout(() => this.wakeFacadeService.snoozeScreen(), 30 * 1000);
+    const estimatedTimeToEndTask = 30 * 1000;
+    setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
 
   establishConnectionWithPump() {
     this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 60 * 1000);
+    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
   }
 
   waitOnReady() {

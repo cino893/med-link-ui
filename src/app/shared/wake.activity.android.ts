@@ -1,5 +1,5 @@
-@JavaProxy('com.tns.CustomWakeActivity')
-export class CustomWakeActivity extends android.app.Activity {
+@JavaProxy('com.tns.CustomWakingActivity')
+export class CustomWakingActivity extends android.app.Activity {
   readonly flags =
     android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
     android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
