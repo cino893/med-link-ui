@@ -32,12 +32,21 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
 
-        <service android:name="com.tns.ForegroundService" android:exported="false"></service>
+        <service android:name="com.tns.ForegroundService" android:exported="false" />
 
         <activity
                 android:name="com.tns.CustomWakeActivity"
-                android:exported="false"
-                android:showForAllUsers="true"></activity>
+                android:launchMode="singleTop"
+                android:noHistory="true"
+                android:showOnLockScreen="true"
+                android:showForAllUsers="true" />
+
+        <activity
+                android:name=".call.CallActivity"
+                android:launchMode="singleTop"
+                android:noHistory="true"
+                android:showOnLockScreen="true"
+                android:showForAllUsers="true" />
 
         <activity
                 android:name="com.tns.NativeScriptActivity"

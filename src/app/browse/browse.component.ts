@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as Permissions from 'nativescript-permissions';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
+import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
 
 @Component({
@@ -17,7 +18,8 @@ export class BrowseComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
-    private foregroundUtilService: ForegroundFacadeService
+    private foregroundUtilService: ForegroundFacadeService,
+    private pumpBluetoothApiService: PumpBluetoothApiService
   ) {
   }
 
@@ -43,12 +45,12 @@ export class BrowseComponent implements OnInit {
           android.Manifest.permission.WAKE_LOCK
         )
       ).then(() => {
-
+      this.pumpBluetoothApiService.enable();
       try {
         this.foregroundUtilService.startForeground();
 
         console.log('Foreground Start');
-        setInterval(() => console.log('interval'), 10000);
+        setInterval(() => console.log('interval2'), 10000);
         this.fa.establishConnectionWithPump();
       } catch (e) {
         console.error(e);

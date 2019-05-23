@@ -10,10 +10,15 @@ import bluetooth = require('nativescript-bluetooth');
 export class PumpBluetoothApiService {
   targetBluDeviceUUID;
 
+  enable(){
+    bluetooth.enable();
+  }
+
+
   scanAndConnect() {
     return new Promise((resolve, reject) => {
       this.targetBluDeviceUUID = '';
-      bluetooth.enable();
+      // bluetooth.enable();
       bluetooth
         .startScanning({
           onDiscovered: (peripheral: Peripheral) => {
@@ -22,7 +27,7 @@ export class PumpBluetoothApiService {
               this.targetBluDeviceUUID = peripheral.UUID;
             }
           },
-          skipPermissionCheck: false,
+          skipPermissionCheck: true,
           seconds: 3
         })
         .then(

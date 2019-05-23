@@ -1,4 +1,5 @@
 import * as Application from 'application';
+import PowerManager = android.os.PowerManager;
 
 @JavaProxy('com.tns.ForegroundService')
 export class ForegroundService extends android.app.Service {
@@ -55,6 +56,8 @@ export class ForegroundService extends android.app.Service {
         intent.setData(android.net.Uri.parse('package:' + packageName));
         context.startActivity(intent);
       }
+
+      // this.wakeScreen();
     }
   }
 
@@ -99,5 +102,19 @@ export class ForegroundService extends android.app.Service {
 
   public onStart(intent: android.content.Intent, startId: number) {
     super.onStart(intent, startId);
+  }
+
+  private wakeScreen() {
+    const powerManager = Application.android.context.getSystemService(
+      android.content.Context.POWER_SERVICE
+    ) as android.os.PowerManager;
+
+    const wakeLock = powerManager.newWakeLock(
+      android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+      PowerManager.ACQUIRE_CAUSES_WAKEUP,
+      Application.android.context.getPackageName() + ':Call'
+    ) as android.os.PowerManager.WakeLock;
+
+    wakeLock.acquire();
   }
 }
