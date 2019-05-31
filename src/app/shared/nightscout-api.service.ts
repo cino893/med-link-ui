@@ -25,7 +25,7 @@ export class NightscoutApiService {
           sgv: glucose.value,
           date: +glucose.date,
           direction: glucose.old,
-        }))).subscribe();
+        }))).subscribe(data => console.log(data.toString() + 'Poszloooo!! o to taki response'));
   }
   sendNewBol(treatments: Array<{ value: number; date: Date }>) {
         this.httpClient

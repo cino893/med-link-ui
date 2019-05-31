@@ -127,19 +127,14 @@ export class DataFacadeService {
   }
 
   private scanAndConnect() {
-    this.wakeFacadeService.wakeScreenByCall();
+   // this.wakeFacadeService.wakeScreenByCall();
     this.pumpBluetoothApiService
       .scanAndConnect()
-      .then(() =>
-        setTimeout(
-          () => this.pumpBluetoothApiService.sendCommand('OK+CONN'),
-          1000
-        )
-      )
+      .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
       .then(() => this.waitOnReady());
     // TODO: We have to remove thoose TIMEOUT HELL!!
-    const estimatedTimeToEndTask = 30 * 1000;
-    setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
+    //const estimatedTimeToEndTask = 15 * 1000;
+    //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
 
   establishConnectionWithPump() {
@@ -149,19 +144,24 @@ export class DataFacadeService {
 
   waitOnReady() {
     this.pumpBluetoothApiService.read().subscribe(() => {
-      console.log('bedzie sss');
       this.transferDataFromPumpThenToApi();
     });
+  }
+  updateDbRows() {
+    this.databaseService.updateBG();
+    this.databaseService.updateTreatments();
+    this.databaseService.updateDS();
+    this.databaseService.updateTempBasal();
   }
 
   // hujnia z grzybnią 2
   transferDataFromPumpThenToApi() {
+    setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 500);
     setTimeout(() => {
       this.pumpBluetoothApiService.read2().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
-        console.log('sendDataToLocalDb');
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout();
+          this.sendDatatoNightscout(); console.log('sendDataToLocalDb');
         });
         this.sendDataToLocalDb2(parsedDate).subscribe(() => {
           this.sendDatatoNightscout2();
@@ -171,17 +171,11 @@ export class DataFacadeService {
         });
         this.sendDataToLocalDb4(parsedDate).subscribe(() => {
           this.sendDatatoNightscout4();
-          console.log('poszlo niezleaaaaa');
-          this.databaseService.updateBG();
-          this.databaseService.updateTreatments();
-          this.databaseService.updateDS();
-          this.databaseService.updateTempBasal();
-          console.log('sendDataTo udate');
           this.pumpBluetoothApiService.disconnect();
           console.log('rozlaczono');
+          this.updateDbRows();
         });
       });
-      setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 1000);
     }, 1000);
   }
 

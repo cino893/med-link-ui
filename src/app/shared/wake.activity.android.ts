@@ -27,6 +27,7 @@ export class CustomWakingActivity extends android.app.Activity {
     const window = this.getWindow();
 
     window.addFlags(this.flags);
+    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   }
 
   turnOff() {

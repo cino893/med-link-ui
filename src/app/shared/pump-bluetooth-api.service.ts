@@ -8,56 +8,37 @@ import bluetooth = require('nativescript-bluetooth');
   providedIn: 'root'
 })
 export class PumpBluetoothApiService {
-  targetBluDeviceUUID;
+  targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C';
 
-  enable(){
+  enable() {
     bluetooth.enable();
   }
-
-
   scanAndConnect() {
     return new Promise((resolve, reject) => {
-      this.targetBluDeviceUUID = '';
-      // bluetooth.enable();
-      bluetooth
-        .startScanning({
-          onDiscovered: (peripheral: Peripheral) => {
-            console.log(peripheral.name);
-            if (peripheral.name && peripheral.name.toLowerCase() === 'med-link-2') {
-              this.targetBluDeviceUUID = peripheral.UUID;
-            }
-          },
-          skipPermissionCheck: true,
-          seconds: 3
-        })
-        .then(
-          () => {
-            if (!this.targetBluDeviceUUID) {
-              return;
-            }
-            bluetooth.connect({
+      this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C';
+      bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
                 console.log('Połączono');
-                resolve();
+                resolve(() => console.log('niby pol'));
               },
-              onDisconnected: (peripheral: Peripheral) => console.log('Rozłączono')
+              onDisconnected: (peripheral: Peripheral) => {
+                console.log('Rozłączono');
+                reject();
+              },
             });
-          },
-          () => {
-            reject();
-          }
-        );
     });
-  }
+    }
   sendCommand(command) {
     const buffer = [];
+    console.log('bede wysylal OK+KONN');
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);
     }
     if (buffer.length) {
       this.recursiveWrite(buffer);
+      console.log('udalo sie chyba to wsykacccc OK+KONN');
     }
   }
   sendCommand2(command) {
@@ -83,7 +64,7 @@ export class PumpBluetoothApiService {
     const nextByte = startByte + chunkLength;
     bluetooth
       .writeWithoutResponse({
-        peripheralUUID: this.targetBluDeviceUUID,
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0',
         value: new Uint8Array(array.slice(startByte, nextByte))
@@ -96,7 +77,7 @@ export class PumpBluetoothApiService {
   }
 
   disconnect() {
-    bluetooth.disconnect({UUID: this.targetBluDeviceUUID});
+    bluetooth.disconnect({UUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C'});
   }
 
   read() {
@@ -114,7 +95,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID,
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });
@@ -135,7 +116,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID,
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });
