@@ -128,17 +128,53 @@ export class DataFacadeService {
 
   private scanAndConnect() {
    // this.wakeFacadeService.wakeScreenByCall();
+    try {
     this.pumpBluetoothApiService
       .scanAndConnect()
+      .then(uidBt => {
+          if (uidBt === 'MED-LINK-2') {
+            console.log(uidBt + 'BBBBBBBBBBBBBBBBBBBBB');
+            return Promise.resolve(uidBt);
+          } else {
+            console.log(uidBt + 'Nie udalo sie polaczyc booooooo oooooooo status 133');
+            return this.pumpBluetoothApiService.scanAndConnect()
+              .then(uidBt => {
+                if (uidBt === 'MED-LINK-2') {
+                  console.log(uidBt + 'CCCCCCCCCCCCCCCCCCCCCCCCCCC');
+                  return Promise.resolve(uidBt);
+                } else {
+                  console.log(uidBt + 'Nie udalo sie polaczyc booooooo oooooooo status 134');
+                  //return Promise.reject(console.log('adam'));
+                  return this.pumpBluetoothApiService.scanAndConnect()
+                    .then(uidBt => {
+                      if (uidBt === 'MED-LINK-2') {
+                        console.log(uidBt + 'CCCCCCCCCCCCCCCCCCCCCCCCCCC');
+                        return Promise.resolve(uidBt);
+                      } else {
+                        console.log(uidBt + 'Nie udalo sie polaczyc booooooo idzie reject status 135');
+                        return Promise.reject(console.log('adam'));
+                        //return this.pumpBluetoothApiService.scanAndConnect()
+                      }
+                    }
+                    )}
+              }
+            )
+          }
+        }
+        )
       .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
-      .then(() => this.waitOnReady());
-    // TODO: We have to remove thoose TIMEOUT HELL!!
+      .then(() => this.waitOnReady())
+      .catch((error) => console.log('error: ', error));
+
+    }    catch {
+      console.log('Totalna wyjebka')
+    }
     //const estimatedTimeToEndTask = 15 * 1000;
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
 
   establishConnectionWithPump() {
-    this.scanAndConnect();
+    //this.scanAndConnect();
     setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
   }
 

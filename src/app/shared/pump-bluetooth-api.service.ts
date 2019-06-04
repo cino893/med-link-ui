@@ -19,12 +19,13 @@ export class PumpBluetoothApiService {
       bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
-                console.log('Połączono');
-                resolve(() => console.log('niby pol'));
+                console.log('Połączono' + peripheral.UUID + ' ' + peripheral.name);
+                resolve(peripheral.name);
               },
               onDisconnected: (peripheral: Peripheral) => {
-                console.log('Rozłączono');
-                reject();
+                peripheral.name = 'ZONK';
+                console.log('Rozłączono' + peripheral.name + peripheral.UUID);
+                resolve(peripheral.name);
               },
             });
     });
