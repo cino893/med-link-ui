@@ -127,7 +127,7 @@ export class DataFacadeService {
   }
 
   private scanAndConnect() {
-   // this.wakeFacadeService.wakeScreenByCall();
+    this.wakeFacadeService.wakeScreenByCall();
     try {
     this.pumpBluetoothApiService
       .scanAndConnect()
@@ -137,33 +137,19 @@ export class DataFacadeService {
             return Promise.resolve(uidBt);
           } else {
             console.log(uidBt + 'Nie udalo sie polaczyc booooooo oooooooo status 133');
-            return this.pumpBluetoothApiService.scanAndConnect()
-              .then(uidBt => {
-                if (uidBt === 'MED-LINK-2') {
-                  console.log(uidBt + 'CCCCCCCCCCCCCCCCCCCCCCCCCCC');
-                  return Promise.resolve(uidBt);
-                } else {
-                  console.log(uidBt + 'Nie udalo sie polaczyc booooooo oooooooo status 134');
-                  //return Promise.reject(console.log('adam'));
-                  return this.pumpBluetoothApiService.scanAndConnect()
-                    .then(uidBt => {
-                      if (uidBt === 'MED-LINK-2') {
-                        console.log(uidBt + 'CCCCCCCCCCCCCCCCCCCCCCCCCCC');
-                        return Promise.resolve(uidBt);
-                      } else {
-                        console.log(uidBt + 'Nie udalo sie polaczyc booooooo idzie reject status 135');
-                        return Promise.reject(console.log('adam'));
-                        //return this.pumpBluetoothApiService.scanAndConnect()
-                      }
-                    }
-                    )}
-              }
-            )
           }
-        }
-        )
-      .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000))
-      .then(() => this.waitOnReady())
+        },
+        uidBt => { console.log('poszedł prawdziwy reject11!!!!!' + uidBt + '       d');
+         return this.pumpBluetoothApiService.scanAndConnect()
+            .then(() => { console.log('XaXaXaXaXa') },
+              () => { console.log('jednak nie udalo sie za 2'); return Promise.reject(); });
+      })
+      .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000),
+        () => { console.log('zatem nie wyslam ok kona');
+      return Promise.reject(console.log('adam23333333')); }
+    )
+      .then(() => { this.waitOnReady(); this.wakeFacadeService.snoozeScreenByCall(); },
+        () => console.log('zatem nie czekam na ready'))
       .catch((error) => console.log('error: ', error));
 
     }    catch {
@@ -175,7 +161,8 @@ export class DataFacadeService {
 
   establishConnectionWithPump() {
     //this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
+   // setInterval(() => this.scanAndConnect(),  60 * 1000);
+    setInterval(() => this.scanAndConnect(),  60 * 1000);
   }
 
   waitOnReady() {

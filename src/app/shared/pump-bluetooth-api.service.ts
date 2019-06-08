@@ -25,7 +25,7 @@ export class PumpBluetoothApiService {
               onDisconnected: (peripheral: Peripheral) => {
                 peripheral.name = 'ZONK';
                 console.log('Rozłączono' + peripheral.name + peripheral.UUID);
-                resolve(peripheral.name);
+                reject(peripheral.name);
               },
             });
     });
