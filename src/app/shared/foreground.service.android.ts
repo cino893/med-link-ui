@@ -23,6 +23,8 @@ export class ForegroundService extends android.app.Service {
   ) {
     super.onStartCommand(intent, flags, startId);
     this.startForeground(1, this.createNotification(intent));
+    console.log("start foreground onstartCommad");
+
     return android.app.Service.START_STICKY;
   }
 

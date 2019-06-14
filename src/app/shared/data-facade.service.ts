@@ -109,56 +109,49 @@ export class DataFacadeService {
   }
 
   sendDatatoNightscout() {
-    this.getDatafromLocalDb().subscribe(glucoses => {
-      this.nightscoutApiService.sendNewBG(glucoses);
+    return new Promise((resolve, reject) => {
+      this.getDatafromLocalDb().subscribe(glucoses => {
+        this.nightscoutApiService
+          .sendNewBG(glucoses)
+          .then(
+            successValue => resolve(successValue),
+            errorValue => reject(errorValue)
+          );
+      });
     });
   }
 
   sendDatatoNightscout2() {
-    this.getDatafromLocalDb2().subscribe(treatments => {
-      this.nightscoutApiService.sendNewBol(treatments);
+    return new Promise((resolve, reject) => {
+      this.getDatafromLocalDb2().subscribe(treatments => {
+        this.nightscoutApiService
+          .sendNewBol(treatments)
+          .then(
+            successValue => resolve(successValue),
+            errorValue => reject(errorValue)
+          );
+      });
     });
   }
 
   sendDatatoNightscout3() {
-    this.getDatafromLocalDb3().subscribe(deviceStatus => {
-      this.nightscoutApiService.sendNewDevicestatus(deviceStatus);
+    return new Promise((resolve, reject) => {
+      this.getDatafromLocalDb3().subscribe(deviceStatus => {
+        this.nightscoutApiService
+          .sendNewDevicestatus(deviceStatus)
+          .then(
+            successValue => resolve(successValue),
+            errorValue => reject(errorValue)
+          );
+      });
     });
   }
 
   sendDatatoNightscout4() {
-    this.getDatafromLocalDb4().subscribe(tempbasal => {
-      this.nightscoutApiService.sendNewTempBasal(tempbasal);
-    });
-  }
-
-  private wrapResponseAndReturnObservable<T>(
-    observable: Observable<T>,
-    success: Function,
-    error?: Function,
-    complete?: Function
-  ): Observable<boolean> {
-    return new Observable(observer => {
-      observable.subscribe(
-        successValue => {
-          success(successValue);
-          observer.next(true);
-          observer.complete();
-        },
-        errorValue => {
-          if (error) {
-            error(errorValue);
-          }
-          observer.next(false);
-          observer.complete();
-        },
-        () => {
-          if (complete) {
-            complete();
-          }
-          observer.complete();
-        }
-      );
+    return new Promise((resolve, reject) => {
+      this.getDatafromLocalDb4().subscribe(tempbasal => {
+        this.nightscoutApiService.sendNewTempBasal(tempbasal);
+      });
     });
   }
 
@@ -231,36 +224,30 @@ export class DataFacadeService {
     });
   }
 
-  updateDbRows() {
-    this.databaseService.updateBG();
-    this.databaseService.updateTreatments();
-    this.databaseService.updateDS();
-    this.databaseService.updateTempBasal();
-  }
-
   // hujnia z grzybnią 2
   transferDataFromPumpThenToApi() {
     setTimeout(() => this.pumpBluetoothApiService.sendCommand2("s"), 400);
     setTimeout(() => {
       this.pumpBluetoothApiService.read2().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
-        this.sendDataToLocalDb(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout();
-          console.log("sendDataToLocalDba");
-        });
-        this.sendDataToLocalDb2(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout2();
-        });
-        this.sendDataToLocalDb3(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout3();
-        });
-        this.sendDataToLocalDb4(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout4();
-          this.pumpBluetoothApiService.disconnect();
-          console.log("rozlaczono");
-          this.updateDbRows();
-          this.wakeFacadeService.snoozeScreenByCall();
-        });
+        this.pumpBluetoothApiService.disconnect();
+          this.sendDataToLocalDb(parsedDate)
+            .then(() => this.sendDatatoNightscout())
+            .then(() => this.databaseService.updateBG())
+            .then(() => this.sendDataToLocalDb2(parsedDate))
+            .then(() => this.sendDatatoNightscout2())
+            .then(() => this.databaseService.updateTreatments())
+            .then(() => this.sendDataToLocalDb3(parsedDate))
+            .then(() => this.sendDatatoNightscout3())
+            .then(() => this.databaseService.updateDS())
+            .then(() => this.sendDataToLocalDb4(parsedDate))
+            .then(() => this.sendDatatoNightscout4())
+            .then(() => this.databaseService.updateTempBasal())
+          .then(() => this.wakeFacadeService.snoozeScreenByCall())
+          .catch(error => {
+            console.log(error)
+            this.wakeFacadeService.snoozeScreenByCall()
+          });
       });
     }, 400);
   }

@@ -46,6 +46,7 @@ export class WakeFacadeService {
 
       this.isOn = false;
     }
+    return Promise.resolve();
   }
 
   wakeScreenByCall() {
