@@ -25,13 +25,8 @@ export class BrowseComponent implements OnInit {
 
   setPermissions() {
     Permissions.requestPermission(
-      android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+      android.Manifest.permission.ACCESS_COARSE_LOCATION
     )
-      .then(() =>
-        Permissions.requestPermission(
-          android.Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-      )
       .then(() =>
         Permissions.requestPermission(android.Manifest.permission.BLUETOOTH)
       )
@@ -44,10 +39,6 @@ export class BrowseComponent implements OnInit {
         Permissions.requestPermission(
           android.Manifest.permission.WAKE_LOCK
         )
-      )     .then(() =>
-        Permissions.requestPermission(
-          android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-        )
       )
       .then(() => Permissions.requestPermission(
         android.Manifest.permission.WRITE_SETTINGS
@@ -55,9 +46,11 @@ export class BrowseComponent implements OnInit {
       .then(() => {
       this.pumpBluetoothApiService.enable();
       try {
-        this.foregroundUtilService.startForeground();
-        // setInterval(() => console.log('interval2' + new Date() + 'a'), 10000);
-        setTimeout(()=> this.fa.establishConnectionWithPump(), 5000)
+        setTimeout(() => {
+          this.foregroundUtilService.startForeground();
+          setInterval(() => console.log('interval2' + new Date() + 'a'), 10000);
+          setTimeout(() => this.fa.establishConnectionWithPump(), 1000)
+        }, 3000)
       } catch (e) {
         console.error(e);
 
