@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { IBasicSettings } from '~/app/model/med-link.model';
-import { DatabaseService } from '~/app/shared/database.service';
-import { NightscoutApiService } from '~/app/shared/nightscout-api.service';
-import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
-import { RawDataService } from '~/app/shared/raw-data-parse.service';
-import { WakeFacadeService } from '~/app/shared/wake-facade.service';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { IBasicSettings } from "~/app/model/med-link.model";
+import { DatabaseService } from "~/app/shared/database.service";
+import { NightscoutApiService } from "~/app/shared/nightscout-api.service";
+import { PumpBluetoothApiService } from "~/app/shared/pump-bluetooth-api.service";
+import { RawDataService } from "~/app/shared/raw-data-parse.service";
+import { WakeFacadeService } from "~/app/shared/wake-facade.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class DataFacadeService {
   constructor(
@@ -47,7 +47,9 @@ export class DataFacadeService {
     );
   }
 
-  getDatafromLocalDb(): Observable<Array<{ value: number; date: Date; old: string }>> {
+  getDatafromLocalDb(): Observable<
+    Array<{ value: number; date: Date; old: string }>
+  > {
     return this.databaseService.getBG().pipe(
       map(rows => {
         return rows.map(a => ({
@@ -70,13 +72,15 @@ export class DataFacadeService {
     );
   }
 
-  getDatafromLocalDb3(): Observable<Array<{
-    reservoir: number;
-    voltage: number;
-    dateString: Date;
-    percent: number;
-    status: string;
-  }>> {
+  getDatafromLocalDb3(): Observable<
+    Array<{
+      reservoir: number;
+      voltage: number;
+      dateString: Date;
+      percent: number;
+      status: string;
+    }>
+  > {
     return this.databaseService.getDS().pipe(
       map(rows => {
         return rows.map(a => ({
@@ -90,7 +94,9 @@ export class DataFacadeService {
     );
   }
 
-  getDatafromLocalDb4(): Observable<Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>> {
+  getDatafromLocalDb4(): Observable<
+    Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>
+  > {
     return this.databaseService.getTempBasal().pipe(
       map(rows => {
         return rows.map(a => ({
@@ -126,34 +132,88 @@ export class DataFacadeService {
     });
   }
 
+  private wrapResponseAndReturnObservable<T>(
+    observable: Observable<T>,
+    success: Function,
+    error?: Function,
+    complete?: Function
+  ): Observable<boolean> {
+    return new Observable(observer => {
+      observable.subscribe(
+        successValue => {
+          success(successValue);
+          observer.next(true);
+          observer.complete();
+        },
+        errorValue => {
+          if (error) {
+            error(errorValue);
+          }
+          observer.next(false);
+          observer.complete();
+        },
+        () => {
+          if (complete) {
+            complete();
+          }
+          observer.complete();
+        }
+      );
+    });
+  }
+
   private scanAndConnect() {
     this.wakeFacadeService.wakeScreenByCall();
     try {
-    this.pumpBluetoothApiService
-      .scanAndConnect()
-      .then(uidBt => {
-          if (uidBt === 'MED-LINK-2') {
-            console.log(uidBt + 'BBBBBBBBBBBBBBBBBBBBB');
-            return Promise.resolve(uidBt);
-          } else {
-            console.log(uidBt + 'Nie udalo sie polaczyc booooooo oooooooo status 133');
+      this.pumpBluetoothApiService
+        .scanAndConnect()
+        .then(
+          uidBt => {
+            if (uidBt === "MED-LINK-2") {
+              console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
+              return Promise.resolve(uidBt);
+            } else {
+              console.log(
+                uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+              );
+            }
+          },
+          uidBt => {
+            console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
+            return this.pumpBluetoothApiService.scanAndConnect().then(
+              () => {
+                console.log("XaXaXaXaXa");
+              },
+              () => {
+                console.log("jednak nie udalo sie za 2");
+                return Promise.reject();
+              }
+            );
           }
-        },
-        uidBt => { console.log('poszedł prawdziwy reject11!!!!!' + uidBt + '       d');
-         return this.pumpBluetoothApiService.scanAndConnect()
-            .then(() => { console.log('XaXaXaXaXa') },
-              () => { console.log('jednak nie udalo sie za 2'); return Promise.reject(); });
-      })
-      .then(() => setTimeout(() => this.pumpBluetoothApiService.sendCommand('OK+CONN'), 1000),
-        () => { console.log('zatem nie wyslam ok kona');
-      return Promise.reject(console.log('adam23333333')); }
-    )
-      .then(() => { this.waitOnReady(); this.wakeFacadeService.snoozeScreenByCall(); },
-        () => console.log('zatem nie czekam na ready'))
-      .catch((error) => console.log('error: ', error));
-
-    }    catch {
-      console.log('Totalna wyjebka')
+        )
+        .then(
+          () =>
+            setTimeout(
+              () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
+              1000
+            ),
+          () => {
+            console.log("zatem nie wyslam ok kona");
+            return Promise.reject(console.log("adam23333333"));
+          }
+        )
+        .then(
+          () => {
+            this.waitOnReady();
+          },
+          () => {
+            console.log("zatem nie czekam na ready");
+            this.wakeFacadeService.snoozeScreenByCall();
+          }
+        )
+        .catch(error => console.log("error: ", error));
+    } catch {
+      console.log("Totalna zsssajebka");
     }
     //const estimatedTimeToEndTask = 15 * 1000;
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
@@ -161,8 +221,8 @@ export class DataFacadeService {
 
   establishConnectionWithPump() {
     //this.scanAndConnect();
-   // setInterval(() => this.scanAndConnect(),  60 * 1000);
-    setInterval(() => this.scanAndConnect(),  60 * 1000);
+    // setInterval(() => this.scanAndConnect(),  60 * 1000);
+    setInterval(() => this.scanAndConnect(), 60 * 1000);
   }
 
   waitOnReady() {
@@ -170,6 +230,7 @@ export class DataFacadeService {
       this.transferDataFromPumpThenToApi();
     });
   }
+
   updateDbRows() {
     this.databaseService.updateBG();
     this.databaseService.updateTreatments();
@@ -179,12 +240,13 @@ export class DataFacadeService {
 
   // hujnia z grzybnią 2
   transferDataFromPumpThenToApi() {
-    setTimeout(() => this.pumpBluetoothApiService.sendCommand2('s'), 500);
+    setTimeout(() => this.pumpBluetoothApiService.sendCommand2("s"), 400);
     setTimeout(() => {
       this.pumpBluetoothApiService.read2().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
         this.sendDataToLocalDb(parsedDate).subscribe(() => {
-          this.sendDatatoNightscout(); console.log('sendDataToLocalDb');
+          this.sendDatatoNightscout();
+          console.log("sendDataToLocalDba");
         });
         this.sendDataToLocalDb2(parsedDate).subscribe(() => {
           this.sendDatatoNightscout2();
@@ -195,28 +257,29 @@ export class DataFacadeService {
         this.sendDataToLocalDb4(parsedDate).subscribe(() => {
           this.sendDatatoNightscout4();
           this.pumpBluetoothApiService.disconnect();
-          console.log('rozlaczono');
+          console.log("rozlaczono");
           this.updateDbRows();
+          this.wakeFacadeService.snoozeScreenByCall();
         });
       });
-    }, 1000);
+    }, 400);
   }
 
   private setArrow(old: string) {
     if (Number(old) >= -5 && Number(old) <= 5) {
-      old = 'Flat';
+      old = "Flat";
     }
     if (Number(old) > 5 && Number(old) < 10) {
-      old = 'FortyFiveUp';
+      old = "FortyFiveUp";
     }
     if (Number(old) >= 10) {
-      old = 'SingleUp';
+      old = "SingleUp";
     }
     if (Number(old) < -5 && Number(old) > -10) {
-      old = 'FortyFiveDown';
+      old = "FortyFiveDown";
     }
     if (Number(old) <= -10) {
-      old = 'SingleDown';
+      old = "SingleDown";
     }
     return old;
   }

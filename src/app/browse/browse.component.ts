@@ -44,13 +44,21 @@ export class BrowseComponent implements OnInit {
         Permissions.requestPermission(
           android.Manifest.permission.WAKE_LOCK
         )
-      ).then(() => {
+      )     .then(() =>
+        Permissions.requestPermission(
+          android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+        )
+      )
+      .then(() => Permissions.requestPermission(
+        android.Manifest.permission.WRITE_SETTINGS
+      ))
+      .then(() => {
       this.pumpBluetoothApiService.enable();
       try {
         this.foregroundUtilService.startForeground();
 
         console.log('Foreground Start');
-        setInterval(() => console.log('interval2'), 10000);
+        setInterval(() => console.log('interval2' + new Date() + 'a'), 10000);
         this.fa.establishConnectionWithPump();
       } catch (e) {
         console.error(e);

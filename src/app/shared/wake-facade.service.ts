@@ -61,10 +61,6 @@ export class WakeFacadeService {
     ) as android.os.PowerManager.WakeLock;
     this.wakeLock.acquire();
     const window = Application.android.foregroundActivity;
-    //window.getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    window.getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-    window.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-    window.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     console.log('udalo sie wlaczyc ekran');
   }
 

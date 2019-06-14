@@ -93,7 +93,7 @@ export class RawDataService {
     uptimeSensorInMinutesRegex = /Czas\ssensora:\s(\d+?)min/;
     expectedBloodGlucoseRegex = /Cel\sBG\ssensor:\s(\d+)-(\d+)\n/;
     batteryVoltageRegex = /Bateria pompy:\s(\d.+?)V/;
-    insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{2,3}).\d{2}J/;
+    insulinInPompLeftRegex = /Zbiorniczek:\s+?(\d{1,3}).\d{2}J/;
     baseBasalRegex = /Baza:\s([\d\.]+).J\/h\n/;
     temporaryBasalMethodPercentage = /TDP:\s+?(\d+)%\s+?(\d+).+?(\d+)m/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;

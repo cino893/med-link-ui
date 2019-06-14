@@ -91,7 +91,7 @@ export class ForegroundService extends android.app.Service {
   }
 
   private getTitle(intent: android.content.Intent): string {
-    var title = intent.getStringExtra('title');
+    const title = intent.getStringExtra('title');
     if (title) {
       return title;
     } else {

@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 import { knownFolders } from 'tns-core-modules/file-system';
 import { nightScoutPath } from "~/app/env";
@@ -25,7 +25,8 @@ export class NightscoutApiService {
           sgv: glucose.value,
           date: +glucose.date,
           direction: glucose.old,
-        }))).subscribe(data => console.log(data.toString() + 'Poszloooo!! o to taki response'));
+        }))).subscribe((data: HttpErrorResponse) => console.log(data.status + data.message + 'Poszloooo!! o to taki response bg'),
+        (error: HttpErrorResponse) => console.log(error));
   }
   sendNewBol(treatments: Array<{ value: number; date: Date }>) {
         this.httpClient
@@ -36,7 +37,8 @@ export class NightscoutApiService {
                     secret: this.secret,
                     insulin: bol.value,
                     created_at: bol.date + this.timezone,
-                }))).subscribe();
+                }))).subscribe((data: HttpErrorResponse) => console.log(data.status + data.message + + 'Poszloooo!! o to taki response bol '),
+          (error: HttpErrorResponse) => console.log(error.message + error.status + error.statusText));
   }
   sendNewTempBasal(tempbasal: Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>) {
         this.httpClient
@@ -51,7 +53,8 @@ export class NightscoutApiService {
                     rate: 0.7,
                     eventType: 'Temp Basal',
                     timestamp: new Date(),
-                }))).subscribe();
+                }))).subscribe((data: HttpErrorResponse) => console.log(data.status + data.message + 'Poszloooo!! o to taki response basal'),
+          (error: HttpErrorResponse) => console.log(error.message + error.status + error.statusText));
   }
   sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; status: string }>) {
         this.httpClient
@@ -63,6 +66,7 @@ export class NightscoutApiService {
                     created_at: new Date(),
                     pump: { clock: bol.dateString, reservoir: bol.reservoir, status: { status: bol.status, timestamp: 1557061755 }, extended: { version: '1.0', ActiveProfile: 'medlink' }, battery: { voltage: bol.voltage.toString().substring(0, 4) } },
                     uploaderBattery: bol.percent,
-                }))).subscribe();
+                }))).subscribe((data: HttpErrorResponse) => console.log(data.status + 'Poszloooo!! o to taki response device st' + data.message),
+          (error: HttpErrorResponse) => console.log(error.message + error.status + error.statusText));
     }
 }
