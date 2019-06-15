@@ -188,7 +188,7 @@ export class DataFacadeService {
           () =>
             setTimeout(
               () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
-              1000
+              500
             ),
           () => {
             console.log("zatem nie wyslam ok kona");
@@ -215,7 +215,7 @@ export class DataFacadeService {
   establishConnectionWithPump() {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
-    setInterval(() => this.scanAndConnect(), 60 * 1000);
+    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
   }
 
   waitOnReady() {
@@ -232,15 +232,15 @@ export class DataFacadeService {
         const parsedDate = this.rawDataService.parseData(data);
         this.pumpBluetoothApiService.disconnect();
           this.sendDataToLocalDb(parsedDate)
+            .then(() => this.sendDataToLocalDb2(parsedDate))
+            .then(() => this.sendDataToLocalDb3(parsedDate))
+            .then(() => this.sendDataToLocalDb4(parsedDate))
             .then(() => this.sendDatatoNightscout())
             .then(() => this.databaseService.updateBG())
-            .then(() => this.sendDataToLocalDb2(parsedDate))
             .then(() => this.sendDatatoNightscout2())
             .then(() => this.databaseService.updateTreatments())
-            .then(() => this.sendDataToLocalDb3(parsedDate))
             .then(() => this.sendDatatoNightscout3())
             .then(() => this.databaseService.updateDS())
-            .then(() => this.sendDataToLocalDb4(parsedDate))
             .then(() => this.sendDatatoNightscout4())
             .then(() => this.databaseService.updateTempBasal())
           .then(() => this.wakeFacadeService.snoozeScreenByCall())

@@ -35,12 +35,12 @@ export class ForegroundService extends android.app.Service {
     this.createNotificationChannel();
     return this.getNotificationBuilder()
       .setSmallIcon(android.R.drawable.btn_plus)
-      .setContentTitle(this.getTitle(intent))
+      .setContentTitle("MED-LINK")
       .build();
   }
 
   private disableDozeMode() {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+    if (android.os.Build.VERSION.SDK_INT >= 24) {
       const intent = new android.content.Intent();
       const context = Application.android.context;
       const packageName = context.getPackageName();
