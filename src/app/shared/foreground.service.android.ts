@@ -35,7 +35,7 @@ export class ForegroundService extends android.app.Service {
     this.createNotificationChannel();
     return this.getNotificationBuilder()
       .setSmallIcon(android.R.drawable.btn_plus)
-      .setContentTitle("MED-LINK")
+      .setContentTitle(this.getTitle(intent))
       .build();
   }
 
@@ -54,9 +54,14 @@ export class ForegroundService extends android.app.Service {
         intent.setAction(
           android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
         );
+        console.log('udalo sie usunac optymaliazacje baterii');
         intent.setData(android.net.Uri.parse('package:' + packageName));
         context.startActivity(intent);
       }
+      else {console.log('NIEEEE EEEEE    udalo sie usunac optymaliazacje baterii');
+            intent.setAction(
+            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+        );}
 
       // this.wakeScreenByActivity();
     }

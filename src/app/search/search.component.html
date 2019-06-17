@@ -2,7 +2,15 @@
     <Label class="action-bar-title" text="Wyślij"></Label>
 </ActionBar>
 
-<GridLayout class="page page-content">
-    <StackLayout class="input-field">
+<StackLayout class="page page-content">
+    <StackLayout col="0">
+    <TextField class="input input-border" autocorrect="false" hint="https://nazwastrony.herokuapp.com" text="" returnKeyType="done"></TextField>
     </StackLayout>
-</GridLayout>
+    <StackLayout>
+    <TextField class="input input-border" autocorrect="false" hint="api_secret(nie hash)" text="" returnKeyType="done" textWrap="true"></TextField>
+    </StackLayout>
+    <StackLayout>
+        <Button text="Zapisz" tap="onTap" class="my-button" textWrap="true"></Button>
+    </StackLayout>
+</StackLayout>
+

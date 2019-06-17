@@ -150,13 +150,18 @@ export class DataFacadeService {
   sendDatatoNightscout4() {
     return new Promise((resolve, reject) => {
       this.getDatafromLocalDb4().subscribe(tempbasal => {
-        this.nightscoutApiService.sendNewTempBasal(tempbasal);
+        this.nightscoutApiService
+          .sendNewTempBasal(tempbasal)
+          .then(
+            successValue => resolve(successValue),
+            errorValue => reject(errorValue)
+          );
       });
     });
   }
 
   private scanAndConnect() {
-    this.wakeFacadeService.wakeScreenByCall();
+    //this.wakeFacadeService.wakeScreenByCall();
     try {
       this.pumpBluetoothApiService
         .scanAndConnect()
@@ -175,6 +180,14 @@ export class DataFacadeService {
             console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
             return this.pumpBluetoothApiService.scanAndConnect().then(
               () => {
+                if (uidBt === "MED-LINK-2") {
+                  console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
+                  return Promise.resolve(uidBt);
+                } else {
+                  console.log(
+                    uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+                  );
+                }
                 console.log("XaXaXaXaXa");
               },
               () => {
@@ -201,14 +214,14 @@ export class DataFacadeService {
           },
           () => {
             console.log("zatem nie czekam na ready");
-            this.wakeFacadeService.snoozeScreenByCall();
+            //this.wakeFacadeService.snoozeScreenByCall();
           }
         )
         .catch(error => console.log("error: ", error));
     } catch {
       console.log("Totalna zsssajebka");
     }
-    //const estimatedTimeToEndTask = 15 * 1000;
+    //const estimatedTimeToEndTask = 30 * 1000;
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
 
@@ -243,10 +256,10 @@ export class DataFacadeService {
             .then(() => this.databaseService.updateDS())
             .then(() => this.sendDatatoNightscout4())
             .then(() => this.databaseService.updateTempBasal())
-          .then(() => this.wakeFacadeService.snoozeScreenByCall())
+          //.then(() => this.wakeFacadeService.snoozeScreenByCall())
           .catch(error => {
-            console.log(error)
-            this.wakeFacadeService.snoozeScreenByCall()
+            console.log(error);
+            //this.wakeFacadeService.snoozeScreenByCall()
           });
       });
     }, 400);

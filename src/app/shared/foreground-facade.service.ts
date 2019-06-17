@@ -14,7 +14,8 @@ export class ForegroundFacadeService {
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
     foregroundNotificationIntent.putExtra('title', 'Serwis pobierania danych z popmy jest w trakcie działania');
     console.log("start freground")
-    app.android.context.startService(foregroundNotificationIntent);
+    //app.android.context.startService(foregroundNotificationIntent);
+    app.android.context.startForegroundService(foregroundNotificationIntent);
   }
 
   stopForeground() {

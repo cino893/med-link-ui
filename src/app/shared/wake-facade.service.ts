@@ -55,7 +55,7 @@ export class WakeFacadeService {
     ) as android.os.PowerManager;
 
     this.wakeLock = powerManager.newWakeLock(
-      android.os.PowerManager.SCREEN_DIM_WAKE_LOCK |
+      android.os.PowerManager.PARTIAL_WAKE_LOCK |
       android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP |
       android.os.PowerManager.ON_AFTER_RELEASE,
       'com.tns.wake-facade'
