@@ -47,7 +47,7 @@ export class BrowseComponent implements OnInit {
       this.pumpBluetoothApiService.enable();
       try {
           this.foregroundUtilService.startForeground();
-          setInterval(() => console.log('interval2' + new Date() + 'a'), 10000);
+          setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
           setTimeout(() => this.fa.establishConnectionWithPump(), 1000)
       } catch (e) {
         console.error(e);
