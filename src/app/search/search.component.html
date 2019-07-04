@@ -1,16 +1,20 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="Wyślij"></Label>
+    <Label class="action-bar-title" text="Dane Nightscout"></Label>
 </ActionBar>
 
 <StackLayout class="page page-content">
     <StackLayout col="0">
-    <TextField class="input input-border" autocorrect="false" hint="https://nazwastrony.herokuapp.com" text="" returnKeyType="done"></TextField>
+    <TextField #nsUrl class="input input-border"
+               autocorrect="false" hint="https://nazwastrony.herokuapp.com"
+               text="" returnKeyType="done" (textChange)="setNS(nsUrl)">
+    </TextField>
     </StackLayout>
     <StackLayout>
-    <TextField class="input input-border" autocorrect="false" hint="api_secret(nie hash)" text="" returnKeyType="done" textWrap="true"></TextField>
+    <TextField #nsKey class="input input-border" autocorrect="false" hint="api_secret(nie hash)" text="" returnKeyType="done" textWrap="true" (textChange)="setNSurl(nsKey)"></TextField>
     </StackLayout>
     <StackLayout>
-        <Button text="Zapisz" tap="onTap" class="my-button" textWrap="true"></Button>
+        <Button class="btn btn-primary btn-active" id="button" text="Zapisz" (tap)="setPer()"></Button>
+        <Label id="lbl" class="action-bar-title" text="{{ title }}"></Label>
     </StackLayout>
 </StackLayout>
 

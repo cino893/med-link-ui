@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
 import { Observable } from 'rxjs';
 import { reduce } from 'rxjs/internal/operators/reduce';
-import bluetooth = require('nativescript-bluetooth');
+import * as bluetooth from 'nativescript-bluetooth';
 
 @Injectable({
   providedIn: 'root'

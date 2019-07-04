@@ -1,4 +1,4 @@
-import * as Application from 'application';
+import * as Application from 'tns-core-modules/application';
 
 @JavaProxy('com.tns.ForegroundService')
 export class ForegroundService extends android.app.Service {

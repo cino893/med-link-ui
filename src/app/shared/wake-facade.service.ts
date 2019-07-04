@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Brightness } from 'nativescript-brightness';
-import * as Application from 'application';
+import * as Application from 'tns-core-modules/application';
 import WindowManager = android.view.WindowManager;
 
 @Injectable({

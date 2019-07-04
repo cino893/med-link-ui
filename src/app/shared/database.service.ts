@@ -9,7 +9,6 @@ const Sqlite = require('nativescript-sqlite');
 })
 export class DatabaseService {
   database;
-
   createTable() {
     const adamDb = new Sqlite('test-adam.db');
     const createMyTable = adamDb.then(
@@ -19,7 +18,7 @@ export class DatabaseService {
         ).then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db4 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
-          .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER, nsUrl TEXT, nsKey TEXT, dateString TEXT);'))
+          .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER DEFAULT 1, nsUrl TEXT, nsKey TEXT, dateString TEXT DEFAULT CURRENT_TIMESTAMP);'))
           .then(
             id => {
               this.database = db;
@@ -73,7 +72,6 @@ export class DatabaseService {
         'UPDATE devicestatus SET isSend = 1 WHERE isSend = 0'
     );
   }
-
   public insertTempBasal(percentsOfBasal, minutes, dateString) {
     return this.database.execSQL(
         'INSERT INTO tempbasal (percentsOfBasal, minutes, dateString) VALUES (?, ?, ?)',
@@ -113,14 +111,14 @@ export class DatabaseService {
   public NSconf(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        'SELECT nsUrl, nsKey, FROM conf WHERE id = 1'
+        'SELECT nsUrl, nsKey, FROM conf WHERE dateString = (SELECT MAX(dateString) FROM conf WHERE id = 1)'
       )
     );
   }
   public insertNS(nsUrl, nsKey) {
     return this.database.execSQL(
-      'INSERT INTO conf (id, nsUrl, nsKey) VALUES (?, ?, ?)',
-      [1 , nsUrl, nsKey]
+      'INSERT INTO conf (nsUrl, nsKey) VALUES (?, ?)',
+      [nsUrl, nsKey]
     );
   }
   public updateNS(nsUrl, nsKey) {
