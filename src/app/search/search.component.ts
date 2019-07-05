@@ -1,4 +1,5 @@
 import { HttpClient } from "@angular/common/http";
+import { identifierModuleUrl } from '@angular/compiler';
 import { ChangeDetectorRef, Component } from "@angular/core";
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -6,6 +7,7 @@ import { alert } from "tns-core-modules/ui/dialogs";
 import { TextField } from "tns-core-modules/ui/text-field";
 import { nightScoutPath } from "~/app/env";
 import { DatabaseService } from '~/app/shared/database.service';
+import { sha1 } from 'sha1';
 
 @Component({
   selector: "Search",
@@ -26,7 +28,8 @@ export class SearchComponent {
   }
   setPer() {
     console.log("aaaaaa" + this.nsUrl);
-    this.databaseService.insertNS(this.nsUrl, this.nsKey);
+    const sha1 = require('sha1');
+    this.databaseService.insertNS(this.nsUrl, sha1(this.nsKey));
     //this.databaseService.updateNS("adsad", "1231231");
     console.log("abbbb" + this.nsUrl + ' ddddddddddd ' + this.nsKey);
     //this.slowo = this.nsUrl;
@@ -45,6 +48,11 @@ export class SearchComponent {
         reject();
       });
     });
+  }
+  encryptKey(nsKey: string){
+    const sha1 = require('sha1');
+    console.log(sha1(nsKey));
+    sha1(nsKey);
   }
   setNS(arg) {
     console.log("setttNS");

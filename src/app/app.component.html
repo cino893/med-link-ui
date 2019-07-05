@@ -1,17 +1,17 @@
 <TabView androidTabsPosition="bottom" (selectedIndexChanged)="onSelectedIndexChanged($event)">
 
     <page-router-outlet
-        *tabItem="{title: 'Pobierz', iconSource: getIconSource('home')}"
+        *tabItem="{title: 'WEB', iconSource: getIconSource('browse')}"
         name="homeTab">
     </page-router-outlet>
 
     <page-router-outlet
-            *tabItem="{title: 'Bluetooth', iconSource: getIconSource('browse')}"
+            *tabItem="{title: 'Bluetooth', iconSource: getIconSource('search')}"
             name="browseTab">
     </page-router-outlet>
 
     <page-router-outlet
-        *tabItem="{title: 'Wyślij', iconSource: getIconSource('search')}"
+        *tabItem="{title: 'NS', iconSource: getIconSource('home')}"
         name="searchTab">
     </page-router-outlet>
 
