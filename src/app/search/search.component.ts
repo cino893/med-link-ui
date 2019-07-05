@@ -17,6 +17,7 @@ import { sha1 } from 'sha1';
 })
 export class SearchComponent {
   slowo: string;
+  slowo2: string;
   nsUrl: string;
   nsKey: string;
   carbs: string;
@@ -35,13 +36,19 @@ export class SearchComponent {
     //this.slowo = this.nsUrl;
     //this.slowo = this.getNSData().toString();
     this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
+    if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://') {
+      this.slowo2 = 'ZŁY ADRES URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+    }
+    else {
+      this.slowo2 = '';
+    }
   }
   sendDatatoNightscout6() {
     return new Promise((resolve, reject) => {
       this.getNSData().subscribe(g => {
          g.map(bol => {
            console.log(bol.http.toString() + "JJJJJJJ" + bol.secret.toString());
-           this.slowo = bol.http.toString() + bol.secret.toString();
+           this.slowo = this.slowo2 + '  ' + bol.http.toString() + ' ' +  bol.secret.toString();
          });
          console.log("as" + this.slowo);
          resolve(),
@@ -49,10 +56,11 @@ export class SearchComponent {
       });
     });
   }
-  encryptKey(nsKey: string){
-    const sha1 = require('sha1');
-    console.log(sha1(nsKey));
-    sha1(nsKey);
+  checkUrl (nsUrl: string){
+    if (this.nsUrl.substring(0, 8).toUpperCase() === 'HTTPS://') {
+      this.slowo = 'zly adres';
+    }
+    console.log(this.slowo + 'TTTTTTTTT');
   }
   setNS(arg) {
     console.log("setttNS");
