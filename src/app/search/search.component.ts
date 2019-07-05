@@ -14,6 +14,7 @@ import { DatabaseService } from '~/app/shared/database.service';
   styleUrls: ["./search.component.scss"]
 })
 export class SearchComponent {
+  slowo: string;
   nsUrl: string;
   nsKey: string;
   carbs: string;
@@ -28,6 +29,22 @@ export class SearchComponent {
     this.databaseService.insertNS(this.nsUrl, this.nsKey);
     //this.databaseService.updateNS("adsad", "1231231");
     console.log("abbbb" + this.nsUrl + ' ddddddddddd ' + this.nsKey);
+    //this.slowo = this.nsUrl;
+    //this.slowo = this.getNSData().toString();
+    this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
+  }
+  sendDatatoNightscout6() {
+    return new Promise((resolve, reject) => {
+      this.getNSData().subscribe(g => {
+         g.map(bol => {
+           console.log(bol.http.toString() + "JJJJJJJ" + bol.secret.toString());
+           this.slowo = bol.http.toString() + bol.secret.toString();
+         });
+         console.log("as" + this.slowo);
+         resolve(),
+        reject();
+      });
+    });
   }
   setNS(arg) {
     console.log("setttNS");
@@ -38,8 +55,8 @@ export class SearchComponent {
     console.log("setttNSUURRL");
     console.log(arg.text);
     this.nsKey = arg.text;
-  }
 
+  }
   getNSData(): Observable<Array<{ http: string; secret: string }>> {
     return this.databaseService.NSconf().pipe(
       map(rows => {
