@@ -171,22 +171,22 @@ export class DataFacadeService {
               console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
               return Promise.resolve(uidBt);
             } else {
-              console.log(
-                uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133"
-              );
+              console.log(uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133");
+              return Promise.reject();
             }
           },
           uidBt => {
             console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
             return this.pumpBluetoothApiService.scanAndConnect().then(
-              () => {
-                if (uidBt === "MED-LINK-2") {
-                  console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
-                  return Promise.resolve(uidBt);
+              uidBt2 => {
+                if (uidBt2 === "MED-LINK-2") {
+                  console.log(uidBt2 + "BBBBBBBBBBBBBBBBBBBBB");
+                  return Promise.resolve(uidBt2);
                 } else {
                   console.log(
-                    uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+                    uidBt2 + "Nie udalo sie polaczyc booooooo oooooooo status 133"
                   );
+                  return Promise.reject();
                 }
                 console.log("XaXaXaXaXa");
               },
