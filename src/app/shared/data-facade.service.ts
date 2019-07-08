@@ -23,7 +23,7 @@ export class DataFacadeService {
   }
 
   sendDataToLocalDb(pumpStatus: IBasicSettings) {
-    return this.databaseService.insertBG(pumpStatus.bloodGlucose);
+      return this.databaseService.insertBG(pumpStatus.bloodGlucose);
   }
 
   sendDataToLocalDb2(pumpStatus: IBasicSettings) {
@@ -167,7 +167,7 @@ export class DataFacadeService {
         .scanAndConnect()
         .then(
           uidBt => {
-            if (uidBt === "MED-LINK-2") {
+            if (uidBt === "HMSoft") {
               console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
               return Promise.resolve(uidBt);
             } else {
@@ -179,7 +179,7 @@ export class DataFacadeService {
             console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
             return this.pumpBluetoothApiService.scanAndConnect().then(
               uidBt2 => {
-                if (uidBt2 === "MED-LINK-2") {
+                if (uidBt2 === "HMSoft") {
                   console.log(uidBt2 + "BBBBBBBBBBBBBBBBBBBBB");
                   return Promise.resolve(uidBt2);
                 } else {
@@ -228,6 +228,7 @@ export class DataFacadeService {
   establishConnectionWithPump() {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
+    this.scanAndConnect();
     setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
   }
 
@@ -243,9 +244,8 @@ export class DataFacadeService {
     setTimeout(() => {
       this.pumpBluetoothApiService.read2().subscribe(data => {
         const parsedDate = this.rawDataService.parseData(data);
-        this.pumpBluetoothApiService.disconnect();
           this.sendDataToLocalDb(parsedDate)
-            .then(() => this.sendDataToLocalDb2(parsedDate))
+            .then(() => { console.log('AAAAA doszlo'); this.sendDataToLocalDb2(parsedDate); })
             .then(() => this.sendDataToLocalDb3(parsedDate))
             .then(() => this.sendDataToLocalDb4(parsedDate))
             .then(() => this.sendDatatoNightscout())
@@ -261,6 +261,7 @@ export class DataFacadeService {
             console.log(error);
             //this.wakeFacadeService.snoozeScreenByCall()
           });
+        this.pumpBluetoothApiService.disconnect();
       });
     }, 400);
   }

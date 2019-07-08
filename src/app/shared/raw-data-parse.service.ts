@@ -23,7 +23,7 @@ export class RawDataService {
         const statusPumpMatch = rawData.match(this.stanPumpRegex);
         const temporaryBasalMethodPercentageM = rawData.match(this.temporaryBasalMethodPercentage);
         if (!insulinInPompLeftMatch && !batteryVoltageMatch && !pumpDataMatch && !statusPumpMatch) {
-            console.log(rawData.toString())
+            console.log(rawData.toString());
             parsedData.batteryVoltage = 1.25;
             parsedData.insulinInPompLeft = 199;
             parsedData.data = {
@@ -32,7 +32,7 @@ export class RawDataService {
             };
             parsedData.statusPump = 'SUSPEND';
         } else {
-            console.log(rawData.toString())
+            console.log(rawData.toString());
             console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]) + ' Y ' + this.dateHax(pumpDataMatch[1]) + ' Z ' + Number(pumpDataMatch[2]))
             parsedData.batteryVoltage = Number(batteryVoltageMatch[1]);
             parsedData.insulinInPompLeft = Number(insulinInPompLeftMatch[1]);
@@ -43,11 +43,13 @@ export class RawDataService {
             parsedData.statusPump = statusPumpMatch[1].toLowerCase().trim();
         }
         if (!bloodGlucoseMatch) {
+
             parsedData.bloodGlucose = {
-                value: 55,
+                value: 10,
                 date: new Date(),
             };
         } else {
+            console.log('BBBBBB   ' + +bloodGlucoseMatch[1].trim() + this.dateHax(bloodGlucoseMatch[2]));
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),
@@ -55,10 +57,11 @@ export class RawDataService {
         }
         if (!lastBolusMatch) {
             parsedData.lastBolus = {
-                value: 1,
+                value: 0,
                 date: new Date(),
             };
         } else {
+            console.log('AAAAAA' + +lastBolusMatch[1].trim() + this.dateHax(lastBolusMatch[2]));
             parsedData.lastBolus = {
                 value: +lastBolusMatch[1].trim(),
                 date: this.dateHax(lastBolusMatch[2]),
@@ -85,7 +88,7 @@ export class RawDataService {
         }
         return new Date(dateDay.join('-') + ' ' + dateHour.join(':'));
     }
-    pumpDataRegex = /^(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{1,3})%/;
+    pumpDataRegex = /(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{1,3})%/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
     lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s+?\d{1,2}:\d{2})/;
     temporaryBasalMethodUnitsPerHourRegex = /PD:([\d\.]+?)\sPodano:\s([\d\.]+?)\nCzas\sPD:\s(\d+?)m\s\/\s(\d+?)m/;

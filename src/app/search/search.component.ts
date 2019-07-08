@@ -36,7 +36,7 @@ export class SearchComponent {
     //this.slowo = this.nsUrl;
     //this.slowo = this.getNSData().toString();
     this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
-    if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://') {
+    if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://' || this.nsUrl.substring(this.nsUrl.length - 1, this.nsUrl.length) === '/') {
       this.slowo2 = 'ZŁY ADRES URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
     }
     else {

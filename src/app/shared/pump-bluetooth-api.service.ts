@@ -8,14 +8,14 @@ import * as bluetooth from 'nativescript-bluetooth';
   providedIn: 'root'
 })
 export class PumpBluetoothApiService {
-  targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C';
+  targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70';
 
   enable() {
     bluetooth.enable();
   }
   scanAndConnect() {
     return new Promise((resolve, reject) => {
-      this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C';
+      this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70';
       bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
@@ -65,7 +65,7 @@ export class PumpBluetoothApiService {
     const nextByte = startByte + chunkLength;
     bluetooth
       .writeWithoutResponse({
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0',
         value: new Uint8Array(array.slice(startByte, nextByte))
@@ -78,7 +78,7 @@ export class PumpBluetoothApiService {
   }
 
   disconnect() {
-    bluetooth.disconnect({UUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C'});
+    bluetooth.disconnect({UUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70'});
   }
 
   read() {
@@ -96,7 +96,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });
@@ -117,7 +117,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:DF:9C',
+        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });
