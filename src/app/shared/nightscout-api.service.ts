@@ -1,5 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { knownFolders } from 'tns-core-modules/file-system';
 import { resetProfiles } from 'tns-core-modules/profiling';
 import { nightScoutPath } from '~/app/env';
@@ -14,36 +16,65 @@ export class NightscoutApiService {
   secret = '258628a55f1370569738e7da6d135c61dcaea7c9';
   device = 'Med-Link';
   timezone = '+02:00';
+  http = '';
+  hash = '';
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient,
+  private databaseService: DatabaseService) {
+  }
+
+  getNSData(): Observable<Array<{ http: string; secret: string }>> {
+    return this.databaseService.NSconf().pipe(
+      map(rows => {
+        return rows.map(a => ({
+          http: a[0],
+          secret: a[1]
+        }));
+      })
+    );
+  }
+
+  getConfig() {
+    return new Promise((resolve, reject) => {
+      this.getNSData().subscribe(g => {
+        g.map(bol => {
+          console.log(bol.http.toString() + "CCCCCTTTTTTTTTT" + bol.secret.toString());
+          this.http = bol.http.toString();
+          this.hash = bol.secret.toString();
+        });
+        console.log("aaaaaaaassssssss" + this.http);
+        resolve(),
+          reject();
+      });
+      });
   }
 
   sendNewBG(glucoses: Array<{ value: number; date: Date; old: string }>) {
     return new Promise((resolve, reject) => {
+      this.getConfig().then(() =>
       this.httpClient
         .post(
-          nightScoutPath + 'entries',
+          this.http + '/api/v1/entries',
           glucoses.map(glucose => ({
             device: this.device,
-            secret: this.secret,
+            secret: this.hash,
             sgv: glucose.value,
             date: +glucose.date,
             direction: glucose.old
-          }))).subscribe(resolve, reject);
+          }))).subscribe(resolve, reject));
     });
-
   }
 
   sendNewBol(treatments: Array<{ value: number; date: Date }>) {
     return new Promise((resolve, reject) => {
       this.httpClient
         .post(
-          nightScoutPath + 'treatments',
+          this.http + '/api/v1/treatments',
           treatments.map(bol => ({
             enteredBy: this.device,
-            secret: this.secret,
+            secret: this.hash,
             insulin: bol.value,
-            created_at: bol.date + this.timezone
+            created_at: bol.date
           }))).subscribe(resolve, reject);
     });
   }
@@ -52,10 +83,10 @@ export class NightscoutApiService {
     return new Promise((resolve, reject) => {
       this.httpClient
         .post(
-          nightScoutPath + 'treatments',
+          this.http + '/api/v1/treatments',
           tempbasal.map(bol => ({
             enteredBy: this.device,
-            secret: this.secret,
+            secret: this.hash,
             duration: bol.minutes,
             created_at: bol.dateString + this.timezone,
             percent: bol.percentsOfBasal,
@@ -70,10 +101,10 @@ export class NightscoutApiService {
     return new Promise ((resolve, reject) => {
     this.httpClient
       .post(
-        nightScoutPath + 'devicestatus',
+        this.http + '/api/v1/devicestatus',
         deviceStatus.map(bol => ({
           device: this.device,
-          secret: this.secret,
+          secret: this.hash,
           created_at: new Date(),
           pump: {
             clock: bol.dateString,
