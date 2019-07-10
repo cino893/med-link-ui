@@ -229,7 +229,7 @@ export class DataFacadeService {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
+    setInterval(() => this.scanAndConnect(), 3 * 60 * 1000);
   }
 
   waitOnReady() {

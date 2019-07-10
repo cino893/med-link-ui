@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { from, Observable, Subject } from 'rxjs';
 import { IBasicSettings } from '~/app/model/med-link.model';
 
 const Sqlite = require('nativescript-sqlite');
@@ -9,6 +9,13 @@ const Sqlite = require('nativescript-sqlite');
 })
 export class DatabaseService {
   database;
+  execSQLSuccessMonitor: Observable<any> = new Subject<any>();
+  execSQLMonitored(command: string): Promise<any> {
+    return this.database.all(command).then(result => {
+      (this.execSQLSuccessMonitor as Subject<any>).next(result);
+      return Promise.resolve(result);
+    });
+  }
   createTable() {
     const adamDb = new Sqlite('test-adam.db');
     const createMyTable = adamDb.then(
@@ -87,7 +94,7 @@ export class DatabaseService {
 
   public getBG(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         'select * from (SELECT glucose, dateString, isSend, glucose - (select e2.glucose from entries e2 where e2.rowid = e1.rowid-1 and e2.dateString < e1.dateString  ORDER BY e2.dateString LIMIT 1 ) as a from entries e1) where isSend = 0 and glucose != 10'
       )
     );
@@ -95,7 +102,7 @@ export class DatabaseService {
 
   public getTreatments(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         'SELECT basalValue, dateString FROM treatments WHERE isSend = 0 GROUP BY basalValue, dateString'
       )
     );
@@ -103,7 +110,7 @@ export class DatabaseService {
 
   public getDS(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         'SELECT reservoir, voltage, dateString, percent, status FROM devicestatus WHERE isSend = 0'
       )
     );
@@ -130,7 +137,7 @@ export class DatabaseService {
 
   public getTempBasal(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         'SELECT percentsOfBasal, minutes, dateString FROM tempbasal WHERE isSend = 0; '
       )
     );

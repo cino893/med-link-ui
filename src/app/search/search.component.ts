@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { identifierModuleUrl } from '@angular/compiler';
-import { ChangeDetectorRef, Component } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { alert } from "tns-core-modules/ui/dialogs";
@@ -15,17 +15,28 @@ import { sha1 } from 'sha1';
   templateUrl: "./search.component.html",
   styleUrls: ["./search.component.scss"]
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
   slowo: string;
   slowo2: string;
   nsUrl: string;
   nsKey: string;
   carbs: string;
   pending = false;
+  pumpData: string;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private databaseService: DatabaseService) {
     // Use the constructor to inject services.
+  }
+  ngOnInit(): void {
+    this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+      if (wynik === undefined) {
+        this.pumpData = 'brak danych';
+      }
+      else {
+        this.pumpData = wynik + this.pumpData;
+      }
+    });
   }
   setPer() {
     console.log("aaaaaa" + this.nsUrl);
@@ -38,6 +49,14 @@ export class SearchComponent {
     this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
     if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://' || this.nsUrl.substring(this.nsUrl.length - 1, this.nsUrl.length) === '/') {
       this.slowo2 = 'ZŁY ADRES URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+      this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+        if (wynik === undefined) {
+          this.pumpData = 'Brak danych';
+        }
+        else {
+          this.pumpData = wynik + this.pumpData;
+        }
+      });
     }
     else {
       this.slowo2 = '';
