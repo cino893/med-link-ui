@@ -4,10 +4,11 @@ import { nightScoutPath } from "~/app/env";
 
 export interface IDataItem {
   id: string;
-  device: string;
-  date: string;
-  direction: string;
-  sgv: number;
+  created_at: string;
+  carbs: number;
+  insulin: number;
+  enteredBy: string;
+  reason: string;
 }
 
 @Injectable({
@@ -19,9 +20,9 @@ export class DataService {
   items = [];
 
   reloadData() {
-    this.httpClient.get(nightScoutPath + "entries.json").subscribe(items => {
+    this.httpClient.get(nightScoutPath + "treatments.json").subscribe(items => {
       this.items = items as any;
-      this.items.forEach(item => (item.id = item.sgv));
+      this.items.forEach(item => (item.id = item._id));
     });
   }
 

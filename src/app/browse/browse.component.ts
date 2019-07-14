@@ -13,6 +13,7 @@ import { RawDataService } from '~/app/shared/raw-data-parse.service';
 export class BrowseComponent implements OnInit {
   text = '';
   output = '';
+  uuid: string;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -22,7 +23,11 @@ export class BrowseComponent implements OnInit {
     private pumpBluetoothApiService: PumpBluetoothApiService
   ) {
   }
-
+  scan(){
+    console.log("a");
+    this.pumpBluetoothApiService.scanAndConnect2();
+    this.uuid = this.pumpBluetoothApiService.targetBluDeviceUUID;
+  }
   setPermissions() {
     Permissions.requestPermission(
       android.Manifest.permission.ACCESS_COARSE_LOCATION

@@ -13,6 +13,20 @@ export class PumpBluetoothApiService {
   enable() {
     bluetooth.enable();
   }
+  scanAndConnect2() {
+      bluetooth
+        .startScanning({
+          onDiscovered: (peripheral: Peripheral) => {
+            console.log(peripheral.name + peripheral.UUID + "C");
+            if (peripheral.name === 'MED-LINKD') {
+              this.targetBluDeviceUUID = peripheral.UUID.toString();
+              console.log("UIID: " + peripheral.UUID);
+            }
+          },
+          skipPermissionCheck: true,
+          seconds: 3
+        });
+  }
   scanAndConnect() {
     return new Promise((resolve, reject) => {
       this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70';
