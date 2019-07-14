@@ -12,6 +12,7 @@ import { WakeFacadeService } from "~/app/shared/wake-facade.service";
   providedIn: "root"
 })
 export class DataFacadeService {
+  btData: string;
   constructor(
     private databaseService: DatabaseService,
     private nightscoutApiService: NightscoutApiService,
@@ -229,7 +230,7 @@ export class DataFacadeService {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 3 * 60 * 1000);
+    setInterval(() => this.scanAndConnect(), 2 * 60 * 1000);
   }
 
   waitOnReady() {
@@ -243,6 +244,8 @@ export class DataFacadeService {
     setTimeout(() => this.pumpBluetoothApiService.sendCommand2("s"), 400);
     setTimeout(() => {
       this.pumpBluetoothApiService.read2().subscribe(data => {
+        console.log('TOOOOO:   ' + data.toString());
+        this.btData = data.toString();
         const parsedDate = this.rawDataService.parseData(data);
           this.sendDataToLocalDb(parsedDate)
             .then(() => { console.log('AAAAA doszlo'); this.sendDataToLocalDb2(parsedDate); })

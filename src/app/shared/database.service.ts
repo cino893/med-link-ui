@@ -102,7 +102,7 @@ export class DatabaseService {
 
   public getTreatments(): Observable<Array<Array<string>>> {
     return from(
-      this.execSQLMonitored(
+      this.database.all(
         'SELECT basalValue, dateString FROM treatments WHERE isSend = 0 GROUP BY basalValue, dateString'
       )
     );
@@ -110,7 +110,7 @@ export class DatabaseService {
 
   public getDS(): Observable<Array<Array<string>>> {
     return from(
-      this.execSQLMonitored(
+      this.database.all(
         'SELECT reservoir, voltage, dateString, percent, status FROM devicestatus WHERE isSend = 0'
       )
     );
@@ -137,7 +137,7 @@ export class DatabaseService {
 
   public getTempBasal(): Observable<Array<Array<string>>> {
     return from(
-      this.execSQLMonitored(
+      this.database.all(
         'SELECT percentsOfBasal, minutes, dateString FROM tempbasal WHERE isSend = 0; '
       )
     );

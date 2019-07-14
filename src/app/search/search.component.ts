@@ -7,6 +7,7 @@ import { alert } from "tns-core-modules/ui/dialogs";
 import { TextField } from "tns-core-modules/ui/text-field";
 import { nightScoutPath } from "~/app/env";
 import { DatabaseService } from '~/app/shared/database.service';
+import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { sha1 } from 'sha1';
 
 @Component({
@@ -25,16 +26,18 @@ export class SearchComponent implements OnInit {
   pumpData: string;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
-              private databaseService: DatabaseService) {
+              private databaseService: DatabaseService,
+              private dataFacadeService: DataFacadeService) {
     // Use the constructor to inject services.
   }
   ngOnInit(): void {
+    this.pumpData = this.dataFacadeService.btData;
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
       if (wynik === undefined) {
         this.pumpData = 'brak danych';
       }
       else {
-        this.pumpData = wynik + this.pumpData;
+        this.pumpData = this.dataFacadeService.btData + wynik;
       }
     });
   }
@@ -49,17 +52,10 @@ export class SearchComponent implements OnInit {
     this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
     if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://' || this.nsUrl.substring(this.nsUrl.length - 1, this.nsUrl.length) === '/') {
       this.slowo2 = 'ZŁY ADRES URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
-      this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
-        if (wynik === undefined) {
-          this.pumpData = 'Brak danych';
-        }
-        else {
-          this.pumpData = wynik + this.pumpData;
-        }
-      });
+      this.pumpData = this.dataFacadeService.btData;
     }
     else {
-      this.slowo2 = '';
+      this.slowo2 = 'OK! ';
     }
   }
   sendDatatoNightscout6() {

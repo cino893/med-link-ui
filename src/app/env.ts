@@ -1,1 +1,1 @@
-export const nightScoutPath = 'https://jrkf.herokuapp.com/api/v1/';
+export const nightScoutPath = 'https://lenka.herokuapp.com/api/v1/';
