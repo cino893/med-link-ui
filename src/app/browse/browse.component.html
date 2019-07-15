@@ -4,6 +4,11 @@
 <StackLayout class="page page-content">
   <Button class="btn btn-primary btn-active" id="button2" text="Scan" (tap)="scan()"></Button>
   <Label id="lbl" class="action-bar-title" [text]="uuid" textWrap="true"></Label>
+    <ListView *ngIf="items.length > 0" [items]="items" class="list-group">
+      <ng-template let-item="item">
+        <Label #nameUUID [text]="item" class="list-group-item" (tap)="saveUuid(nameUUID)"></Label>
+      </ng-template>
+    </ListView>
   <Button class="btn btn-primary btn-active" id="button" text="Uruchom" (tap)="setPermissions()"></Button>
 </StackLayout>
 
