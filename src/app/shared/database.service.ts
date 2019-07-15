@@ -26,6 +26,7 @@ export class DatabaseService {
           .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db4 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER  primary key autoincrement, nsUrl TEXT, nsKey TEXT, dateString TEXT DEFAULT SYSDATE);'))
+          .then(db5 => db.execSQL('CREATE TABLE IF NOT EXISTS MAC (id INTEGER  primary key autoincrement, UUID TEXT, dateString TEXT DEFAULT SYSDATE);'))
           .then(
             id => {
               this.database = db;
@@ -128,10 +129,15 @@ export class DatabaseService {
       [nsUrl, nsKey, new Date()]
     );
   }
-  public updateNS(nsUrl, nsKey) {
+  public  getMAC() {
+    return this.execSQLMonitored(
+      'SELECT UUID FROM MAC WHERE UUID is not null ORDER BY ID DESC LIMIT 1'
+    );
+  }
+  public insertMAC(uuid) {
     return this.database.execSQL(
-      'UPDATE conf SET ns_url = ?, ns_key = ? WHERE id = 1',
-      [nsUrl, nsKey]
+      'INSERT INTO MAC (uuid) VALUES (?)',
+      [uuid]
     );
   }
 

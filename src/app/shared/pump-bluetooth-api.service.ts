@@ -8,24 +8,32 @@ import * as bluetooth from 'nativescript-bluetooth';
   providedIn: 'root'
 })
 export class PumpBluetoothApiService {
-  targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70';
+  targetBluDeviceUUID = 'D8:A9:8B:B2:D9:71';
+  targetBluDeviceUUID2 = [];
 
   enable() {
     bluetooth.enable();
   }
   scanAndConnect2() {
+    return new Observable<string>(observer => {
+      this.targetBluDeviceUUID2 = [];
       bluetooth
         .startScanning({
           onDiscovered: (peripheral: Peripheral) => {
             console.log(peripheral.name + peripheral.UUID + "C");
-            if (peripheral.name === 'MED-LINKD') {
+            observer.next(peripheral.name + peripheral.UUID);
+            this.targetBluDeviceUUID2.push(peripheral.name + ' ,' + peripheral.UUID);
+            if (peripheral.name === 'MED-LINK') {
               this.targetBluDeviceUUID = peripheral.UUID.toString();
               console.log("UIID: " + peripheral.UUID);
+              observer.complete();
             }
-          },
+          }
+          ,
           skipPermissionCheck: true,
           seconds: 3
-        });
+        }).then(() => observer.complete());
+    }).pipe(reduce((acc, val) => acc + val));
   }
   scanAndConnect() {
     return new Promise((resolve, reject) => {

@@ -4,6 +4,7 @@ import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
+import { DatabaseService } from '~/app/shared/database.service';
 
 @Component({
   selector: 'Browse',
@@ -14,19 +15,31 @@ export class BrowseComponent implements OnInit {
   text = '';
   output = '';
   uuid: string;
+  items = [];
 
   constructor(
     private cdr: ChangeDetectorRef,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
+    private databaseService: DatabaseService,
     private foregroundUtilService: ForegroundFacadeService,
     private pumpBluetoothApiService: PumpBluetoothApiService
   ) {
   }
-  scan(){
+  saveUuid(arg) {
+    console.log("WWWWWWWW" + arg.text);
+    this.uuid = arg.text.toString().split(',')[1];
+    console.log("CCCWWWWW" + this.uuid);
+    this.databaseService.insertMAC(this.uuid);
+    //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
+  }
+  scan() {
     console.log("a");
-    this.pumpBluetoothApiService.scanAndConnect2();
-    this.uuid = this.pumpBluetoothApiService.targetBluDeviceUUID;
+    this.pumpBluetoothApiService.scanAndConnect2().subscribe(a => {
+      console.log("TTRRR" + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
+      this.items = this.pumpBluetoothApiService.targetBluDeviceUUID2;
+      this.uuid = this.pumpBluetoothApiService.targetBluDeviceUUID;
+      });
   }
   setPermissions() {
     Permissions.requestPermission(
