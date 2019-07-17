@@ -35,7 +35,7 @@ export class ForegroundService extends android.app.Service {
     this.createNotificationChannel();
     return this.getNotificationBuilder()
       .setSmallIcon(android.R.drawable.btn_plus)
-      .setContentTitle(this.getTitle(intent))
+      .setContentTitle('MED-LINK')
       .build();
   }
 

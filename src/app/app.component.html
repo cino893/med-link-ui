@@ -1,7 +1,7 @@
 <TabView androidTabsPosition="bottom" (selectedIndexChanged)="onSelectedIndexChanged($event)">
 
     <page-router-outlet
-        *tabItem="{title: 'WEB', iconSource: getIconSource('browse')}"
+        *tabItem="{title: 'NIGHTSCOUT', iconSource: getIconSource('home')}"
         name="homeTab">
     </page-router-outlet>
 
@@ -11,7 +11,7 @@
     </page-router-outlet>
 
     <page-router-outlet
-        *tabItem="{title: 'NS', iconSource: getIconSource('home')}"
+        *tabItem="{title: 'CONFIG', iconSource: getIconSource('browse')}"
         name="searchTab">
     </page-router-outlet>
 

@@ -120,6 +120,6 @@ export class NightscoutApiService {
             battery: { voltage: bol.voltage.toString().substring(0, 4) }
           },
           uploaderBattery: bol.percent
-        }))).subscribe(resolve, reject))s;
+        }))).subscribe(resolve, reject));
   });
 }}

@@ -7,6 +7,7 @@ import { DataService } from "../shared/data.service";
   templateUrl: "./home.component.html"
 })
 export class HomeComponent implements OnInit {
+  webViewSrc: string = 'https://testowycgm.herokuapp.com';
   constructor(public dataService: DataService) {}
 
   ngOnInit(): void {

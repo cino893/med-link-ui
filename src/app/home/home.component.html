@@ -1,11 +1,7 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="Pobierz"></Label>
+    <Label class="action-bar-title" text="Twoja strona nightscout"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content">
-    <ListView *ngIf="dataService.items.length > 0" [items]="dataService.items" class="list-group">
-        <ng-template let-item="item">
-            <Label [nsRouterLink]="['../item', item.id]" [text]="item.id" class="list-group-item"></Label>
-        </ng-template>
-    </ListView>
+    <WebView row="1" #myWebView [src]="webViewSrc"></WebView>
 </GridLayout>
