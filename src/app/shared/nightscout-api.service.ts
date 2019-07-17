@@ -38,11 +38,10 @@ export class NightscoutApiService {
     return new Promise((resolve, reject) => {
       this.getNSData().subscribe(g => {
         g.map(bol => {
-          console.log(bol.http.toString() + "CCCCCTTTTTTTTTT" + bol.secret.toString());
           this.http = bol.http.toString();
           this.hash = bol.secret.toString();
         });
-        console.log("aaaaaaaassssssss" + this.http);
+        console.log("TO JEST API I SECRET Z BAZY aaaaaaaassssssss" + this.http + this.hash);
         resolve(),
           reject();
       });
@@ -51,17 +50,23 @@ export class NightscoutApiService {
 
   sendNewBG(glucoses: Array<{ value: number; date: Date; old: string }>) {
     return new Promise((resolve, reject) => {
-      this.getConfig().then(() =>
-      this.httpClient
-        .post(
-          this.http + '/api/v1/entries',
-          glucoses.map(glucose => ({
-            device: this.device,
-            secret: this.hash,
-            sgv: glucose.value,
-            date: +glucose.date,
-            direction: glucose.old
-          }))).subscribe(resolve, reject));
+      if (glucoses.length > 1) {
+        console.log("DLUGOSC API KOMUNIKATU:  " + glucoses.length);
+        this.httpClient
+          .post(
+            this.http + '/api/v1/entries',
+            glucoses.map(glucose => ({
+              device: this.device,
+              secret: this.hash,
+              sgv: glucose.value,
+              date: +glucose.date,
+              direction: glucose.old
+            }))).subscribe(resolve, reject);
+      }
+      else {
+        console.log("Przyszedł zły cukier!!");
+        resolve();
+      }
     });
   }
 
@@ -99,6 +104,7 @@ export class NightscoutApiService {
 
   sendNewDevicestatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; status: string }>) {
     return new Promise ((resolve, reject) => {
+      this.getConfig().then(() =>
     this.httpClient
       .post(
         this.http + '/api/v1/devicestatus',
@@ -114,6 +120,6 @@ export class NightscoutApiService {
             battery: { voltage: bol.voltage.toString().substring(0, 4) }
           },
           uploaderBattery: bol.percent
-        }))).subscribe(resolve, reject);
+        }))).subscribe(resolve, reject))s;
   });
 }}

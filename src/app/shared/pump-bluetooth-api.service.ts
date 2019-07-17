@@ -1,15 +1,24 @@
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { Peripheral } from 'nativescript-bluetooth';
 import { Observable } from 'rxjs';
 import { reduce } from 'rxjs/internal/operators/reduce';
 import * as bluetooth from 'nativescript-bluetooth';
+import { DataFacadeService } from '~/app/shared/data-facade.service';
+import { DatabaseService } from '~/app/shared/database.service';
+import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
+import { RawDataService } from '~/app/shared/raw-data-parse.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PumpBluetoothApiService {
-  targetBluDeviceUUID = 'D8:A9:8B:B2:D9:71';
+  targetBluDeviceUUID: string;
   targetBluDeviceUUID2 = [];
+
+  constructor(
+    private databaseService: DatabaseService
+  ) {
+  }
 
   enable() {
     bluetooth.enable();
@@ -22,22 +31,22 @@ export class PumpBluetoothApiService {
           onDiscovered: (peripheral: Peripheral) => {
             console.log(peripheral.name + peripheral.UUID + "C");
             observer.next(peripheral.name + peripheral.UUID);
-            this.targetBluDeviceUUID2.push(peripheral.name + ' ,' + peripheral.UUID);
-            if (peripheral.name === 'MED-LINK') {
+            if (peripheral.name === 'MED-LINK' || peripheral.name === 'MED-LINK-2' || peripheral.name === 'HMSoft') {
+              this.targetBluDeviceUUID2.push(peripheral.name + ' ,' + peripheral.UUID);
               this.targetBluDeviceUUID = peripheral.UUID.toString();
-              console.log("UIID: " + peripheral.UUID);
-              observer.complete();
+              console.log("UIID: " + this.targetBluDeviceUUID);
             }
           }
           ,
           skipPermissionCheck: true,
-          seconds: 3
+          seconds: 2
         }).then(() => observer.complete());
     }).pipe(reduce((acc, val) => acc + val));
   }
   scanAndConnect() {
     return new Promise((resolve, reject) => {
-      this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70';
+      this.databaseService.getMAC().then(a => this.targetBluDeviceUUID = a.toString());
+      console.log("to jest target: " + this.targetBluDeviceUUID);
       bluetooth.connect({
               UUID: this.targetBluDeviceUUID,
               onConnected: (peripheral: Peripheral) => {
@@ -66,7 +75,7 @@ export class PumpBluetoothApiService {
   }
   sendCommand2(command) {
     const buffer = [];
-    console.log('prawdziwe ssss')
+    console.log('prawdziwe ssss');
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);
@@ -87,7 +96,7 @@ export class PumpBluetoothApiService {
     const nextByte = startByte + chunkLength;
     bluetooth
       .writeWithoutResponse({
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
+        peripheralUUID: this.targetBluDeviceUUID,
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0',
         value: new Uint8Array(array.slice(startByte, nextByte))
@@ -100,7 +109,7 @@ export class PumpBluetoothApiService {
   }
 
   disconnect() {
-    bluetooth.disconnect({UUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70'});
+    bluetooth.disconnect({UUID: this.targetBluDeviceUUID});
   }
 
   read() {
@@ -118,7 +127,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
+        peripheralUUID: this.targetBluDeviceUUID,
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });
@@ -139,7 +148,7 @@ export class PumpBluetoothApiService {
             observer.complete();
           }
         },
-        peripheralUUID: this.targetBluDeviceUUID = 'D8:A9:8B:B2:D9:70',
+        peripheralUUID: this.targetBluDeviceUUID,
         characteristicUUID: 'ffe1',
         serviceUUID: 'ffe0'
       });

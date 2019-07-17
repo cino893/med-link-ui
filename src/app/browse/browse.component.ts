@@ -35,11 +35,14 @@ export class BrowseComponent implements OnInit {
   }
   scan() {
     console.log("a");
+    Permissions.requestPermission(
+      android.Manifest.permission.ACCESS_COARSE_LOCATION
+    ).then(() =>
     this.pumpBluetoothApiService.scanAndConnect2().subscribe(a => {
       console.log("TTRRR" + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
       this.items = this.pumpBluetoothApiService.targetBluDeviceUUID2;
       this.uuid = this.pumpBluetoothApiService.targetBluDeviceUUID;
-      });
+      }));
   }
   setPermissions() {
     Permissions.requestPermission(

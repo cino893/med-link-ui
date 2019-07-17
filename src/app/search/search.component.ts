@@ -31,28 +31,25 @@ export class SearchComponent implements OnInit {
     // Use the constructor to inject services.
   }
   ngOnInit(): void {
-    this.pumpData = this.dataFacadeService.btData;
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
       if (wynik === undefined) {
         this.pumpData = 'brak danych';
       }
       else {
-        this.pumpData = this.dataFacadeService.btData + wynik;
+        this.pumpData = this.dataFacadeService.btData + 'SQL: ' + wynik;
       }
     });
   }
-  setPer() {
+  Zapisz() {
     console.log("aaaaaa" + this.nsUrl);
     const sha1 = require('sha1');
     this.databaseService.insertNS(this.nsUrl, sha1(this.nsKey));
+    this.pumpData = this.dataFacadeService.btData;
     //this.databaseService.updateNS("adsad", "1231231");
-    console.log("abbbb" + this.nsUrl + ' ddddddddddd ' + this.nsKey);
-    //this.slowo = this.nsUrl;
-    //this.slowo = this.getNSData().toString();
+    console.log("NS URL: " + this.nsUrl + ' ddddddddddd ' + this.nsKey);
     this.sendDatatoNightscout6().then(() => console.log(this.slowo + "aRRRRRRRRRR"));
     if (this.nsUrl.substring(0, 8).toUpperCase() !== 'HTTPS://' || this.nsUrl.substring(this.nsUrl.length - 1, this.nsUrl.length) === '/') {
       this.slowo2 = 'ZŁY ADRES URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
-      this.pumpData = this.dataFacadeService.btData;
     }
     else {
       this.slowo2 = 'OK! ';

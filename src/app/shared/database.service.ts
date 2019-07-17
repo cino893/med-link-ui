@@ -130,7 +130,7 @@ export class DatabaseService {
     );
   }
   public  getMAC() {
-    return this.execSQLMonitored(
+    return this.database.all(
       'SELECT UUID FROM MAC WHERE UUID is not null ORDER BY ID DESC LIMIT 1'
     );
   }

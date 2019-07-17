@@ -13,7 +13,7 @@ export class ForegroundFacadeService {
     const foregroundNotificationIntent = new android.content.Intent();
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
     foregroundNotificationIntent.putExtra('title', 'Serwis pobierania danych z pompy jest w trakcie działania');
-    console.log("start freground")
+    console.log("start freground");
     app.android.context.startService(foregroundNotificationIntent);
     //app.android.context.startForegroundService(foregroundNotificationIntent);
   }
@@ -21,7 +21,7 @@ export class ForegroundFacadeService {
   stopForeground() {
     const foregroundNotificationIntent = new android.content.Intent();
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
-    console.log("stop freground")
+    console.log("stop freground");
     app.android.context.stopService(foregroundNotificationIntent);
   }
 }

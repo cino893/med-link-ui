@@ -168,7 +168,7 @@ export class DataFacadeService {
         .scanAndConnect()
         .then(
           uidBt => {
-            if (uidBt === "HMSoft") {
+            if (uidBt === "MED-LINK" || uidBt === "MED-LINK-2" || uidBt === "MED-LINK-3" || uidBt === "HMSoft") {
               console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
               return Promise.resolve(uidBt);
             } else {
@@ -230,7 +230,7 @@ export class DataFacadeService {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 2 * 60 * 1000);
+    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
   }
 
   waitOnReady() {
@@ -251,12 +251,12 @@ export class DataFacadeService {
             .then(() => { console.log('AAAAA doszlo'); this.sendDataToLocalDb2(parsedDate); })
             .then(() => this.sendDataToLocalDb3(parsedDate))
             .then(() => this.sendDataToLocalDb4(parsedDate))
+            .then(() => this.sendDatatoNightscout3())
+            .then(() => this.databaseService.updateDS())
             .then(() => this.sendDatatoNightscout())
             .then(() => this.databaseService.updateBG())
             .then(() => this.sendDatatoNightscout2())
             .then(() => this.databaseService.updateTreatments())
-            .then(() => this.sendDatatoNightscout3())
-            .then(() => this.databaseService.updateDS())
             .then(() => this.sendDatatoNightscout4())
             .then(() => this.databaseService.updateTempBasal())
           //.then(() => this.wakeFacadeService.snoozeScreenByCall())
