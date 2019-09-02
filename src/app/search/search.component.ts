@@ -20,7 +20,9 @@ export class SearchComponent implements OnInit {
   slowo: string;
   slowo2: string;
   nsUrl: string;
+  nsUrl2: string;
   nsKey: string;
+  nsKey2: string;
   carbs: string;
   pending = false;
   pumpData: string;
@@ -39,11 +41,12 @@ export class SearchComponent implements OnInit {
         this.pumpData = this.dataFacadeService.btData + 'SQL: ' + wynik;
       }
     });
+    this.sendDatatoNightscout7().then(() => console.log(this.nsUrl2 + "fffffffffffff3333333f"));
   }
   Zapisz() {
     console.log("aaaaaa" + this.nsUrl);
     const sha1 = require('sha1');
-    this.databaseService.insertNS(this.nsUrl, sha1(this.nsKey));
+    this.databaseService.insertNS(this.nsUrl, sha1(this.nsKey), this.nsKey);
     this.pumpData = this.dataFacadeService.btData;
     //this.databaseService.updateNS("adsad", "1231231");
     console.log("NS URL: " + this.nsUrl + ' ddddddddddd ' + this.nsKey);
@@ -68,6 +71,20 @@ export class SearchComponent implements OnInit {
       });
     });
   }
+  sendDatatoNightscout7() {
+    return new Promise((resolve, reject) => {
+      this.getNSData().subscribe(g => {
+        g.map(bol => {
+          console.log(bol.http.toString() + "66666666666" + bol.secret.toString());
+          this.nsUrl2 = bol.http.toString();
+          this.nsKey2 = bol.hash.toString();
+        });
+        console.log("as" + this.nsUrl2);
+        resolve(),
+          reject();
+      });
+    });
+  }
   checkUrl (nsUrl: string){
     if (this.nsUrl.substring(0, 8).toUpperCase() === 'HTTPS://') {
       this.slowo = 'zly adres';
@@ -85,12 +102,13 @@ export class SearchComponent implements OnInit {
     this.nsKey = arg.text;
 
   }
-  getNSData(): Observable<Array<{ http: string; secret: string }>> {
+  getNSData(): Observable<Array<{ http: string; secret: string; hash: string }>> {
     return this.databaseService.NSconf().pipe(
       map(rows => {
         return rows.map(a => ({
           http: a[0],
-          secret: a[1]
+          secret: a[1],
+          hash: a[2]
         }));
       })
     );

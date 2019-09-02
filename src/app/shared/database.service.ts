@@ -25,7 +25,7 @@ export class DatabaseService {
         ).then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS treatments (id INTEGER, basalValue TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db3 => db.execSQL('CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db4 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
-          .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER  primary key autoincrement, nsUrl TEXT, nsKey TEXT, dateString TEXT DEFAULT SYSDATE);'))
+          .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER  primary key autoincrement, nsUrl TEXT, nsKey TEXT, nsKey2 TEXT, dateString TEXT DEFAULT SYSDATE);'))
           .then(db5 => db.execSQL('CREATE TABLE IF NOT EXISTS MAC (id INTEGER  primary key autoincrement, UUID TEXT, dateString TEXT DEFAULT SYSDATE);'))
           .then(
             id => {
@@ -119,14 +119,14 @@ export class DatabaseService {
   public NSconf(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        'SELECT nsUrl, nsKey FROM conf WHERE nsUrl is not null and nsKey is not null ORDER BY id desc LIMIT 1'
+        'SELECT nsUrl, nsKey, nsKey2 FROM conf WHERE nsUrl is not null and nsKey is not null ORDER BY id desc LIMIT 1'
       )
     );
   }
-  public insertNS(nsUrl, nsKey) {
+  public insertNS(nsUrl, nsKey, nsKey2) {
     return this.database.execSQL(
-      'INSERT INTO conf (nsUrl, nsKey, dateString) VALUES (?, ?, ?)',
-      [nsUrl, nsKey, new Date()]
+      'INSERT INTO conf (nsUrl, nsKey, nsKey2, dateString) VALUES (?, ?, ?, ?)',
+      [nsUrl, nsKey, nsKey2, new Date()]
     );
   }
   public  getMAC() {

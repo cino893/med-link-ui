@@ -6,11 +6,11 @@
     <StackLayout col="0">
     <TextField #nsUrl class="input input-border"
                autocorrect="false" hint="https://nazwastrony.herokuapp.com"
-               text="" returnKeyType="done" (textChange)="setNS(nsUrl)">
+               [text]="nsUrl2" returnKeyType="done" (textChange)="setNS(nsUrl)">
     </TextField>
     </StackLayout>
     <StackLayout>
-    <TextField #nsKey class="input input-border" autocorrect="false" hint="api_secret(nie hash)" text="" returnKeyType="done" textWrap="true" (textChange)="setNSurl(nsKey)"></TextField>
+    <TextField #nsKey class="input input-border" autocorrect="false" hint="api_secret(nie hash)" [text]="nsKey2" returnKeyType="done" textWrap="true" (textChange)="setNSurl(nsKey)"></TextField>
     </StackLayout>
     <StackLayout>
         <Button class="btn btn-primary btn-active" id="button" text="Zapisz" (tap)="Zapisz()"></Button>
