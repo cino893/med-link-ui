@@ -26,6 +26,7 @@ export class BrowseComponent implements OnInit {
   interval: number = 0;
   counter: number;
   isCompleted: boolean = false;
+  bool2: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -87,11 +88,12 @@ export class BrowseComponent implements OnInit {
         okButtonText: "Potwierdzam",
         cancelButtonText: "Anuluj"
       }).then(result => {
-        if (result === true) { this.setPermissions(); }
+        if (result === true) { this.setPermissions(); this.databaseService.insertStan(true); }
         else {
           // result argument is boolean
           console.log("Dialog result: " + result);
           mySwitch.checked = false;
+          this.databaseService.insertStan(false);
         }
       });
 
@@ -103,6 +105,7 @@ export class BrowseComponent implements OnInit {
       clearInterval(this.fa.int0);
       clearInterval(this.int1);
       clearInterval(this.interval);
+      this.databaseService.insertStan(false);
     }
   }
   scan() {
@@ -180,6 +183,12 @@ export class BrowseComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-
+     this.databaseService.getStan().subscribe(wynik => {
+       this.bool2 = wynik.toString().toLowerCase() === 'true';
+       console.log("AAAAAA$$$: " + wynik.toString());
+       if (this.bool2 === true) {
+         this.isCompleted = true;
+       }
+     });
   }
 }

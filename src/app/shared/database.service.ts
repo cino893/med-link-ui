@@ -27,6 +27,7 @@ export class DatabaseService {
           .then(db4 => db.execSQL('CREATE TABLE IF NOT EXISTS devicestatus (id INTEGER, reservoir NUMBER, voltage NUMBER, dateString TEXT, percent TEXT, status TEXT, isSend INTEGER DEFAULT 0);'))
           .then(db2 => db.execSQL('CREATE TABLE IF NOT EXISTS conf (id INTEGER  primary key autoincrement, nsUrl TEXT, nsKey TEXT, nsKey2 TEXT, dateString TEXT DEFAULT SYSDATE);'))
           .then(db5 => db.execSQL('CREATE TABLE IF NOT EXISTS MAC (id INTEGER  primary key autoincrement, UUID TEXT, dateString TEXT DEFAULT SYSDATE);'))
+          .then(db6 => db.execSQL('CREATE TABLE IF NOT EXISTS STAN (id INTEGER  primary key autoincrement, Stan Boolean, dateString TEXT DEFAULT SYSDATE);'))
           .then(
             id => {
               this.database = db;
@@ -138,6 +139,19 @@ export class DatabaseService {
     return this.database.execSQL(
       'INSERT INTO MAC (uuid) VALUES (?)',
       [uuid]
+    );
+  }
+  public insertStan(stan) {
+    return this.database.execSQL(
+      'INSERT INTO STAN (stan) VALUES (?)',
+      [stan]
+    );
+  }
+  public getStan(): Observable<Array<Array<string>>> {
+    return from(
+      this.database.all(
+        'SELECT stan FROM STAN WHERE stan is not null ORDER BY ID DESC LIMIT 1; '
+      )
     );
   }
 
