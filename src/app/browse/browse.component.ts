@@ -8,6 +8,7 @@ import { DatabaseService } from '~/app/shared/database.service';
 import * as appSettings from "application-settings";
 import { Switch } from "tns-core-modules/ui/switch";
 import { EventData } from "tns-core-modules/data/observable";
+import integer = android.R.integer;
 
 @Component({
   selector: 'Browse',
@@ -20,6 +21,7 @@ export class BrowseComponent implements OnInit {
   uuid: string;
   items = [];
   bool: boolean = false;
+  int0: number  = 0;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -46,7 +48,9 @@ export class BrowseComponent implements OnInit {
     }
     else {
       this.foregroundUtilService.stopForeground();
-      clearInterval();
+      clearInterval(this.int0);
+      console.log("aaaaa" + isChecked + this.int0);
+      clearInterval(this.fa.int0);
     }
   }
   scan() {
@@ -87,13 +91,13 @@ export class BrowseComponent implements OnInit {
       this.pumpBluetoothApiService.enable();
       try {
           this.foregroundUtilService.startForeground();
-          setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
+          this.int0 = setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
           setTimeout(() => this.fa.establishConnectionWithPump(), 1000)
       } catch (e) {
         console.error(e);
 
         this.foregroundUtilService.stopForeground();
-        clearInterval();
+        clearInterval(this.int0);
       }
     });
   }

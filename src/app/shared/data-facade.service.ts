@@ -13,6 +13,7 @@ import { WakeFacadeService } from "~/app/shared/wake-facade.service";
 })
 export class DataFacadeService {
   btData: string;
+  int0: number  = 0;
   constructor(
     private databaseService: DatabaseService,
     private nightscoutApiService: NightscoutApiService,
@@ -230,7 +231,8 @@ export class DataFacadeService {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
-    setInterval(() => this.scanAndConnect(), 5 * 60 * 1000);
+    this.int0 = setInterval(() => this.scanAndConnect(), 10 * 1000);
+    console.log('aa33');
   }
 
   waitOnReady() {
