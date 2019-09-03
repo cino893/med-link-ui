@@ -9,6 +9,8 @@
         <Label #nameUUID [text]="item" class="list-group-item" (tap)="saveUuid(nameUUID)"></Label>
       </ng-template>
     </ListView>
+
   <Button class="btn btn-primary btn-active" id="button" text="Uruchom" (tap)="setPermissions()"></Button>
+  <Switch checked="false" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="true" class="switch"></Switch>
 </StackLayout>
 

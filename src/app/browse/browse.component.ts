@@ -5,6 +5,9 @@ import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service'
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
 import { DatabaseService } from '~/app/shared/database.service';
+import * as appSettings from "application-settings";
+import { Switch } from "tns-core-modules/ui/switch";
+import { EventData } from "tns-core-modules/data/observable";
 
 @Component({
   selector: 'Browse',
@@ -16,6 +19,7 @@ export class BrowseComponent implements OnInit {
   output = '';
   uuid: string;
   items = [];
+  bool: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -33,8 +37,23 @@ export class BrowseComponent implements OnInit {
     this.databaseService.insertMAC(this.uuid);
     //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
   }
+  onCheckedChange(args: EventData) {
+    const mySwitch = args.object as Switch;
+    const isChecked = mySwitch.checked; // boolean
+    console.log("aaaaa" + isChecked);
+    if (isChecked === true) {
+      this.setPermissions();
+    }
+    else {
+      this.foregroundUtilService.stopForeground();
+      clearInterval();
+    }
+  }
   scan() {
-    console.log("a");
+    this.bool = appSettings.getBoolean("someBoolean", false);
+    console.log("aRRRAAA:  " + this.bool + appSettings.getBoolean("someBoolean"));
+    appSettings.setBoolean("someBoolean", this.bool);
+    console.log("aRRRAAA222222:  " + this.bool + appSettings.getBoolean("someBoolean"));
     Permissions.requestPermission(
       android.Manifest.permission.ACCESS_COARSE_LOCATION
     ).then(() =>
@@ -74,6 +93,7 @@ export class BrowseComponent implements OnInit {
         console.error(e);
 
         this.foregroundUtilService.stopForeground();
+        clearInterval();
       }
     });
   }
