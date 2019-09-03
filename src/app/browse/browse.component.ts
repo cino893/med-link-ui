@@ -25,6 +25,7 @@ export class BrowseComponent implements OnInit {
   int1: number  = 0;
   interval: number = 0;
   counter: number;
+  isCompleted: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -41,6 +42,7 @@ export class BrowseComponent implements OnInit {
     console.log("CCCWWWWW" + this.uuid);
     this.databaseService.insertMAC(this.uuid);
     //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
+    this.isCompleted = true;
   }
   onCheckedChange(args: EventData) {
     const mySwitch = args.object as Switch;
