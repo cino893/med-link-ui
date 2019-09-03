@@ -118,7 +118,7 @@ export class DatabaseService {
   }
   public NSconf(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         'SELECT nsUrl, nsKey, nsKey2 FROM conf WHERE nsUrl is not null and nsKey is not null ORDER BY id desc LIMIT 1'
       )
     );

@@ -18,6 +18,15 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     //this.dataService.reloadData();
     this.sendDatatoNightscout7().then(() => console.log(this.webViewSrc + "ffffffffffffff111111"));
+    this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+      if (wynik === undefined) {
+        this.webViewSrc = 'brak danych';
+      }
+      else {
+        this.webViewSrc = wynik.toString().split(',')[0];
+        console.log("444444aaaaaaEEEEEEEEEE" + this.webViewSrc);
+      }
+    });
   }
 
   getNSData(): Observable<Array<{ http: string; secret: string; hash: string }>> {
@@ -31,8 +40,6 @@ export class HomeComponent implements OnInit {
       })
     );
   }
-
-
   sendDatatoNightscout7() {
     return new Promise((resolve, reject) => {
       this.getNSData().subscribe(g => {

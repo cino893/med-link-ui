@@ -9,6 +9,10 @@
         <Label #nameUUID [text]="item" class="list-group-item" (tap)="saveUuid(nameUUID)"></Label>
       </ng-template>
     </ListView>
-  <Switch checked="false" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="true" class="switch"></Switch>
+  <StackLayout orientation="horizontal">
+    <Label id="lbl2" text="URUCHOM, I ZAAKCEPTUJ WARUNKI: " textWrap="true" class="label"margin="1" width="250"></Label>
+    <Switch checked="false" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
+  </StackLayout>
 </StackLayout>
+
 
