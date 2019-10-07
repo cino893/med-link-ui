@@ -1,12 +1,18 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { compose } from 'nativescript-email';
+import * as Permissions from 'nativescript-permissions';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { alert } from 'tns-core-modules/ui/dialogs';
+import { KeyboardType } from 'tns-core-modules/ui/enums';
 import { TextField } from 'tns-core-modules/ui/text-field';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { DatabaseService } from '~/app/shared/database.service';
 import { TraceWriterService } from '~/app/shared/trace-writer.service';
+import Runtime = java.lang.Runtime;
+import * as fs from "tns-core-modules/file-system";
+import datetime = KeyboardType.datetime;
+import array = android.R.array;
 
 @Component({
   selector: "Search",
@@ -24,6 +30,7 @@ export class SearchComponent implements OnInit {
   carbs: string;
   pending = false;
   pumpData: string;
+  aReduced2: string;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -53,19 +60,37 @@ export class SearchComponent implements OnInit {
   }
 
   sendLogs() {
-    this.databaseService.getLogs().subscribe(a => {
-      const aMaped = a.map(b => {
-        return b.reduce((prev, next) => prev + next, "");
-      });
+    const documents = fs.path.join(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString());
+    const myFolder = fs.Folder.fromPath(documents);
+    const myFile = myFolder.getFile("my.log");
+    Runtime.getRuntime().exec('logcat -v time -f /sdcard/my.log -d')
+    Permissions.requestPermission(
+      android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ).then(() =>
+      this.databaseService.getLogs().subscribe(a => {
+        const aMaped = a.map(b => {
+          return b.reduce((prev, next) => prev + next, "");
+        });
 
-      const aReduced = aMaped.reduce((prev, next) => prev + next + "\r\n", "");
+        const aReduced = aMaped.reduce((prev, next) => prev + next + "\r\n", "");
 
-      compose({
-        subject: "Debug med-link-ui",
-        body: aReduced,
-        to: ["jrkf@o2.pl"]
-      });
-    });
+        compose({
+          subject: "Debug med-link-ui",
+          body: "aReduced2",
+          to: ["jrkf@o2.pl"],
+          attachments:
+            [{
+              mimeType: 'text/plain',
+              path: myFile.path,
+              fileName: 'my.log'
+            }]
+        });
+      })
+    );
+    console.log(myFile.path + "dddddd " + myFolder.path);
+
+    //myFile.readText().then(res => { this.aReduced2 = res.toString(); console.log("SSSSSSaa " + this.aReduced2.substring(1, this.aReduced2.length) + " ssss")});
+
   }
 
   Zapisz() {

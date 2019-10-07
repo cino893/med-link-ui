@@ -7,6 +7,7 @@ import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { DatabaseService } from '~/app/shared/database.service';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
+import * as traceModule from "tns-core-modules/trace"
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +65,7 @@ export class PumpBluetoothApiService {
   sendCommand(command) {
     const buffer = [];
     console.log('bede wysylal OK+KONN');
+    traceModule.write( "AAAAAAAAAAAAAAa  YYYYYunhandled-error", traceModule.categories.Debug, 2);
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);

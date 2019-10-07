@@ -6,8 +6,8 @@ import {
   messageType,
   clearWriters,
   addWriter,
-  disable
-} from "tns-core-modules/trace";
+  disable, addCategories
+} from 'tns-core-modules/trace';
 import { isUndefined } from "tns-core-modules/utils/types";
 import { Subject, Subscription } from "rxjs";
 
@@ -31,7 +31,7 @@ export class TraceWriterService {
 
   private setupWriter() {
     // setCategories(categories.All);
-    setCategories(categories.concat(categories.Debug, categories.Error));
+    setCategories(categories.Error);
     enable();
     clearWriters();
     addWriter(this.customWriter);
