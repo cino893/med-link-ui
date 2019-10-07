@@ -1,7 +1,7 @@
 <ActionBar class="action-bar">
   <Label class="action-bar-title" text="Bluetooth"></Label>
 </ActionBar>
-<StackLayout class="page page-content">
+<StackLayout class="page page-content" (longPress)="onLongPress($event)">
   <Button class="btn btn-primary btn-active" id="button2" text="Scan" (tap)="scan()"></Button>
   <Label id="lbl" class="h3 p-15 text-center" [text]="uuid" textWrap="true" colour="blue"></Label>
     <ListView *ngIf="items.length > 0" [items]="items" class="list-group">

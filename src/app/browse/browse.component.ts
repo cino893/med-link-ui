@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as Permissions from 'nativescript-permissions';
+import { PromptResult } from 'tns-core-modules/ui/dialogs';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
@@ -8,6 +9,7 @@ import { DatabaseService } from '~/app/shared/database.service';
 import * as appSettings from "application-settings";
 import { Switch } from "tns-core-modules/ui/switch";
 import { EventData } from "tns-core-modules/data/observable";
+import { GestureEventData } from "tns-core-modules/ui/gestures";
 import * as dialogs from "tns-core-modules/ui/dialogs";
 
 @Component({
@@ -44,6 +46,35 @@ export class BrowseComponent implements OnInit {
     this.databaseService.insertMAC(this.uuid);
     //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
     this.isCompleted = true;
+  }
+  onLongPress(args: GestureEventData) {
+    console.log("Object that triggered the event: " + args.object);
+    console.log("View that triggered the event: " + args.view);
+    console.log("Event name: " + args.eventName);
+    this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
+      dialogs.prompt({
+      title: "Podaj nr pompy",
+      message: "Twoj nr pompy to:",
+      okButtonText: "OK",
+      cancelButtonText: "Cancel",
+      inputType: dialogs.inputType.number
+    }).then( r => {
+      console.log("Dialog closed!" + r.result + ", A TO TEKST:" +  r.text);
+        this.pumpBluetoothApiService.sendCommand3(r.text);
+    }).then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
+        dialogs.prompt({
+          title: "IMIE I NAZWISKO",
+          message: "Podaj imie i nazwisko",
+          okButtonText: "OK",
+          cancelButtonText: "Cancel",
+          inputType: dialogs.inputType.text
+        }).then(rr => {
+          console.log("TTTTTTTTTTTTTTTTTTTTa" + rr.text);
+    this.pumpBluetoothApiService.sendCommand3(rr.text);
+  }
+        )))
+    ));
+
   }
   onCheckedChange(args: EventData) {
     const mySwitch = args.object as Switch;

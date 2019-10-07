@@ -50,7 +50,7 @@ export class NightscoutApiService {
 
   sendNewBG(glucoses: Array<{ value: number; date: Date; old: string }>) {
     return new Promise((resolve, reject) => {
-      if (glucoses.length > 1) {
+      if (glucoses.length >= 1) {
         console.log("DLUGOSC API KOMUNIKATU:  " + glucoses.length);
         this.httpClient
           .post(
@@ -65,6 +65,7 @@ export class NightscoutApiService {
       }
       else {
         console.log("Przyszedł zły cukier!!");
+        console.log("DLUGOSC API KOMUNIKATU:  " + glucoses.length);
         resolve();
       }
     });

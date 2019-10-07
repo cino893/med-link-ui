@@ -89,6 +89,21 @@ export class PumpBluetoothApiService {
       this.recursiveWrite(buffer);
     }
   }
+  sendCommand3(command) {
+    const buffer = [];
+    console.log('prawdziwe ssss');
+    for (const char of command) {
+      const charCode = char.charCodeAt(0);
+      buffer.push(charCode);
+      buffer.push(0x0d /*CR*/);
+
+      console.log("aaatotootototo:"  + buffer );
+    }
+    if (buffer.length) {
+      this.recursiveWrite(buffer);
+    }
+  }
+
 
   private recursiveWrite(
     array: Array<number>,
@@ -125,7 +140,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('rea')) {
+          if (result.includes('rea') || result.includes('zeka')) {
             observer.complete();
           }
         },
@@ -146,7 +161,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('EomEomEo')) {
+          if (result.includes('EomEomEo') || result.includes('Podaj numer') ||  result.includes('nie')) {
             observer.complete();
           }
         },
