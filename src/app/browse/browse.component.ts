@@ -62,6 +62,8 @@ export class BrowseComponent implements OnInit {
       console.log("Dialog closed!" + r.result + ", A TO TEKST:" +  r.text);
         this.pumpBluetoothApiService.sendCommand3(r.text);
     }).then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
+
+
         dialogs.prompt({
           title: "IMIE I NAZWISKO",
           message: "Podaj imie i nazwisko",
@@ -70,7 +72,7 @@ export class BrowseComponent implements OnInit {
           inputType: dialogs.inputType.text
         }).then(rr => {
           console.log("TTTTTTTTTTTTTTTTTTTTa" + rr.text);
-    this.pumpBluetoothApiService.sendCommand3(rr.text);
+    this.pumpBluetoothApiService.sendCommand3(rr.text)
   }
         )))
     ));

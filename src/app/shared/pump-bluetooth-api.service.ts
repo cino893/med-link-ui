@@ -95,11 +95,13 @@ export class PumpBluetoothApiService {
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);
-      buffer.push(0x0d /*CR*/);
+
 
       console.log("aaatotootototo:"  + buffer );
     }
     if (buffer.length) {
+      buffer.push(0x0d /*CR*/);
+      buffer.push(0x0a /*LF*/);
       this.recursiveWrite(buffer);
     }
   }
@@ -161,13 +163,19 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('EomEomEo') || result.includes('Podaj numer') ||  result.includes('nie')) {
+          if (result.includes('EomEomEo') || result.includes('Podaj numer') ||  result.includes('Test O') ||  result.includes('Podaj imie')) {
             observer.complete();
+            bluetooth.stopNotifying({
+                peripheralUUID: this.targetBluDeviceUUID,
+                characteristicUUID: 'ffe1',
+                serviceUUID: 'ffe0'
+              }
+            );
           }
         },
         peripheralUUID: this.targetBluDeviceUUID,
         characteristicUUID: 'ffe1',
-        serviceUUID: 'ffe0'
+        serviceUUID: 'ffe0',
       });
     }).pipe(reduce((acc, val) => acc + val));
   }
