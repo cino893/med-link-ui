@@ -163,7 +163,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('EomEomEo') || result.includes('Podaj numer') ||  result.includes('Test O') ||  result.includes('Podaj imie')) {
+          if (result.includes('EomEomEo') || result.includes('Podaj numer') ||  result.includes('Test O') ||  result.includes('Podaj imie') || result.includes('KASUJ')) {
             observer.complete();
             bluetooth.stopNotifying({
                 peripheralUUID: this.targetBluDeviceUUID,

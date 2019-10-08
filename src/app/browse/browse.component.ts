@@ -11,6 +11,7 @@ import { Switch } from "tns-core-modules/ui/switch";
 import { EventData } from "tns-core-modules/data/observable";
 import { GestureEventData } from "tns-core-modules/ui/gestures";
 import * as dialogs from "tns-core-modules/ui/dialogs";
+import { ActivityIndicator } from "tns-core-modules/ui/activity-indicator";
 
 @Component({
   selector: 'Browse',
@@ -19,6 +20,7 @@ import * as dialogs from "tns-core-modules/ui/dialogs";
 })
 export class BrowseComponent implements OnInit {
   text = '';
+  isBusy: boolean = false;
   output = '';
   uuid: string;
   items = [];
@@ -47,10 +49,35 @@ export class BrowseComponent implements OnInit {
     //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
     this.isCompleted = true;
   }
-  onLongPress(args: GestureEventData) {
-    console.log("Object that triggered the event: " + args.object);
-    console.log("View that triggered the event: " + args.view);
-    console.log("Event name: " + args.eventName);
+  onPlus() {
+    dialogs.confirm( { title: "Chcesz dodać lub usunąć profil użytkownia z pilota?",
+    cancelButtonText: "Usun",
+      okButtonText: "Dodaj",
+      neutralButtonText: "Anuluj"
+    }).then(t => {
+      if (t === true) {
+        console.log("TAK" + t);
+        this.addUser();
+        this.isBusy = true;
+      }
+      if (t === false) {
+        console.log("nie" + t);
+        this.deleteUser();
+        this.isBusy = false;
+      }
+      else {
+
+        console.log("anulowane wybieranie usera");
+      }
+
+    }
+    )
+  }
+  onBusyChanged(args: EventData) {
+    const indicator: ActivityIndicator = <ActivityIndicator>args.object;
+    console.log("indicator.busy changed to: " + indicator.busy);
+  }
+  addUser() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
       dialogs.prompt({
       title: "Podaj nr pompy",
@@ -62,8 +89,6 @@ export class BrowseComponent implements OnInit {
       console.log("Dialog closed!" + r.result + ", A TO TEKST:" +  r.text);
         this.pumpBluetoothApiService.sendCommand3(r.text);
     }).then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
-
-
         dialogs.prompt({
           title: "IMIE I NAZWISKO",
           message: "Podaj imie i nazwisko",
@@ -72,12 +97,29 @@ export class BrowseComponent implements OnInit {
           inputType: dialogs.inputType.text
         }).then(rr => {
           console.log("TTTTTTTTTTTTTTTTTTTTa" + rr.text);
-    this.pumpBluetoothApiService.sendCommand3(rr.text)
+          this.pumpBluetoothApiService.sendCommand3(rr.text);
   }
         )))
     ));
-
   }
+
+  deleteUser() {
+    this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
+      dialogs.prompt({
+        title: "USUWANIE PROFILU",
+        message: "Czy na pewno chcesz usunąć profil użytkownika?",
+        okButtonText: "OK",
+        cancelButtonText: "Cancel"
+      }).then( r => {
+        console.log("Dialog closed!" + r.result + ", A TO wynikkkkk");
+        if (r.result) {
+          this.pumpBluetoothApiService.sendCommand3("KASUJ");
+          //this.isBusy = false;
+        }
+      })
+    ));
+  }
+
   onCheckedChange(args: EventData) {
     const mySwitch = args.object as Switch;
     const isChecked = mySwitch.checked; // boolean

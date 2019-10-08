@@ -1,7 +1,11 @@
-<ActionBar class="action-bar">
+<ActionBar class="action-bar" >
+  <NavigationButton icon="res://ic_arrow_back_black_24dp"></NavigationButton>
+  <ActionItem (tap)="onPlus()"
+              android.systemIcon="ic_menu_add" android.position="actionBar">
+  </ActionItem>
   <Label class="action-bar-title" text="Bluetooth"></Label>
 </ActionBar>
-<StackLayout class="page page-content" (longPress)="onLongPress($event)">
+<StackLayout class="page page-content">
   <Button class="btn btn-primary btn-active" id="button2" text="Scan" (tap)="scan()"></Button>
   <Label id="lbl" class="h3 p-15 text-center" [text]="uuid" textWrap="true" colour="blue"></Label>
     <ListView *ngIf="items.length > 0" [items]="items" class="list-group">
@@ -10,9 +14,11 @@
       </ng-template>
     </ListView>
   <StackLayout orientation="horizontal">
+
     <Label id="lbl2" text="URUCHOM, I ZAAKCEPTUJ WARUNKI: " textWrap="true" class="label"margin="1" width="250"></Label>
     <Switch checked="{{ bool2 }}" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
   </StackLayout>
+  <ActivityIndicator [busy]="isBusy" (busyChange)="onBusyChanged($event)"></ActivityIndicator>
 </StackLayout>
 
 
