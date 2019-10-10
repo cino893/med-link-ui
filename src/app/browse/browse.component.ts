@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, NgZone } from '@angular/core';
 import * as Permissions from 'nativescript-permissions';
 import { PromptResult } from 'tns-core-modules/ui/dialogs';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
@@ -34,6 +34,7 @@ export class BrowseComponent implements OnInit {
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private zone: NgZone,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
     private databaseService: DatabaseService,
@@ -64,6 +65,7 @@ export class BrowseComponent implements OnInit {
         console.log("nie" + t);
         this.deleteUser();
         this.isBusy = false;
+        //this.zone.run (() => this.isBusy = false);
       }
       else {
 
@@ -72,10 +74,6 @@ export class BrowseComponent implements OnInit {
 
     }
     )
-  }
-  onBusyChanged(args: EventData) {
-    const indicator: ActivityIndicator = <ActivityIndicator>args.object;
-    console.log("indicator.busy changed to: " + indicator.busy);
   }
   addUser() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
@@ -96,12 +94,15 @@ export class BrowseComponent implements OnInit {
           cancelButtonText: "Cancel",
           inputType: dialogs.inputType.text
         }).then(rr => {
+          this.isBusy = false;
           console.log("TTTTTTTTTTTTTTTTTTTTa" + rr.text);
           this.pumpBluetoothApiService.sendCommand3(rr.text);
+            this.zone.run (() => this.isBusy = false);
   }
         )))
     ));
   }
+
 
   deleteUser() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
