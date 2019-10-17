@@ -176,11 +176,15 @@ export class BrowseComponent implements OnInit {
     }
     else {
       this.foregroundUtilService.stopForeground();
-      clearInterval(this.int0);
+      //clearInterval(this.int0);
       console.log("aaaaa" + isChecked + this.int0);
-      clearInterval(this.fa.int0);
-      clearInterval(this.int1);
-      clearInterval(this.interval);
+      //learInterval(this.fa.int0);
+      //clearInterval(this.int1);
+      //clearInterval(this.interval);
+      for(var i = 0; i < 100; i++)
+      {
+        clearInterval(i);
+      }
       this.databaseService.insertStan(false);
     }
   }
