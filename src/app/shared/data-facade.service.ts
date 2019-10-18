@@ -226,6 +226,70 @@ export class DataFacadeService {
     //const estimatedTimeToEndTask = 30 * 1000;
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
+   scanAndConnectStop() {
+    //this.wakeFacadeService.wakeScreenByCall();
+    try {
+      this.pumpBluetoothApiService
+        .scanAndConnect()
+        .then(
+          uidBt => {
+            if (uidBt === "MED-LINK" || uidBt === "MED-LINK-2" || uidBt === "MED-LINK-3" || uidBt === "HMSoft") {
+              console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
+              return Promise.resolve(uidBt);
+            } else {
+              console.log(uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133");
+              return Promise.reject();
+            }
+          },
+          uidBt => {
+            console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
+            return this.pumpBluetoothApiService.scanAndConnect().then(
+              uidBt2 => {
+                if (uidBt2 === "HMSoft") {
+                  console.log(uidBt2 + "BBBBBBBBBBBBBBBBBBBBB");
+                  return Promise.resolve(uidBt2);
+                } else {
+                  console.log(
+                    uidBt2 + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+                  );
+                  return Promise.reject();
+                }
+                console.log("XaXaXaXaXa");
+              },
+              () => {
+                console.log("jednak nie udalo sie za 2");
+                return Promise.reject();
+              }
+            );
+          }
+        )
+        .then(
+          () =>
+            setTimeout(
+              () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
+              500
+            ),
+          () => {
+            console.log("zatem nie wyslam ok kona");
+            return Promise.reject(console.log("adam23333333"));
+          }
+        )
+        .then(
+          () => {
+            this.waitOnReadyStop();
+          },
+          () => {
+            console.log("zatem nie czekam na ready");
+            //this.wakeFacadeService.snoozeScreenByCall();
+          }
+        )
+        .catch(error => console.log("error: ", error));
+    } catch {
+      console.log("Totalna zsssajebka");
+    }
+    //const estimatedTimeToEndTask = 30 * 1000;
+    //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
+  }
 
   establishConnectionWithPump() {
     //this.scanAndConnect();
@@ -240,6 +304,30 @@ export class DataFacadeService {
     this.pumpBluetoothApiService.read().subscribe(() => {
       this.transferDataFromPumpThenToApi();
     });
+  }
+  waitOnReadyStop() {
+    this.pumpBluetoothApiService.read().subscribe(() => {
+     // this.transferDataFromPumpThenToApi();
+      this.checStatusPump();
+    });
+  }
+  checStatusPump(){
+    setTimeout(() => this.pumpBluetoothApiService.sendCommand2("a"), 400);
+    setTimeout(() => this.pumpBluetoothApiService.read3()
+        .subscribe( dane => {
+          console.log("To jest wynik"+ dane);
+          if (dane.toString().includes("uruchomiona")){
+            console.log("STOP POMPA");
+            this.pumpBluetoothApiService.sendCommand("stop");
+            setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => this.pumpBluetoothApiService.disconnect()), 500)
+          } else
+            {
+            console.log("START POMPA!!!");
+            this.pumpBluetoothApiService.sendCommand("start");
+            setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => this.pumpBluetoothApiService.disconnect()), 500)
+          }
+        })
+      , 400);
   }
 
   // hujnia z grzybnią 2

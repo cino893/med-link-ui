@@ -102,8 +102,6 @@ export class BrowseComponent implements OnInit {
         )))
     ));
   }
-
-
   deleteUser() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
       dialogs.prompt({
@@ -187,6 +185,19 @@ export class BrowseComponent implements OnInit {
       }
       this.databaseService.insertStan(false);
     }
+  }
+  stop() {
+    dialogs.confirm( { title: "Czy na pewno chcesz wyłączyć pompe?",
+      okButtonText: "Tak",
+      cancelButtonText: "Nie"
+    }).then(t => {
+      if (t === true) {
+        console.log("TAKa" + t);
+        this.isBusy = false;
+        this.fa.scanAndConnectStop();
+      }
+      else { this.isBusy = false }
+    }).then( () => console.log("CIEKAWE MIESJCE !@EWDSFSRER"))
   }
   scan() {
     this.bool = appSettings.getBoolean("someBoolean", false);

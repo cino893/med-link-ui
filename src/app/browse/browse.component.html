@@ -19,6 +19,5 @@
     <Switch checked="{{ bool2 }}" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
   </StackLayout>
   <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
+  <Button class="btn btn-primary btn-active" id="button3" text="ZMIEN STAN POMPY" (tap)="stop()"></Button>
 </StackLayout>
-
-
