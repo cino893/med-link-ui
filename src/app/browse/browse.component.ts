@@ -24,7 +24,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   isBusy: boolean = false;
   output = '';
   uuid: string;
-  pumpStan: string = "ZMIEN STAN POMPY";
+  pumpStan: string;
   items = [];
   bool: boolean = false;
   int0: number = 0;
@@ -202,7 +202,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   }
 
   stop() {
-    if (this.pumpStan = 'ZMIEN STAN POMPY') {
+    if (this.pumpStan === 'ZMIEN STAN POMPY') {
       console.log("dodaj to z dolu......aaaa.....")
     }
     dialogs.confirm({
@@ -213,9 +213,9 @@ export class BrowseComponent implements OnInit, OnDestroy {
       if (t === true) {
         console.log("TAKa" + t);
         this.isBusy = true;
-        this.pumpStan = "Proszę czekać ...";
+        appSettings.setString("pumpStan", "Proszę czekać...");
         this.fa.scanAndConnectStop().then(() => this.zone.run(() => {
-            this.pumpStan = this.fa.stanPump;
+            this.pumpStan = appSettings.getString("pumpStan", "Cos poszło nie tak");
             console.log("TO TO TO TO: " + this.fa.stanPump);
             this.isBusy = false;
             // this.fa.getDatafromLocalDb3().subscribe( devicestatus => {this.setNewDeviceStatus(devicestatus).then(a => console.log("aaaa a moze teraz po mapowaniu:" + a));});
@@ -331,10 +331,11 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
       appSettings.setNumber("interv", this.interv);
+      this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       console.log("551");
     }, 1000);
 
-    this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+
      this.databaseService.getStan().subscribe(wynik => {
        this.bool2 = wynik.toString().toLowerCase() === 'true';
        console.log("to jest stan switcha: " + wynik.toString());
