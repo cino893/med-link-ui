@@ -295,7 +295,7 @@ export class DataFacadeService {
                       console.log("STOP POMPA");
                       this.pumpBluetoothApiService.sendCommand("stop");
                       setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
-                        this.zone.run (() => this.stanPump = "WZNÓW POMPĘ");
+                        this.zone.run (() => appSettings.setString("pumpStan", "WZNOW POMPE"));
                         this.pumpBluetoothApiService.disconnect();
                         resolve();
                       }), 500);
@@ -304,7 +304,7 @@ export class DataFacadeService {
                       console.log("START POMPA!!!");
                       this.pumpBluetoothApiService.sendCommand("start");
                       setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
-                        this.zone.run (() => this.stanPump = "ZAWIEŚ POMPĘ");
+                        this.zone.run (() => appSettings.setString("pumpStan", "ZAWIEŚ POMPE"));
                         this.pumpBluetoothApiService.disconnect();
                         resolve();
                       }), 500);
