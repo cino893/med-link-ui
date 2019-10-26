@@ -3,6 +3,7 @@ import * as app from 'tns-core-modules/application';
 import { DatabaseService } from '~/app/shared/database.service';
 import ContextCompat = android.support.v4.content.ContextCompat;
 import { DataFacadeService } from '~/app/shared/data-facade.service';
+import * as appSettings from "tns-core-modules/application-settings";
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,7 @@ export class ForegroundFacadeService {
     this.interval = setInterval(() => {
       console.log(this.counter);
      // this.uuid = this.counter.toString();
+      appSettings.setString("counter", this.counter.toString());
       this.counter--;
       if (this.counter <= 2) {
 

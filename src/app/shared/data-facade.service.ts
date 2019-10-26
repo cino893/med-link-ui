@@ -332,7 +332,7 @@ export class DataFacadeService {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
-    this.int0 = setInterval(() => this.scanAndConnect(), 70 * 1000);
+    this.int0 = setInterval(() => this.scanAndConnect(),  5 * 60 * 1000);
     console.log('aa33');
   }
 
@@ -398,7 +398,6 @@ export class DataFacadeService {
             //this.wakeFacadeService.snoozeScreenByCall()
           });
         this.pumpBluetoothApiService.disconnect();
-        appSettings.setString("pumpStan", "zawies2");
       });
     }, 400);
   }

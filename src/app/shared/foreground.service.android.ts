@@ -2,6 +2,7 @@ import * as Application from 'tns-core-modules/application';
 
 @JavaProxy('com.tns.ForegroundService')
 export class ForegroundService extends android.app.Service {
+
   public onCreate(): void {
     super.onCreate();
   }
@@ -58,10 +59,6 @@ export class ForegroundService extends android.app.Service {
         intent.setData(android.net.Uri.parse('package:' + packageName));
         context.startActivity(intent);
       }
-      else {console.log('NIEEEE EEEEE    udalo sie usunac optymaliazacje baterii');
-            intent.setAction(
-            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-        );}
 
       // this.wakeScreenByActivity();
     }

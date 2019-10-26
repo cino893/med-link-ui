@@ -24,13 +24,13 @@ export class RawDataService {
         const temporaryBasalMethodPercentageM = rawData.match(this.temporaryBasalMethodPercentage);
         if (!insulinInPompLeftMatch || !batteryVoltageMatch || !pumpDataMatch || !statusPumpMatch) {
             console.log(rawData.toString());
-            parsedData.batteryVoltage = 1.25;
+            parsedData.batteryVoltage = 1.99;
             parsedData.insulinInPompLeft = 199;
             parsedData.data = {
                 data: new Date(),
-                percent: 69,
+                percent: 99,
             };
-            parsedData.statusPump = 'SUSPEND';
+            parsedData.statusPump = 'BLAD ODCZYTU BT';
         } else {
             console.log(rawData.toString());
             console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]) + ' Y ' + this.dateHax(pumpDataMatch[1]) + ' Z ' + Number(pumpDataMatch[2]))

@@ -46,20 +46,23 @@ export class PumpBluetoothApiService {
   }
   scanAndConnect() {
     return new Promise((resolve, reject) => {
-      this.databaseService.getMAC().then(a => this.targetBluDeviceUUID = a.toString());
+      this.databaseService.getMAC().then(a =>
+      {
+        this.targetBluDeviceUUID = a.toString();
       console.log("to jest target: " + this.targetBluDeviceUUID);
       bluetooth.connect({
-              UUID: this.targetBluDeviceUUID,
-              onConnected: (peripheral: Peripheral) => {
-                console.log('Połączono' + peripheral.UUID + ' ' + peripheral.name);
-                resolve(peripheral.name);
-              },
-              onDisconnected: (peripheral: Peripheral) => {
-                peripheral.name = 'ZONK';
-                console.log('Rozłączono' + peripheral.name + peripheral.UUID);
-                reject(peripheral.name);
-              },
-            });
+        UUID: this.targetBluDeviceUUID,
+        onConnected: (peripheral: Peripheral) => {
+          console.log('Połączono' + peripheral.UUID + ' ' + peripheral.name);
+          resolve(peripheral.name);
+        },
+        onDisconnected: (peripheral: Peripheral) => {
+          peripheral.name = 'ZONK';
+          console.log('Rozłączono' + peripheral.name + peripheral.UUID);
+          reject(peripheral.name);
+        },
+      });
+    });
     });
     }
   sendCommand(command) {
