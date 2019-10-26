@@ -22,7 +22,7 @@ export class RawDataService {
         const pumpDataMatch = rawData.match(this.pumpDataRegex);
         const statusPumpMatch = rawData.match(this.stanPumpRegex);
         const temporaryBasalMethodPercentageM = rawData.match(this.temporaryBasalMethodPercentage);
-        if (!insulinInPompLeftMatch && !batteryVoltageMatch && !pumpDataMatch && !statusPumpMatch) {
+        if (!insulinInPompLeftMatch || !batteryVoltageMatch || !pumpDataMatch || !statusPumpMatch) {
             console.log(rawData.toString());
             parsedData.batteryVoltage = 1.25;
             parsedData.insulinInPompLeft = 199;

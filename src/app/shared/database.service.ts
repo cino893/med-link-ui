@@ -131,7 +131,7 @@ export class DatabaseService {
 
   public getBG(): Observable<Array<Array<string>>> {
     return from(
-      this.execSQLMonitored(
+      this.database.all(
         "select * from (SELECT glucose, dateString, isSend, glucose - (select e2.glucose from entries e2 where e2.rowid = e1.rowid-1 and e2.dateString < e1.dateString  ORDER BY e2.dateString LIMIT 1 ) as a from entries e1) where isSend = 0 and glucose != 10"
       )
     );
@@ -147,14 +147,14 @@ export class DatabaseService {
 
   public getDS(): Observable<Array<Array<string>>> {
     return from(
-      this.database.all(
+      this.execSQLMonitored(
         "SELECT reservoir, voltage, dateString, percent, status FROM devicestatus WHERE isSend = 0"
       )
     );
   }
   public NSconf(): Observable<Array<Array<string>>> {
     return from(
-      this.execSQLMonitored(
+      this.database.all(
         "SELECT nsUrl, nsKey, nsKey2 FROM conf WHERE nsUrl is not null and nsKey is not null ORDER BY id desc LIMIT 1"
       )
     );

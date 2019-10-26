@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, NgZone, Renderer, ElementRef } from "@angular/core";
 import * as Permissions from 'nativescript-permissions';
 import { PromptResult } from 'tns-core-modules/ui/dialogs';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
@@ -12,6 +12,7 @@ import { EventData } from "tns-core-modules/data/observable";
 import { GestureEventData } from "tns-core-modules/ui/gestures";
 import * as dialogs from "tns-core-modules/ui/dialogs";
 import { ActivityIndicator } from "tns-core-modules/ui/activity-indicator";
+import { Button } from "tns-core-modules/ui/button";
 
 @Component({
   selector: 'Browse',
@@ -23,6 +24,7 @@ export class BrowseComponent implements OnInit {
   isBusy: boolean = false;
   output = '';
   uuid: string;
+  pumpStan: string = "ZMIEN STAN POMPY";
   items = [];
   bool: boolean = false;
   int0: number  = 0;
@@ -33,13 +35,15 @@ export class BrowseComponent implements OnInit {
   bool2: boolean = false;
 
   constructor(
+    private nsr: Renderer,
     private cdr: ChangeDetectorRef,
     private zone: NgZone,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
     private databaseService: DatabaseService,
     private foregroundUtilService: ForegroundFacadeService,
-    private pumpBluetoothApiService: PumpBluetoothApiService
+    private pumpBluetoothApiService: PumpBluetoothApiService,
+    private elementRef: ElementRef,
   ) {
   }
   saveUuid(arg) {
@@ -176,28 +180,60 @@ export class BrowseComponent implements OnInit {
       this.foregroundUtilService.stopForeground();
       //clearInterval(this.int0);
       console.log("aaaaa" + isChecked + this.int0);
-      //learInterval(this.fa.int0);
+/*      //learInterval(this.fa.int0);
       //clearInterval(this.int1);
       //clearInterval(this.interval);
       for(var i = 0; i < 100; i++)
       {
         clearInterval(i);
-      }
+      }*/
       this.databaseService.insertStan(false);
     }
   }
   stop() {
-    dialogs.confirm( { title: "Czy na pewno chcesz wyłączyć pompe?",
+    if (this.pumpStan = 'ZMIEN STAN POMPY'){
+      console.log("dodaj to z dolu......aaaa.....")
+    }
+    dialogs.confirm( { title: "Czy na pewno chcesz zmienić stan pompy?",
       okButtonText: "Tak",
       cancelButtonText: "Nie"
     }).then(t => {
       if (t === true) {
         console.log("TAKa" + t);
-        this.isBusy = false;
-        this.fa.scanAndConnectStop();
+        this.isBusy = true;
+        this.pumpStan = "Proszę czekać ...";
+        this.fa.scanAndConnectStop().then(() => this.zone.run(() => {
+            this.pumpStan = this.fa.stanPump;
+            console.log("TO TO TO TO: " + this.fa.stanPump);
+            this.isBusy = false;
+           // this.fa.getDatafromLocalDb3().subscribe( devicestatus => {this.setNewDeviceStatus(devicestatus).then(a => console.log("aaaa a moze teraz po mapowaniu:" + a));});
+          }
+          ), () => {
+          this.isBusy = false;
+          this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak"
+        });
       }
       else { this.isBusy = false }
     }).then( () => console.log("CIEKAWE MIESJCE !@EWDSFSRER"))
+  }
+  setNewDeviceStatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; status: string }>) {
+    return new Promise ((resolve, reject) => {
+      console.log("A to status: " );
+      deviceStatus.map(bol => {
+        console.log(bol.status + "66666666666" );
+        if( bol.status === 'normal') {
+          this.pumpStan = 'ZAWIEŚ POMPĘ';
+          console.log("ANO MAMY 1");
+        }
+        if (bol.status === 'suspend'){
+          this.pumpStan = 'WZNÓW POMPĘ';
+          console.log("ANO MAMY 2");
+        }
+
+      });
+      resolve(),
+        reject();
+    });
   }
   scan() {
     this.bool = appSettings.getBoolean("someBoolean", false);
@@ -218,7 +254,6 @@ export class BrowseComponent implements OnInit {
   }
   startCountdown(seconds){
     this.counter = seconds;
-
     this.interval = setInterval(() => {
       console.log(this.counter);
       this.uuid = this.counter.toString();
@@ -259,21 +294,22 @@ export class BrowseComponent implements OnInit {
       this.pumpBluetoothApiService.enable();
       try {
           this.foregroundUtilService.startForeground();
-          this.startCountdown(300);
+         // this.startCountdown(300);
         //a = (new Date()).valueOf() - (new Date("Tue Sep 03 2019 13:41:57 GMT+0200 (czas środkowoeuropejski letni)")).valueOf();
-          this.int1 = setInterval(() => { clearInterval(this.interval); this.startCountdown(300);}, 300000);
-          this.int0 = setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
-          setTimeout(() => this.fa.establishConnectionWithPump(), 500)
+        //  this.int1 = setInterval(() => { clearInterval(this.interval); this.startCountdown(300);}, 300000);
+         // this.int0 = setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
+         // setTimeout(() => this.fa.establishConnectionWithPump(), 500)
       } catch (e) {
         console.error(e);
 
         this.foregroundUtilService.stopForeground();
-        clearInterval(this.int0);
-        clearInterval(this.int1);
+        //clearInterval(this.int0);
+        //clearInterval(this.int1);
       }
     });
   }
   ngOnInit(): void {
+    this.pumpStan = appSettings.getString("pumpStan");
      this.databaseService.getStan().subscribe(wynik => {
        this.bool2 = wynik.toString().toLowerCase() === 'true';
        console.log("AAAAAA$$$: " + wynik.toString());
@@ -281,5 +317,37 @@ export class BrowseComponent implements OnInit {
          this.isCompleted = true;
        }
      });
+    this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+      if (wynik === '') {
+        this.pumpStan = "brak danych";
+      }
+      if (wynik.toString().endsWith('suspend')){
+        this.zone.run (() =>
+        {
+          //this.pumpStan = "WZNÓW POMPĘ";
+          appSettings.setString("pumpStan", "WZNOW POMPE");
+          this.pumpStan = appSettings.getString("pumpStan");
+           this.pumpStan = appSettings.getString("pumpStan")
+          console.log(wynik.toString());
+          console.log("ANO MAMY 3" + wynik.toString().endsWith('suspend') + this.pumpStan);
+
+          this.cdr.detectChanges();
+
+          console.log(this.elementRef.nativeElement.android);
+        });
+
+      }
+      if (wynik.toString().endsWith('normal')){
+        this.zone.run (() => {
+          appSettings.setString("pumpStan", "ZAWIES POMPE");
+          setTimeout( () => this.pumpStan = appSettings.getString("pumpStan"), 1);
+          //this.pumpStan = "ZAWIEŚ POMPĘ";
+          console.log(wynik.toString());
+          console.log("ANO MAMY 4" + wynik.toString().endsWith('normal') + this.pumpStan);
+          console.log(this.elementRef.nativeElement.android);
+          this.cdr.detectChanges();
+        });
+      }
+    });
   }
 }
