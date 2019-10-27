@@ -16,6 +16,7 @@ export class DataFacadeService {
   btData: string;
   int0: number;
   stanPump: string = "W TRAKCIE...";
+
   constructor(
     private databaseService: DatabaseService,
     private zone: NgZone,
@@ -279,46 +280,48 @@ export class DataFacadeService {
           () => {
             console.log("zatem nie wyslam ok kona");
             return Promise.reject(console.log("adam23333333"));
+
           }
         )
         .then(
           () => {
-            //this.waitOnReadyStop();
+            const timeoutAlert = setTimeout(() => this.errorPumpStan(), 60 * 1000);
             this.pumpBluetoothApiService.read().subscribe(() => {
-              // this.transferDataFromPumpThenToApi();
-              //this.checStatusPump();
-              setTimeout(() => this.pumpBluetoothApiService.sendCommand2("a"), 400);
+              this.pumpBluetoothApiService.sendCommand2("a");
               setTimeout(() => this.pumpBluetoothApiService.read3()
                   .subscribe( dane => {
                     console.log("To jest wynik"+ dane);
                     if (dane.toString().includes("uruchomiona")){
                       console.log("STOP POMPA");
                       this.pumpBluetoothApiService.sendCommand("stop");
-                      setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
+                      setTimeout( () => this.pumpBluetoothApiService.read5().subscribe(() => {
                         this.zone.run (() => appSettings.setString("pumpStan", "WZNOW POMPE"));
                         this.pumpBluetoothApiService.disconnect();
+                        clearTimeout(timeoutAlert);
                         resolve();
                       }), 500);
                     } else
                     {
                       console.log("START POMPA!!!");
                       this.pumpBluetoothApiService.sendCommand("start");
-                      setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
+                      setTimeout( () => this.pumpBluetoothApiService.read4().subscribe(() => {
                         this.zone.run (() => appSettings.setString("pumpStan", "ZAWIEŚ POMPE"));
                         this.pumpBluetoothApiService.disconnect();
+                        clearTimeout(timeoutAlert);
                         resolve();
                       }), 500);
                     }
-                  })
+                  }, () => this.errorPumpStan())
                 , 400);
-            });
+            }, () => this.errorPumpStan());
           },
           () => {
             console.log("zatem nie czekam na ready");
+            this.errorPumpStan();
+            reject();
             //this.wakeFacadeService.snoozeScreenByCall();
           }
         )
-        .catch(error => console.log("error: ", error));
     } catch {
       console.log("Totalna zsssajebka");
       reject();
@@ -327,13 +330,22 @@ export class DataFacadeService {
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   })
   }
+  errorPumpStan(){
+    appSettings.setBoolean("isBusy", false);
+    appSettings.setString("pumpStan", "ZMIEN STAN POMPY");
+    const options = {
+      title: "Cos poszło nie tak",
+      message: "Sprawdz stan pompy!",
+      okButtonText: "Przyjąłem do wiadomości"
+    };
+    alert(options);
+  }
 
   establishConnectionWithPump() {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
     this.scanAndConnect();
     this.int0 = setInterval(() => this.scanAndConnect(),  5 * 60 * 1000);
-    console.log('aa33');
   }
 
 

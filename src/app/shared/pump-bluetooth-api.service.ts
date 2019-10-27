@@ -44,6 +44,10 @@ export class PumpBluetoothApiService {
         }).then(() => observer.complete());
     }).pipe(reduce((acc, val) => acc + val));
   }
+  private unsubscribeAll(): void {
+    console.log("unsubscribeAll launchListenerCB:");
+  }
+
   scanAndConnect() {
     return new Promise((resolve, reject) => {
       this.databaseService.getMAC().then(a =>
@@ -60,6 +64,7 @@ export class PumpBluetoothApiService {
           peripheral.name = 'ZONK';
           console.log('Rozłączono' + peripheral.name + peripheral.UUID);
           reject(peripheral.name);
+          this.unsubscribeAll();
         },
       });
     });
@@ -187,7 +192,49 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('uruchomion') || result.includes('zatrzyman')) {
+          if (result.includes('zatrzyman') || result.includes('uruchomion')) {
+            observer.complete();
+          }
+        },
+        peripheralUUID: this.targetBluDeviceUUID,
+        characteristicUUID: 'ffe1',
+        serviceUUID: 'ffe0'
+      });
+    }).pipe(reduce((acc, val) => acc + val));
+  }
+  read4() {
+    return new Observable<string>(observer => {
+      bluetooth.startNotifying({
+        onNotify: ({ value }) => {
+          const result = new Uint8Array(value).reduce(
+            (o, byte) => (o += String.fromCharCode(byte)),
+            ''
+          );
+
+          observer.next(result);
+          console.log(result);
+          if (result.includes('uruchomion')) {
+            observer.complete();
+          }
+        },
+        peripheralUUID: this.targetBluDeviceUUID,
+        characteristicUUID: 'ffe1',
+        serviceUUID: 'ffe0'
+      });
+    }).pipe(reduce((acc, val) => acc + val));
+  }
+  read5() {
+    return new Observable<string>(observer => {
+      bluetooth.startNotifying({
+        onNotify: ({ value }) => {
+          const result = new Uint8Array(value).reduce(
+            (o, byte) => (o += String.fromCharCode(byte)),
+            ''
+          );
+
+          observer.next(result);
+          console.log(result);
+          if (result.includes('zatrzyman')) {
             observer.complete();
           }
         },

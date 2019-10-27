@@ -62,35 +62,35 @@ export class SearchComponent implements OnInit {
   sendLogs() {
     const documents = fs.path.join(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString());
     const myFolder = fs.Folder.fromPath(documents);
-    const myFile = myFolder.getFile("my.log");
-    Runtime.getRuntime().exec('logcat -v time -f /sdcard/my.log -d')
-    Permissions.requestPermission(
-      android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ).then(() =>
-      this.databaseService.getLogs().subscribe(a => {
-        const aMaped = a.map(b => {
-          return b.reduce((prev, next) => prev + next, "");
-        });
-
-        const aReduced = aMaped.reduce((prev, next) => prev + next + "\r\n", "");
-
+    const myFile = myFolder.getFile("my.txt");
+    const a = Runtime.getRuntime().exec('logcat -v time -f /sdcard/my.txt -d');
+/*    for (let i = 99; a.isAlive(); i++){
+      console.log("tatata:1" + a.isAlive());
+    }*/
+    const u = setInterval( () => {
+    if (a.isAlive() === false){
+      clearInterval(u);
+      console.log("CIOSs");
+      Permissions.requestPermission(
+        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      ).then(() =>
         compose({
           subject: "Debug med-link-ui",
           body: "aReduced2",
           to: ["jrkf@o2.pl"],
-          attachments:
-            [{
-              mimeType: 'text/plain',
-              path: myFile.path,
-              fileName: 'my.log'
-            }]
-        });
-      })
-    );
-    console.log(myFile.path + "dddddd " + myFolder.path);
-
-    //myFile.readText().then(res => { this.aReduced2 = res.toString(); console.log("SSSSSSaa " + this.aReduced2.substring(1, this.aReduced2.length) + " ssss")});
-
+                    attachments:
+                      [{
+                        mimeType: 'text',
+                        path: myFile.path,
+                        fileName: 'my.txt'
+                      }]
+        })
+      )
+    }
+    else {
+      console.log("BAM BAM");
+    }
+    }, 500);
   }
 
   Zapisz() {

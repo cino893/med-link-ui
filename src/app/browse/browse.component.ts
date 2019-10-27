@@ -1,6 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, NgZone, Renderer, ElementRef, OnDestroy } from "@angular/core";
+import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import * as Permissions from 'nativescript-permissions';
-import { PromptResult } from 'tns-core-modules/ui/dialogs';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
@@ -9,10 +8,7 @@ import { DatabaseService } from '~/app/shared/database.service';
 import * as appSettings from "application-settings";
 import { Switch } from "tns-core-modules/ui/switch";
 import { EventData } from "tns-core-modules/data/observable";
-import { GestureEventData } from "tns-core-modules/ui/gestures";
 import * as dialogs from "tns-core-modules/ui/dialogs";
-import { ActivityIndicator } from "tns-core-modules/ui/activity-indicator";
-import { Button } from "tns-core-modules/ui/button";
 
 @Component({
   selector: 'Browse',
@@ -21,14 +17,13 @@ import { Button } from "tns-core-modules/ui/button";
 })
 export class BrowseComponent implements OnInit, OnDestroy {
   text = '';
-  isBusy: boolean = false;
+  isBusy: boolean = appSettings.getBoolean("isBusy", false);
   output = '';
   uuid: string;
   pumpStan: string;
   items = [];
   bool: boolean = false;
   int0: number = 0;
-  int1: number = 0;
   interval: number = 0;
   counter: number;
   isCompleted: boolean = appSettings.getBoolean("isCompleted", false);
@@ -36,24 +31,19 @@ export class BrowseComponent implements OnInit, OnDestroy {
   interv: number;
 
   constructor(
-    private nsr: Renderer,
-    private cdr: ChangeDetectorRef,
     private zone: NgZone,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
     private databaseService: DatabaseService,
     private foregroundUtilService: ForegroundFacadeService,
     private pumpBluetoothApiService: PumpBluetoothApiService,
-    private elementRef: ElementRef,
   ) {
   }
 
   saveUuid(arg) {
-    console.log("WWWWWWWW" + arg.text);
     this.uuid = arg.text.toString().split(',')[1];
-    console.log("CCCWWWWW" + this.uuid);
+    console.log("To jest zapisywany UUID:" + this.uuid);
     this.databaseService.insertMAC(this.uuid);
-    //this.databaseService.getMAC().then(a => console.log("TAAAAK:" + a));
     this.isCompleted = true;
     appSettings.setBoolean("isCompleted", true);
   }
@@ -69,20 +59,15 @@ export class BrowseComponent implements OnInit, OnDestroy {
       neutralButtonText: "Anuluj"
     }).then(t => {
         if (t === true) {
-          console.log("TAK" + t);
           this.addUser();
-          this.isBusy = true;
+          appSettings.setBoolean("isBusy", true);
         }
         if (t === false) {
-          console.log("nie" + t);
           this.deleteUser();
-          this.isBusy = false;
-          //this.zone.run (() => this.isBusy = false);
+          appSettings.setBoolean("isBusy", false);
         } else {
-
           console.log("anulowane wybieranie usera");
         }
-
       }
     )
   }
@@ -106,10 +91,9 @@ export class BrowseComponent implements OnInit, OnDestroy {
           cancelButtonText: "Cancel",
           inputType: dialogs.inputType.text
         }).then(rr => {
-            this.isBusy = false;
-            console.log("TTTTTTTTTTTTTTTTTTTTa" + rr.text);
+          appSettings.setBoolean("isBusy", false);
             this.pumpBluetoothApiService.sendCommand3(rr.text);
-            this.zone.run(() => this.isBusy = false);
+            this.zone.run(() => appSettings.setBoolean("isBusy", false));
           }
         )))
     ));
@@ -123,7 +107,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
         okButtonText: "OK",
         cancelButtonText: "Cancel"
       }).then(r => {
-        console.log("Dialog closed!" + r.result + ", A TO wynikkkkk");
         if (r.result) {
           this.pumpBluetoothApiService.sendCommand3("KASUJ");
           //this.isBusy = false;
@@ -135,7 +118,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
   onCheckedChange(args: EventData) {
     const mySwitch = args.object as Switch;
     const isChecked = mySwitch.checked; // boolean
-    console.log("aaaaa32" + isChecked);
     if (isChecked === true) {
       dialogs.confirm({
         title: "Oswiadczenie",
@@ -179,8 +161,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
           this.setPermissions();
           this.databaseService.insertStan(true);
         } else {
-          // result argument is boolean
-          console.log("Dialog result: " + result);
           mySwitch.checked = false;
           this.databaseService.insertStan(false);
         }
@@ -188,104 +168,47 @@ export class BrowseComponent implements OnInit, OnDestroy {
 
     } else {
       this.foregroundUtilService.stopForeground();
-      //clearInterval(this.int0);
-      console.log("aaaaa" + isChecked + this.int0);
-      /*      //learInterval(this.fa.int0);
-            //clearInterval(this.int1);
-            //clearInterval(this.interval);
-            for(var i = 0; i < 100; i++)
-            {
-              clearInterval(i);
-            }*/
       this.databaseService.insertStan(false);
     }
   }
 
   stop() {
-    if (this.pumpStan === 'ZMIEN STAN POMPY') {
-      console.log("dodaj to z dolu......aaaa.....")
-    }
     dialogs.confirm({
       title: "Czy na pewno chcesz zmienić stan pompy?",
       okButtonText: "Tak",
       cancelButtonText: "Nie"
     }).then(t => {
       if (t === true) {
-        console.log("TAKa" + t);
-        this.isBusy = true;
+        appSettings.setBoolean("isBusy", true);
         appSettings.setString("pumpStan", "Proszę czekać...");
-        this.fa.scanAndConnectStop().then(() => this.zone.run(() => {
-            this.pumpStan = appSettings.getString("pumpStan", "Cos poszło nie tak");
-            console.log("TO TO TO TO: " + this.fa.stanPump);
-            this.isBusy = false;
-            // this.fa.getDatafromLocalDb3().subscribe( devicestatus => {this.setNewDeviceStatus(devicestatus).then(a => console.log("aaaa a moze teraz po mapowaniu:" + a));});
+        this.fa.scanAndConnectStop().then(() => this.zone.run(() =>
+          {
+            this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+            appSettings.setBoolean("isBusy", false);
           }
         ), () => {
-          this.isBusy = false;
-          this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak"
+          this.zone.run(() => {
+            appSettings.setBoolean("isBusy", false);
+            this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
+          })
         });
       } else {
-        this.isBusy = false
+        appSettings.setBoolean("isBusy", false);
       }
     }).then(() => console.log("CIEKAWE MIESJCE !@EWDSFSRER"))
   }
 
-  setNewDeviceStatus(deviceStatus: Array<{ reservoir: number; voltage: number; dateString: Date; percent: number; status: string }>) {
-    return new Promise((resolve, reject) => {
-      console.log("A to status: ");
-      deviceStatus.map(bol => {
-        console.log(bol.status + "66666666666");
-        if (bol.status === 'normal') {
-          this.pumpStan = 'ZAWIEŚ POMPĘ';
-          console.log("ANO MAMY 1");
-        }
-        if (bol.status === 'suspend') {
-          this.pumpStan = 'WZNÓW POMPĘ';
-          console.log("ANO MAMY 2");
-        }
-
-      });
-      resolve(),
-        reject();
-    });
-  }
-
   scan() {
     this.bool = appSettings.getBoolean("someBoolean", false);
-    console.log("aRRRAAA:  " + this.bool + appSettings.getBoolean("someBoolean"));
     appSettings.setBoolean("someBoolean", this.bool);
-    console.log("aRRRAAA222222:  " + this.bool + appSettings.getBoolean("someBoolean"));
     Permissions.requestPermission(
       android.Manifest.permission.ACCESS_COARSE_LOCATION
     ).then(() =>
       this.pumpBluetoothApiService.scanAndConnect2().subscribe(a => {
-        console.log("TTRRR" + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
+        console.log("TO Jest Wynik skanowania: " + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
         this.items = this.pumpBluetoothApiService.targetBluDeviceUUID2;
-        //this.uuid = this.pumpBluetoothApiService.targetBluDeviceUUID;
-        this.uuid = "Kliknij na urządzenie MED-LINK ,XX:XX:XX:XX:XX  ";
-
-
       }));
   }
-
-  startCountdown(seconds) {
-    this.counter = seconds;
-    this.interval = setInterval(() => {
-      console.log(this.counter);
-      this.uuid = this.counter.toString();
-      this.counter--;
-      if (this.counter <= 2) {
-
-        // The code here will run when
-        // the timer has reached zero.
-
-        clearInterval(this.interval);
-        console.log('Ding!');
-
-      }
-    }, 1000);
-  }
-
   setPermissions() {
     Permissions.requestPermission(
       android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -310,18 +233,10 @@ export class BrowseComponent implements OnInit, OnDestroy {
         this.pumpBluetoothApiService.enable();
         try {
           this.foregroundUtilService.startForeground();
-          //this.uuid = this.foregroundUtilService.counter.toString();
-          // this.startCountdown(300);
-          //a = (new Date()).valueOf() - (new Date("Tue Sep 03 2019 13:41:57 GMT+0200 (czas środkowoeuropejski letni)")).valueOf();
-          //  this.int1 = setInterval(() => { clearInterval(this.interval); this.startCountdown(300);}, 300000);
-          // this.int0 = setInterval(() => console.log('interval22         ' + new Date() + 'a'), 10000);
-          // setTimeout(() => this.fa.establishConnectionWithPump(), 500)
         } catch (e) {
           console.error(e);
 
           this.foregroundUtilService.stopForeground();
-          //clearInterval(this.int0);
-          //clearInterval(this.int1);
         }
       });
   }
@@ -332,43 +247,31 @@ export class BrowseComponent implements OnInit, OnDestroy {
       this.uuid = appSettings.getString("counter");
       appSettings.setNumber("interv", this.interv);
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+      this.isBusy = appSettings.getBoolean("isBusy");
       console.log("551");
     }, 1000);
 
 
      this.databaseService.getStan().subscribe(wynik => {
        this.bool2 = wynik.toString().toLowerCase() === 'true';
-       console.log("to jest stan switcha: " + wynik.toString());
      });
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
-      if (wynik === '') {
-        this.pumpStan = "brak danych";
-      }
       if (wynik.toString().endsWith('suspend')){
         this.zone.run (() =>
         {
-          //this.pumpStan = "WZNÓW POMPĘ";
           appSettings.setString("pumpStan", "WZNOW POMPE");
           this.pumpStan = appSettings.getString("pumpStan");
-           this.pumpStan = appSettings.getString("pumpStan");
-          console.log(wynik.toString());
-          console.log("ANO MAMY 3" + wynik.toString().endsWith('suspend') + this.pumpStan);
-
-          this.cdr.detectChanges();
-
-          console.log(this.elementRef.nativeElement.android);
+          this.pumpStan = appSettings.getString("pumpStan");
+          console.log("ANO MAMY POMPE ZAWIESZONA: " + wynik.toString().endsWith('suspend') + this.pumpStan);
         });
 
       }
-      if (wynik.toString().endsWith('normal')){
+      if (wynik.toString().endsWith('normal'))
+      {
         this.zone.run (() => {
           appSettings.setString("pumpStan", "ZAWIES POMPE");
-          setTimeout( () => this.pumpStan = appSettings.getString("pumpStan"), 1);
-          //this.pumpStan = "ZAWIEŚ POMPĘ";
-          console.log(wynik.toString());
-          console.log("ANO MAMY 4" + wynik.toString().endsWith('normal') + this.pumpStan);
-          console.log(this.elementRef.nativeElement.android);
-          this.cdr.detectChanges();
+          this.pumpStan = appSettings.getString("pumpStan");
+          console.log("ANO MAMY POMPE URUCHOMIONA: " + wynik.toString().endsWith('normal') + this.pumpStan);
         });
       }
     });

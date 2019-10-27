@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as app from 'tns-core-modules/application';
 import { DatabaseService } from '~/app/shared/database.service';
-import ContextCompat = android.support.v4.content.ContextCompat;
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import * as appSettings from "tns-core-modules/application-settings";
 
@@ -40,8 +39,6 @@ export class ForegroundFacadeService {
     clearInterval(this.fa.int0);
     clearInterval(this.interval);
     this.fa.clearInt();
-    //clearInterval(this.int1);
-    //clearInterval(this.interval);
     for(let i = 0; i < 100; i++)
     {
       clearInterval(i);
@@ -59,13 +56,8 @@ export class ForegroundFacadeService {
       appSettings.setString("counter", this.counter.toString());
       this.counter--;
       if (this.counter <= 2) {
-
-        // The code here will run when
-        // the timer has reached zero.
-
         clearInterval(this.interval);
         console.log('Ding!');
-
       }
     }, 1000);
   }
