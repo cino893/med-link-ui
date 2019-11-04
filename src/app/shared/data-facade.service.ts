@@ -285,7 +285,7 @@ export class DataFacadeService {
         )
         .then(
           () => {
-            const timeoutAlert = setTimeout(() => this.errorPumpStan(), 60 * 1000);
+            const timeoutAlert = setTimeout(() => this.errorPumpStan(), 63 * 1000);
             this.pumpBluetoothApiService.read().subscribe(() => {
               this.pumpBluetoothApiService.sendCommand2("a");
               setTimeout(() => this.pumpBluetoothApiService.read3()
