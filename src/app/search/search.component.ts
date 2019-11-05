@@ -67,6 +67,11 @@ export class SearchComponent implements OnInit {
 /*    for (let i = 99; a.isAlive(); i++){
       console.log("tatata:1" + a.isAlive());
     }*/
+    console.log("to ta wielkosc pliku: " + myFile.size);
+    if (myFile.size > 10000000 )
+    {
+      myFile.remove();
+    }
     const u = setInterval( () => {
     if (a.isAlive() === false){
       clearInterval(u);
