@@ -234,7 +234,7 @@ export class DataFacadeService {
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
    scanAndConnectStop() {
-    //this.wakeFacadeService.wakeScreenByCall();
+    this.wakeFacadeService.wakeScreenByCall();
      return new Promise((resolve, reject) => {
     try {
       this.pumpBluetoothApiService
@@ -319,7 +319,7 @@ export class DataFacadeService {
             console.log("zatem nie czekam na ready");
             this.errorPumpStan();
             reject();
-            //this.wakeFacadeService.snoozeScreenByCall();
+            this.wakeFacadeService.snoozeScreenByCall();
           }
         )
     } catch {
@@ -344,8 +344,10 @@ export class DataFacadeService {
   establishConnectionWithPump() {
     //this.scanAndConnect();
     // setInterval(() => this.scanAndConnect(),  60 * 1000);
+    this.wakeFacadeService.setAlarm();
     this.scanAndConnect();
     this.int0 = setInterval(() => this.scanAndConnect(),  5 * 60 * 1000);
+
   }
 
 

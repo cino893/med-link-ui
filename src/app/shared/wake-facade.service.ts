@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Brightness } from 'nativescript-brightness';
 import * as Application from 'tns-core-modules/application';
 import WindowManager = android.view.WindowManager;
+import System = java.lang.System;
+import AlarmManager = android.app.AlarmManager;
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +30,35 @@ export class WakeFacadeService {
 
       this.isOn = true;
     }
+  }
+  setAlarm(){
+    const am = Application.android.context.getSystemService(
+      android.content.Context.ALARM_SERVICE
+    ) as android.app.AlarmManager;
+    const intent = new android.content.Intent();
+    const context = Application.android.context;
+    const pendingIntent = android.app.PendingIntent.getActivity(context,
+      1,
+      intent,
+      android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+
+    am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 5 * 60 * 1000, pendingIntent);
+    console.log("Idzie intent Pending :)" + am.getNextAlarmClock());
+    this.wakeScreenByCall();
+
+  }
+  cancelAlarm(){
+    const am = Application.android.context.getSystemService(
+      android.content.Context.ALARM_SERVICE
+    ) as android.app.AlarmManager;
+    const intent = new android.content.Intent();
+    const context = Application.android.context;
+    const pendingIntent = android.app.PendingIntent.getActivity(context,
+      1,
+      intent,
+      android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+    am.cancel(pendingIntent);
+    console.log("Wylaczony alarm");
   }
 
   snoozeActivityScreen() {

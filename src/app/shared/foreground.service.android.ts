@@ -1,4 +1,5 @@
 import * as Application from 'tns-core-modules/application';
+import PendingIntent = android.app.PendingIntent;
 
 @JavaProxy('com.tns.ForegroundService')
 export class ForegroundService extends android.app.Service {
@@ -33,10 +34,16 @@ export class ForegroundService extends android.app.Service {
     intent: android.content.Intent
   ): android.app.Notification {
     this.disableDozeMode();
+    const openActivityIntent = new android.content.Intent();
+    openActivityIntent.setClassName(Application.android.context, 'com.tns.NativeScriptActivity');
+    openActivityIntent.setFlags(android.content.Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+    const openActivityPendingIntent = PendingIntent.getActivity(Application.android.context, 0, openActivityIntent, 0);
+
     this.createNotificationChannel();
     return this.getNotificationBuilder()
       .setSmallIcon(android.R.drawable.btn_plus)
       .setContentTitle('MED-LINK')
+      .setContentIntent(openActivityPendingIntent)
       .build();
   }
 
