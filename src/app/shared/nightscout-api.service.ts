@@ -94,7 +94,7 @@ export class NightscoutApiService {
             enteredBy: this.device,
             secret: this.hash,
             duration: bol.minutes,
-            created_at: bol.dateString + this.timezone,
+            created_at: bol.dateString,
             percent: bol.percentsOfBasal,
             rate: 0.7,
             eventType: 'Temp Basal',

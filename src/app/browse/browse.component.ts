@@ -165,7 +165,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           mySwitch.checked = false;
           this.databaseService.insertStan(false);
         }
-      });
+      }, () => console.log("MAM CIE"));
 
     } else {
       this.foregroundUtilService.stopForeground();
@@ -253,23 +253,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
         }
       });
   }
-
-  ngOnInit(): void {
-    clearInterval(appSettings.getNumber(("interv")));
-    this.interv = setInterval(() => {
-      this.uuid = appSettings.getString("counter");
-      appSettings.setNumber("interv", this.interv);
-      this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
-      this.isBusy = appSettings.getBoolean("isBusy");
-      console.log("551");
-      this.changeColorButton();
-    }, 1000);
-    appSettings.setNumber('interv', this.interv);
-
-
-     this.databaseService.getStan().subscribe(wynik => {
-       this.bool2 = wynik.toString().toLowerCase() === 'true';
-     });
+  execSQL(){
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
       if (wynik.toString().endsWith('suspend')){
         this.zone.run (() =>
@@ -286,9 +270,29 @@ export class BrowseComponent implements OnInit, OnDestroy {
         this.zone.run (() => {
           appSettings.setString("pumpStan", "ZAWIES POMPE");
           this.pumpStan = appSettings.getString("pumpStan");
+          this.changeColorButton();
           console.log("ANO MAMY POMPE URUCHOMIONA: " + wynik.toString().endsWith('normal') + this.pumpStan);
         });
       }
     });
+  }
+
+  ngOnInit(): void {
+    clearInterval(appSettings.getNumber(("interv")));
+    this.interv = setInterval(() => {
+      this.uuid = appSettings.getString("counter");
+      ///appSettings.setNumber("interv", this.interv);
+      this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+      this.isBusy = appSettings.getBoolean("isBusy");
+      console.log("551");
+      this.changeColorButton();
+    }, 1000);
+    appSettings.setNumber('interv', this.interv);
+
+
+     this.databaseService.getStan().subscribe(wynik => {
+       this.bool2 = wynik.toString().toLowerCase() === 'true';
+     });
+    this.execSQL();
   }
 }
