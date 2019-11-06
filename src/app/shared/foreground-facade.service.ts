@@ -29,19 +29,20 @@ export class ForegroundFacadeService {
     app.android.context.startService(foregroundNotificationIntent);
     //app.android.context.startForegroundService(foregroundNotificationIntent);
     this.startCountdown(300);
-    this.int1 = setInterval(() => { clearInterval(this.interval); this.startCountdown(300);}, 300000);
+    this.int1 = setInterval(() => { clearInterval(appSettings.getNumber('interval')); this.startCountdown(300); }, 300000);
+    appSettings.setNumber("int1", this.int1);
     setTimeout(() => this.fa.establishConnectionWithPump(), 500);
   }
 
   stopForeground() {
-    clearInterval(this.int1);
-    clearInterval(this.fa.int0);
-    clearInterval(this.interval);
+    clearInterval(appSettings.getNumber('int1'));
+    clearInterval(appSettings.getNumber('int0'));
+    clearInterval(appSettings.getNumber('interval'));
     this.fa.clearInt();
-    for(let i = 0; i < 100; i++)
+/*    for(let i = 0; i < 100; i++)
     {
       clearInterval(i);
-    }
+    }*/
     this.wakeFacadeService.cancelAlarm();
 
     const foregroundNotificationIntent = new android.content.Intent();
@@ -57,9 +58,10 @@ export class ForegroundFacadeService {
       appSettings.setString("counter", this.counter.toString());
       this.counter--;
       if (this.counter <= 2) {
-        clearInterval(this.interval);
+        clearInterval(appSettings.getNumber('interval'));
         console.log('Ding!');
       }
     }, 1000);
+    appSettings.setNumber('interval', this.interval);
   }
 }

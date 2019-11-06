@@ -1,6 +1,8 @@
 <ActionBar class="action-bar">
     <Label class="action-bar-title" text="Twoja strona nightscout"></Label>
+    <ActionItem (tap)="onRefresh()" android.systemIcon="ic_menu_save" android.position="actionBar"> </ActionItem>
 </ActionBar>
+
 
 <GridLayout class="page page-content">
     <WebView row="1" #myWebView  [src]="webViewSrc"></WebView>

@@ -23,12 +23,13 @@ export class BrowseComponent implements OnInit, OnDestroy {
   pumpStan: string;
   items = [];
   bool: boolean = false;
-  int0: number = 0;
-  interval: number = 0;
+  int0: number;
+  interval: number;
   counter: number;
   isCompleted: boolean = appSettings.getBoolean("isCompleted", false);
   bool2: boolean = false;
   interv: number;
+  color: string = '#3d5afe';
 
   constructor(
     private zone: NgZone,
@@ -48,7 +49,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     appSettings.setBoolean("isCompleted", true);
   }
   ngOnDestroy(): void {
-    clearInterval(this.interv);
+    clearInterval(appSettings.getNumber('interv'));
   }
 
   onPlus() {
@@ -171,6 +172,18 @@ export class BrowseComponent implements OnInit, OnDestroy {
       this.databaseService.insertStan(false);
     }
   }
+  changeColorButton(){
+    if (this.pumpStan === "WZNOW POMPE")
+    {
+      this.color = 'GREEN'
+    } else {
+      if (this.pumpStan === "ZAWIES POMPE") {
+        this.color = 'RED'
+      } else {
+        this.color = '#3d5afe'
+      }
+    }
+  }
 
   stop() {
     dialogs.confirm({
@@ -249,7 +262,9 @@ export class BrowseComponent implements OnInit, OnDestroy {
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
       console.log("551");
+      this.changeColorButton();
     }, 1000);
+    appSettings.setNumber('interv', this.interv);
 
 
      this.databaseService.getStan().subscribe(wynik => {
@@ -261,7 +276,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
         {
           appSettings.setString("pumpStan", "WZNOW POMPE");
           this.pumpStan = appSettings.getString("pumpStan");
-          this.pumpStan = appSettings.getString("pumpStan");
+          this.changeColorButton();
           console.log("ANO MAMY POMPE ZAWIESZONA: " + wynik.toString().endsWith('suspend') + this.pumpStan);
         });
 

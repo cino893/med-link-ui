@@ -10,23 +10,15 @@ import { map } from "rxjs/operators";
   templateUrl: "./home.component.html"
 })
 export class HomeComponent implements OnInit {
-  //a = 'https://openaps.readthedocs.io/en/latest/docs/While%20You%20Wait%20For%20Gear/nightscout-setup.html';
   webViewSrc: string = 'https://openaps.readthedocs.io/en/latest/docs/While%20You%20Wait%20For%20Gear/nightscout-setup.html';
   constructor(public dataService: DataService,
               public databaseService: DatabaseService ) {}
 
   ngOnInit(): void {
-    //this.dataService.reloadData();
     this.sendDatatoNightscout7().then(() => console.log(this.webViewSrc + "ffffffffffffff111111"));
-    this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
-      if (wynik === undefined) {
-        this.webViewSrc = 'brak danych';
-      }
-      else {
-        this.webViewSrc = wynik.toString().split(',')[0];
-        console.log("444444aaaaaaEEEEEEEEEE" + this.webViewSrc);
-      }
-    });
+  }
+  onRefresh(){
+    this.sendDatatoNightscout7().then(() => console.log(this.webViewSrc + "ffffffffffffff111111"));
   }
 
   getNSData(): Observable<Array<{ http: string; secret: string; hash: string }>> {

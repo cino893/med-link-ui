@@ -27,8 +27,8 @@ export class DataFacadeService {
   ) {
     this.databaseService.createTable();
   }
-  clearInt(){
-    clearInterval(this.int0);
+  clearInt() {
+    clearInterval(appSettings.getNumber('int0'));
   }
 
   sendDataToLocalDb(pumpStatus: IBasicSettings) {
@@ -305,7 +305,7 @@ export class DataFacadeService {
                       console.log("START POMPA!!!");
                       this.pumpBluetoothApiService.sendCommand("start");
                       setTimeout( () => this.pumpBluetoothApiService.read4().subscribe(() => {
-                        this.zone.run (() => appSettings.setString("pumpStan", "ZAWIEŚ POMPE"));
+                        this.zone.run (() => appSettings.setString("pumpStan", "ZAWIES POMPE"));
                         this.pumpBluetoothApiService.disconnect();
                         clearTimeout(timeoutAlert);
                         resolve();
@@ -347,6 +347,7 @@ export class DataFacadeService {
     this.wakeFacadeService.setAlarm();
     this.scanAndConnect();
     this.int0 = setInterval(() => this.scanAndConnect(),  5 * 60 * 1000);
+    appSettings.setNumber('int0', this.int0);
 
   }
 

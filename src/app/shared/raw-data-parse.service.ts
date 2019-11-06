@@ -45,7 +45,7 @@ export class RawDataService {
         if (!bloodGlucoseMatch) {
 
             parsedData.bloodGlucose = {
-                value: 110,
+                value: 10,
                 date: new Date(),
             };
         } else {
