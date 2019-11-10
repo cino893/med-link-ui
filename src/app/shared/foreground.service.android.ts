@@ -3,6 +3,10 @@ import PendingIntent = android.app.PendingIntent;
 
 @JavaProxy('com.tns.ForegroundService')
 export class ForegroundService extends android.app.Service {
+  constructor(
+  ){
+    super();
+  }
 
   public onCreate(): void {
     super.onCreate();
@@ -39,10 +43,11 @@ export class ForegroundService extends android.app.Service {
     openActivityIntent.setFlags(android.content.Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
     const openActivityPendingIntent = PendingIntent.getActivity(Application.android.context, 0, openActivityIntent, 0);
 
+
     this.createNotificationChannel();
     return this.getNotificationBuilder()
-      .setSmallIcon(android.R.drawable.btn_plus)
-      .setContentTitle('MED-LINK')
+      .setSmallIcon(android.R.drawable.btn_star)
+      .setContentTitle(this.getTitle(intent))
       .setContentIntent(openActivityPendingIntent)
       .build();
   }
@@ -82,7 +87,23 @@ export class ForegroundService extends android.app.Service {
       'TNS-ForegroundService-1'
     );
   }
+  public updateNotification(){
+    //this.createNotification("a");
+     const importance =
+       android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
+     const mChannel = new android.app.NotificationChannel(
+       'TNS-ForegroundService-1',
+       'TNS-ForegroundService-1',
+       importance
+     );
 
+    //Notification notification=getMyActivityNotification(text);
+    // NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+     const nm = this.getSystemService(
+       android.content.Context.NOTIFICATION_SERVICE
+     );
+     nm.notify(1, mChannel);
+  }
   private createNotificationChannel() {
     if (!android.support.v4.os.BuildCompat.isAtLeastO()) {
       // Not Oreo, not creating notification channel as compatibility issues may exist
@@ -106,7 +127,7 @@ export class ForegroundService extends android.app.Service {
     if (title) {
       return title;
     } else {
-      return 'Running in background';
+      return 'MED-LINK';
     }
   }
 

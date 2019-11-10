@@ -255,6 +255,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   }
   execSQL(){
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+      this.foregroundUtilService.updateForeground();
       if (wynik.toString().endsWith('suspend')){
         this.zone.run (() =>
         {

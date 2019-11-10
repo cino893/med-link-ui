@@ -12,11 +12,26 @@ export class ForegroundFacadeService {
   int1: number;
   interval: number;
   counter: number;
+  belka: string;
   constructor(
     private fa: DataFacadeService,
     private databaseService: DatabaseService,
     private wakeFacadeService: WakeFacadeService
   ){
+  }
+  updateForeground(){
+    this.databaseService.getLastBg().subscribe(wynik => {
+      console.log("to jest wynik co ma isc do belki: " + wynik.toString());
+      //this.belka = wynik.toString() + new Date();
+      const foregroundNotificationIntent = new android.content.Intent();
+      foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
+      foregroundNotificationIntent.putExtra('title', wynik.toString());
+      console.log("DAJESZ MALENKI" + this.belka);
+      app.android.context.startService(foregroundNotificationIntent);
+      //nm.notify(app.android.context, foregroundNotificationIntent);
+    });
+
+    //app.android.context.notify(foregroundNotificationIntent);
   }
   startForeground() {
     if (!app.android || !app.android.context) {
@@ -24,7 +39,8 @@ export class ForegroundFacadeService {
     }
     const foregroundNotificationIntent = new android.content.Intent();
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
-    foregroundNotificationIntent.putExtra('title', 'Serwis pobierania danych z pompy jest w trakcie działania');
+    foregroundNotificationIntent.putExtra('title', this.belka);
+
     console.log("start freground");
     app.android.context.startService(foregroundNotificationIntent);
     //app.android.context.startForegroundService(foregroundNotificationIntent);

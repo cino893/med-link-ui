@@ -183,6 +183,13 @@ export class DatabaseService {
       )
     );
   }
+  public getLastBg(): Observable<Array<Array<string>>> {
+    return from(
+      this.database.all(
+        "select glucose, SUBSTR(dateString, 4, 18) from (SELECT glucose, dateString, isSend, glucose - (select e2.glucose from entries e2 where e2.rowid = e1.rowid-1 and e2.dateString < e1.dateString  ORDER BY e2.dateString LIMIT 1 ) as a from entries e1) where glucose != 10 ORDER BY dateString DESC LIMIT 1;"
+      )
+    );
+  }
 
   public getTempBasal(): Observable<Array<Array<string>>> {
     return from(
