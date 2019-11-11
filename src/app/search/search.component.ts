@@ -3,16 +3,11 @@ import { compose } from 'nativescript-email';
 import * as Permissions from 'nativescript-permissions';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { alert } from 'tns-core-modules/ui/dialogs';
-import { KeyboardType } from 'tns-core-modules/ui/enums';
-import { TextField } from 'tns-core-modules/ui/text-field';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
 import { DatabaseService } from '~/app/shared/database.service';
 import { TraceWriterService } from '~/app/shared/trace-writer.service';
 import Runtime = java.lang.Runtime;
 import * as fs from "tns-core-modules/file-system";
-import datetime = KeyboardType.datetime;
-import array = android.R.array;
 
 @Component({
   selector: "Search",
@@ -29,7 +24,6 @@ export class SearchComponent implements OnInit {
   nsKey2: string;
   carbs: string;
   pending = false;
-  pumpData: string;
   aReduced2: string;
 
   constructor(
@@ -46,17 +40,6 @@ export class SearchComponent implements OnInit {
         this.databaseService.insertLogs(date, message, messageType, category);
       }
     );
-
-    this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
-      if (wynik === undefined) {
-        this.pumpData = "brak danych";
-      } else {
-        this.pumpData = this.dataFacadeService.btData + "SQL: " + wynik;
-      }
-    });
-    this.sendDatatoNightscout7().then(() =>
-      console.log(this.nsUrl2 + "fffffffffffff3333333f")
-    );
   }
 
   sendLogs() {
@@ -64,9 +47,6 @@ export class SearchComponent implements OnInit {
     const myFolder = fs.Folder.fromPath(documents);
     const myFile = myFolder.getFile("my.txt");
     const a = Runtime.getRuntime().exec('logcat -v time -f /sdcard/my.txt -d');
-/*    for (let i = 99; a.isAlive(); i++){
-      console.log("tatata:1" + a.isAlive());
-    }*/
     console.log("to ta wielkosc pliku: " + myFile.size);
     if (myFile.size > 10000000 )
     {
@@ -102,8 +82,6 @@ export class SearchComponent implements OnInit {
     console.log("aaaaaa" + this.nsUrl);
     const sha1 = require("sha1");
     this.databaseService.insertNS(this.nsUrl, sha1(this.nsKey), this.nsKey);
-    this.pumpData = this.dataFacadeService.btData;
-    //this.databaseService.updateNS("adsad", "1231231");
     console.log("NS URL: " + this.nsUrl + " ddddddddddd " + this.nsKey);
     this.sendDatatoNightscout6().then(() =>
       console.log(this.slowo + "aRRRRRRRRRR")
@@ -149,12 +127,6 @@ export class SearchComponent implements OnInit {
       });
     });
   }
-  checkUrl(nsUrl: string) {
-    if (this.nsUrl.substring(0, 8).toUpperCase() === "HTTPS://") {
-      this.slowo = "zly adres";
-    }
-    console.log(this.slowo + "TTTTTTTTT");
-  }
   setNS(arg) {
     console.log("setttNS");
     console.log(arg.text);
@@ -177,40 +149,5 @@ export class SearchComponent implements OnInit {
         }));
       })
     );
-  }
-
-  shouldButtonBeEnabled() {
-    return !!this.carbs && !this.pending;
-  }
-
-  showFeedBack(success, response) {
-    let title;
-
-    if (success) {
-      title = "Sukces!";
-    } else {
-      title = "Błąd!";
-    }
-
-    const options = {
-      title,
-      message: JSON.stringify(response),
-      okButtonText: "Przyjąłem do wiadomości"
-    };
-
-    alert(options).then(() => this.clearForm());
-  }
-
-  clearForm() {
-    this.pending = false;
-    this.carbs = "";
-  }
-
-  runChangeDetection() {
-    this.changeDetectorRef.detectChanges();
-  }
-
-  changeText(textfield) {
-    this.carbs = (<TextField>textfield.object).text.toString();
   }
 }
