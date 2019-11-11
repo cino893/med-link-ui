@@ -12,7 +12,7 @@ export class ForegroundFacadeService {
   int1: number;
   interval: number;
   counter: number;
-  belka: string;
+  belka: string = "MED-LINK";
   constructor(
     private fa: DataFacadeService,
     private databaseService: DatabaseService,
@@ -26,7 +26,6 @@ export class ForegroundFacadeService {
       const foregroundNotificationIntent = new android.content.Intent();
       foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
       foregroundNotificationIntent.putExtra('title', wynik.toString());
-      console.log("DAJESZ MALENKI" + this.belka);
       app.android.context.startService(foregroundNotificationIntent);
       //nm.notify(app.android.context, foregroundNotificationIntent);
     });
@@ -40,7 +39,7 @@ export class ForegroundFacadeService {
     const foregroundNotificationIntent = new android.content.Intent();
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
     foregroundNotificationIntent.putExtra('title', this.belka);
-
+    console.log("DAJESZ MALENKI2" + this.belka);
     console.log("start freground");
     app.android.context.startService(foregroundNotificationIntent);
     //app.android.context.startForegroundService(foregroundNotificationIntent);

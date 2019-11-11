@@ -125,7 +125,12 @@ export class ForegroundService extends android.app.Service {
   private getTitle(intent: android.content.Intent): string {
     const title = intent.getStringExtra('title');
     if (title) {
-      return title;
+      if (title === null){
+        return "MED-LINK2"
+      }
+      else {
+        return title;
+      }
     } else {
       return 'MED-LINK';
     }

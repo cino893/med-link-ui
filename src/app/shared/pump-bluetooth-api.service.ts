@@ -32,7 +32,7 @@ export class PumpBluetoothApiService {
           onDiscovered: (peripheral: Peripheral) => {
             console.log(peripheral.name + peripheral.UUID + "C");
             observer.next(peripheral.name + peripheral.UUID);
-            if (peripheral.name === 'MED-LINK' || peripheral.name === 'MED-LINK-2' || peripheral.name === 'HMSoft') {
+            if (peripheral.name === 'MED-LINK' || peripheral.name === 'MED-LINK-2' || peripheral.name === 'MED-LINK-3' || peripheral.name === 'HMSoft') {
               this.targetBluDeviceUUID2.push(peripheral.name + ' ,' + peripheral.UUID);
               this.targetBluDeviceUUID = peripheral.UUID.toString();
               console.log("UIID: " + this.targetBluDeviceUUID);

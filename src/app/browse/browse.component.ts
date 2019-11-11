@@ -21,6 +21,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   output = '';
   uuid: string;
   pumpStan: string;
+  pumpData: string;
   items = [];
   bool: boolean = false;
   int0: number;
@@ -255,6 +256,8 @@ export class BrowseComponent implements OnInit, OnDestroy {
   }
   execSQL(){
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
+      this.pumpData = this.fa.btData;
+      appSettings.setString("pumpData", this.fa.btData);
       this.foregroundUtilService.updateForeground();
       if (wynik.toString().endsWith('suspend')){
         this.zone.run (() =>
@@ -282,6 +285,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     clearInterval(appSettings.getNumber(("interv")));
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
+      this.pumpData = appSettings.getString("pumpData");
       ///appSettings.setNumber("interv", this.interv);
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
