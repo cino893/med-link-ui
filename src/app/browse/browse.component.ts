@@ -9,6 +9,8 @@ import * as appSettings from "application-settings";
 import { Switch } from "tns-core-modules/ui/switch";
 import { EventData } from "tns-core-modules/data/observable";
 import * as dialogs from "tns-core-modules/ui/dialogs";
+import { GestureEventData } from "tns-core-modules/ui/gestures";
+
 
 @Component({
   selector: 'Browse',
@@ -26,11 +28,13 @@ export class BrowseComponent implements OnInit, OnDestroy {
   bool: boolean = false;
   int0: number;
   interval: number;
+  minuta: number;
   counter: number;
   isCompleted: boolean = appSettings.getBoolean("isCompleted", false);
   bool2: boolean = false;
   interv: number;
   color: string = '#3d5afe';
+  stopPeriodPump: number;
 
   constructor(
     private zone: NgZone,
@@ -100,16 +104,67 @@ export class BrowseComponent implements OnInit, OnDestroy {
         )))
     ));
   }
+  onLongPress(args: GestureEventData) {
+    if (this.pumpStan === "ZAWIES POMPE"){
+      dialogs.action({
+        title: "ZATRZYMAJ POMPE NA: ",
+        cancelButtonText: "Cancel",
+        actions: ["10 MIN", "15 MIN", "20 MIN", "30 MIN", "60 MIN"]
+      }).then(r => {
+        if(r.toString() !== 'Cancel') {
+          console.log("Evsent name: " + args.eventName + r.length + "asdasd    " + r.toString());
+
+          appSettings.setBoolean("isBusy", true);
+          appSettings.setString("pumpStan", "Proszę czekać...");
+          this.fa.scanAndConnectStop().then(() => this.zone.run(() =>
+            {
+              const date = new Date();
+              date.setMinutes(date.getMinutes() + parseInt(r.toString().substring(0, 2), 10));
+              const godzina = date.getHours() + ":" + date.getMinutes();
+              appSettings.setString('pumpStan', "WZNOWIENIE POMPY O " + godzina);
+              this.stopPeriodPump = setTimeout(() => this.stopCommon(), 1000 * 60 * parseInt(r.toString().substring(0, 2), 10));
+              appSettings.setNumber('stopPeriodPump', this.stopPeriodPump);
+              appSettings.setBoolean("isBusy", false);
+            }
+          ), () => {
+            this.zone.run(() => {
+              appSettings.setBoolean("isBusy", false);
+              this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
+            })
+          });
+
+        }
+      });
+    }
+    else { if(this.pumpStan.toString().includes("WZNOWIENIE")) {
+      dialogs.confirm({
+        title: "Czy chcesz anulować pozniejsze właczenie pompy?",
+        message: "Pompa musi zostać uruchomiona ręcznie",
+        okButtonText: "OK",
+        cancelButtonText: "Cancel"
+      }).then(r => {
+          if (r) {
+            console.log("AAAAAAAAAAAAAAAA");
+            clearTimeout(appSettings.getNumber('stopPeriodPump'));
+            appSettings.setString('pumpStan', 'WZNOW POMPE');
+            appSettings.setBoolean("isBusy", false);
+          }
+        }
+      );
+    }
+
+    }
+  }
 
   deleteUser() {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
-      dialogs.prompt({
+      dialogs.confirm({
         title: "USUWANIE PROFILU",
         message: "Czy na pewno chcesz usunąć profil użytkownika?",
         okButtonText: "OK",
         cancelButtonText: "Cancel"
       }).then(r => {
-        if (r.result) {
+        if (r) {
           this.pumpBluetoothApiService.sendCommand3("KASUJ");
           //this.isBusy = false;
         }
@@ -185,7 +240,22 @@ export class BrowseComponent implements OnInit, OnDestroy {
       }
     }
   }
-
+  stopCommon(){
+    clearTimeout(appSettings.getNumber('stopPeriodPump'));
+    appSettings.setBoolean("isBusy", true);
+    appSettings.setString("pumpStan", "Proszę czekać...");
+    this.fa.scanAndConnectStop().then(() => this.zone.run(() =>
+      {
+        this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+        appSettings.setBoolean("isBusy", false);
+      }
+    ), () => {
+      this.zone.run(() => {
+        appSettings.setBoolean("isBusy", false);
+        this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
+      })
+    });
+  }
   stop() {
     dialogs.confirm({
       title: "Czy na pewno chcesz zmienić stan pompy?",
@@ -193,19 +263,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
       cancelButtonText: "Nie"
     }).then(t => {
       if (t === true) {
-        appSettings.setBoolean("isBusy", true);
-        appSettings.setString("pumpStan", "Proszę czekać...");
-        this.fa.scanAndConnectStop().then(() => this.zone.run(() =>
-          {
-            this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
-            appSettings.setBoolean("isBusy", false);
-          }
-        ), () => {
-          this.zone.run(() => {
-            appSettings.setBoolean("isBusy", false);
-            this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
-          })
-        });
+     this.stopCommon();
       } else {
         appSettings.setBoolean("isBusy", false);
       }
@@ -257,9 +315,10 @@ export class BrowseComponent implements OnInit, OnDestroy {
   execSQL(){
     this.databaseService.execSQLSuccessMonitor.subscribe(wynik => {
       this.pumpData = this.fa.btData;
+      console.log("%%%%%%%%%%%%%%%%%%%%%%           :" + this.fa.btData);
       appSettings.setString("pumpData", this.fa.btData);
       this.foregroundUtilService.updateForeground();
-      if (wynik.toString().endsWith('suspend')){
+      if (wynik.toString().endsWith('suspend') && !appSettings.getString('pumpStan').includes("WZNOWIENIE")){
         this.zone.run (() =>
         {
           appSettings.setString("pumpStan", "WZNOW POMPE");
@@ -275,6 +334,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           appSettings.setString("pumpStan", "ZAWIES POMPE");
           this.pumpStan = appSettings.getString("pumpStan");
           this.changeColorButton();
+          clearTimeout(appSettings.getNumber('stopPeriodPump'));
           console.log("ANO MAMY POMPE URUCHOMIONA: " + wynik.toString().endsWith('normal') + this.pumpStan);
         });
       }
@@ -286,10 +346,9 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
       this.pumpData = appSettings.getString("pumpData");
-      ///appSettings.setNumber("interv", this.interv);
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
-      console.log("551");
+      //console.log("551");
       this.changeColorButton();
     }, 1000);
     appSettings.setNumber('interv', this.interv);

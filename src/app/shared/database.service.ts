@@ -21,7 +21,7 @@ export class DatabaseService {
     const createMyTable = adamDb.then(
       db => {
         db.execSQL(
-          `CREATE TABLE IF NOT EXISTS entries (id INTEGER, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);`
+          `CREATE TABLE IF NOT EXISTS entries (id INTEGER primary key autoincrement, glucose TEXT, dateString TEXT, isSend INTEGER DEFAULT 0);`
         )
           .then(db2 =>
             db.execSQL(
@@ -186,7 +186,7 @@ export class DatabaseService {
   public getLastBg(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        "select glucose, SUBSTR(dateString, 4, 18) from entries where glucose != 10 ORDER BY dateString DESC LIMIT 1"
+        "select glucose, SUBSTR(dateString, 4, 18) from entries where glucose != 10 ORDER BY id DESC LIMIT 1"
       )
     );
   }

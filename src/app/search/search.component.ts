@@ -40,6 +40,9 @@ export class SearchComponent implements OnInit {
         this.databaseService.insertLogs(date, message, messageType, category);
       }
     );
+    this.sendDatatoNightscout7().then(() =>
+      console.log(this.nsUrl2 + "fffffffffffff3333333f")
+    );
   }
 
   sendLogs() {
@@ -48,10 +51,11 @@ export class SearchComponent implements OnInit {
     const myFile = myFolder.getFile("my.txt");
     const a = Runtime.getRuntime().exec('logcat -v time -f /sdcard/my.txt -d');
     console.log("to ta wielkosc pliku: " + myFile.size);
-    if (myFile.size > 10000000 )
+    if (myFile.size > 5000000 )
     {
       myFile.remove();
     }
+
     const u = setInterval( () => {
     if (a.isAlive() === false){
       clearInterval(u);

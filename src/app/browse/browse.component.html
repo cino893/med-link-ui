@@ -5,6 +5,7 @@
   </ActionItem>
   <Label class="action-bar-title" text="Bluetooth"></Label>
 </ActionBar>
+<ScrollView>
 <StackLayout class="page page-content">
   <Button class="btn btn-primary btn-active" id="button2" text="Scan" (tap)="scan()"></Button>
   <Label id="lbl" class="h3 p-15 text-center" [text]="uuid" textWrap="true" colour="blue"></Label>
@@ -19,10 +20,12 @@
     <Switch checked="{{ bool2 }}" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
   </StackLayout>
   <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
-  <Button class="btn btn-primary btn-active" isEnabled="{{ isCompleted }}" id="button3" [text]="pumpStan" (tap)="stop()" [ngStyle]="{ 'background-color': color }"></Button>
-  <ScrollView orientation="vertical" row="1" col="0" height="300" backgroundColor="blue">
+  <Button class="btn btn-primary btn-active" isEnabled="{{ isCompleted }}" id="button3" [text]="pumpStan" (tap)="stop()" (longPress)="onLongPress($event)" [ngStyle]="{ 'background-color': color }"></Button>
+  <ScrollView orientation="vertical" row="1" col="0" height="500" backgroundColor="blue">
     <StackLayout>
       <Label id="lbl3" class="h3 p-15" [text]="pumpData" textWrap="true" style="color:white;" ></Label>
     </StackLayout>
   </ScrollView>
 </StackLayout>
+</ScrollView>
+

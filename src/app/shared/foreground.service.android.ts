@@ -38,6 +38,7 @@ export class ForegroundService extends android.app.Service {
     intent: android.content.Intent
   ): android.app.Notification {
     this.disableDozeMode();
+    //intent.putExtra('title', 'Medlink');
     const openActivityIntent = new android.content.Intent();
     openActivityIntent.setClassName(Application.android.context, 'com.tns.NativeScriptActivity');
     openActivityIntent.setFlags(android.content.Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -123,16 +124,22 @@ export class ForegroundService extends android.app.Service {
   }
 
   private getTitle(intent: android.content.Intent): string {
-    const title = intent.getStringExtra('title');
-    if (title) {
-      if (title === null){
-        return "MED-LINK2"
+    if (intent.hasExtra('title')){
+
+      const title = intent.getStringExtra('title').toString();
+      if (title) {
+        if (title === null){
+          return "MED-LINK2"
+        }
+        else {
+          return title;
+        }
+      } else {
+        return 'MED-LINK';
       }
-      else {
-        return title;
-      }
-    } else {
-      return 'MED-LINK';
+    }
+    else {
+      console.log("ALE JEBŁO!!!!!!!!!!!!!!!!#########################################");
     }
   }
 
