@@ -8,6 +8,9 @@ import { DatabaseService } from '~/app/shared/database.service';
 import { TraceWriterService } from '~/app/shared/trace-writer.service';
 import Runtime = java.lang.Runtime;
 import * as fs from "tns-core-modules/file-system";
+import { EventData } from "tns-core-modules/data/observable";
+import { Switch } from "tns-core-modules/ui/switch";
+import * as appSettings from "tns-core-modules/application-settings";
 
 @Component({
   selector: "Search",
@@ -25,6 +28,7 @@ export class SearchComponent implements OnInit {
   carbs: string;
   pending = false;
   aReduced2: string;
+  auto: boolean;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -35,6 +39,7 @@ export class SearchComponent implements OnInit {
     // Use the constructor to inject services.
   }
   ngOnInit(): void {
+    this.auto = appSettings.getBoolean('auto', false)
     this.traceWriterService.subscribe(
       ({ message, date, category, messageType }) => {
         this.databaseService.insertLogs(date, message, messageType, category);
@@ -99,6 +104,16 @@ export class SearchComponent implements OnInit {
       this.slowo2 = "OK! ";
     }
   }
+  onCheckedChangeAuto(args: EventData) {
+    const mySwitch = args.object as Switch;
+    const isChecked = mySwitch.checked; // boolean
+    if (isChecked === true) {
+      appSettings.setBoolean("auto", true);
+    }
+    else {
+      appSettings.setBoolean("auto", false);
+    }
+    }
   sendDatatoNightscout6() {
     return new Promise((resolve, reject) => {
       this.getNSData().subscribe(g => {

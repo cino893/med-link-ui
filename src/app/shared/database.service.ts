@@ -30,7 +30,7 @@ export class DatabaseService {
           )
           .then(db3 =>
             db.execSQL(
-              "CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);"
+              "CREATE TABLE IF NOT EXISTS tempbasal (id INTEGER  primary key autoincrement, percentsOfBasal TEXT, minutes INTEGER, dateString TEXT, isSend INTEGER DEFAULT 0);"
             )
           )
           .then(db4 =>
@@ -194,7 +194,7 @@ export class DatabaseService {
   public getTempBasal(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        "SELECT percentsOfBasal, minutes, dateString FROM tempbasal WHERE isSend = 0; "
+        "SELECT percentsOfBasal, minutes, dateString FROM tempbasal WHERE isSend = 0 and percentsOfBasal != 0 ORDER BY ID DESC LIMIT 1; "
       )
     );
   }

@@ -64,7 +64,7 @@ export class NightscoutApiService {
             }))).subscribe(resolve, reject);
       }
       else {
-        console.log("Przyszedł zły cukier!!");
+        console.log("Brak informacji o cukrze cukier!!");
         console.log("DLUGOSC API KOMUNIKATU:  " + glucoses.length);
         resolve();
       }
@@ -87,6 +87,7 @@ export class NightscoutApiService {
 
   sendNewTempBasal(tempbasal: Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>) {
     return new Promise((resolve, reject) => {
+      if (tempbasal.length >= 1) {
       this.httpClient
         .post(
           this.http + '/api/v1/treatments',
@@ -100,6 +101,12 @@ export class NightscoutApiService {
             eventType: 'Temp Basal',
             timestamp: new Date()
           }))).subscribe(resolve, reject);
+      }
+      else {
+        console.log("Brak TDP - OK");
+        console.log("DLUGOSC API KOMUNIKATU:  " + tempbasal.length);
+        resolve();
+      }
     });
   }
 
