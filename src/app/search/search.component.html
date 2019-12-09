@@ -22,6 +22,9 @@
         <Switch checked="{{ auto }}" (checkedChange)="onCheckedChangeAuto($event)" class="switch" margin="1" width="100"></Switch>
     </StackLayout>
     <StackLayout>
+        <Button class="btn btn-primary btn-active" id="button3" [text]="rangeText" (tap)="getBGRange()" isEnabled="{{ auto }}" ></Button>
+    </StackLayout>
+    <StackLayout>
         <Button class="btn btn-primary btn-active" id="button2" text="Wyślij logi" (tap)="sendLogs()"></Button>
     </StackLayout>
     <ScrollView orientation="vertical" row="1" col="0" height="100" backgroundColor="blue">

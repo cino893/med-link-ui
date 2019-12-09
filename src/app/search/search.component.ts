@@ -11,6 +11,8 @@ import * as fs from "tns-core-modules/file-system";
 import { EventData } from "tns-core-modules/data/observable";
 import { Switch } from "tns-core-modules/ui/switch";
 import * as appSettings from "tns-core-modules/application-settings";
+import * as dialogs from "tns-core-modules/ui/dialogs";
+import { toNumbers } from "@angular/compiler-cli/src/diagnostics/typescript_version";
 
 @Component({
   selector: "Search",
@@ -29,6 +31,8 @@ export class SearchComponent implements OnInit {
   pending = false;
   aReduced2: string;
   auto: boolean;
+  range: number;
+  rangeText: string = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75);
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -39,7 +43,8 @@ export class SearchComponent implements OnInit {
     // Use the constructor to inject services.
   }
   ngOnInit(): void {
-    this.auto = appSettings.getBoolean('auto', false)
+    this.auto = appSettings.getBoolean('auto', false);
+    this.rangeText = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75) + "MG/DL";
     this.traceWriterService.subscribe(
       ({ message, date, category, messageType }) => {
         this.databaseService.insertLogs(date, message, messageType, category);
@@ -49,6 +54,26 @@ export class SearchComponent implements OnInit {
       console.log(this.nsUrl2 + "fffffffffffff3333333f")
     );
   }
+  getBGRange(){
+    dialogs.prompt({
+      title: "Podaj wartość przy jakiej ma zostać wyłączona pompa",
+      message: "Wartość graniczna to:",
+      okButtonText: "OK",
+      cancelButtonText: "Cancel",
+      inputType: dialogs.inputType.number
+    }).then(r => {
+      console.log("Dialog closed!" + r.result + ", A TO TEKST:" + r.text);
+      this.range = Number(r.text);
+      if(this.range <= 75 || this.range >= 110){
+ dialogs.alert({message: "UWAGA WARTOŚC Z POZA ZAKRESU: 75 - 110 MG/DL", okButtonText: "OK"});
+      }
+      else {
+        appSettings.setNumber('range', this.range);
+        this.rangeText = "AUTO STOP PRZY WARTOŚCI: " + this.range + "MG/DL";
+      }
+
+    });
+}
 
   sendLogs() {
     const documents = fs.path.join(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString());
@@ -108,10 +133,12 @@ export class SearchComponent implements OnInit {
     const mySwitch = args.object as Switch;
     const isChecked = mySwitch.checked; // boolean
     if (isChecked === true) {
-      appSettings.setBoolean("auto", true);
+       appSettings.setBoolean("auto", true);
+      this.auto = appSettings.getBoolean('auto');
     }
     else {
       appSettings.setBoolean("auto", false);
+      this.auto = appSettings.getBoolean('auto');
     }
     }
   sendDatatoNightscout6() {

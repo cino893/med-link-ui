@@ -139,7 +139,7 @@ export class ForegroundService extends android.app.Service {
       }
     }
     else {
-      console.log("ALE JEBŁO!!!!!!!!!!!!!!!!#########################################");
+      console.log("BAD ERROR!!");
     }
   }
 

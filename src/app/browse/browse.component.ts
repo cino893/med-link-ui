@@ -28,13 +28,14 @@ export class BrowseComponent implements OnInit, OnDestroy {
   bool: boolean = false;
   int0: number;
   interval: number;
-  minuta: number;
   counter: number;
   isCompleted: boolean = appSettings.getBoolean("isCompleted", false);
   bool2: boolean = false;
   interv: number;
   color: string = '#3d5afe';
   stopPeriodPump: number;
+  minuta: string;
+  godzina: string;
 
   constructor(
     private zone: NgZone,
@@ -48,7 +49,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
 
   saveUuid(arg) {
     this.uuid = arg.text.toString().split(',')[1];
-    console.log("To jest zapisywany UUID:" + this.uuid);
+    console.log("To jest zapisany UUID:" + this.uuid);
     this.databaseService.insertMAC(this.uuid);
     this.isCompleted = true;
     appSettings.setBoolean("isCompleted", true);
@@ -120,8 +121,16 @@ export class BrowseComponent implements OnInit, OnDestroy {
             {
               const date = new Date();
               date.setMinutes(date.getMinutes() + parseInt(r.toString().substring(0, 2), 10));
-              const godzina = date.getHours() + ":" + date.getMinutes();
-              appSettings.setString('pumpStan', "WZNOWIENIE POMPY O " + godzina);
+              this.minuta = date.getMinutes().toString();
+              if(date.getMinutes() < 10){
+                this.minuta = '0' + this.minuta;
+              }
+              this.godzina = date.getHours().toString();
+              if(date.getHours() < 10){
+                this.godzina = '0' + this.godzina;
+              }
+              const czas = this.godzina + ":" + this.minuta;
+              appSettings.setString('pumpStan', "WZNOWIENIE POMPY O " + czas);
               this.stopPeriodPump = setTimeout(() => this.stopCommon(), 1000 * 60 * parseInt(r.toString().substring(0, 2), 10));
               appSettings.setNumber('stopPeriodPump', this.stopPeriodPump);
               appSettings.setBoolean("isBusy", false);
@@ -318,7 +327,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
       console.log("%%%%%%%%%%%%%%%%%%%%%%           :" + this.fa.btData);
       appSettings.setString("pumpData", this.fa.btData);
       this.foregroundUtilService.updateForeground();
-      if (wynik.toString().endsWith('suspend') && !appSettings.getString('pumpStan').includes("WZNOWIENIE")){
+      if (wynik.toString().endsWith('suspend') && !appSettings.getString('pumpStan', "ZMIEN STAN POMPY").toString().includes("WZNOWIENIE")){
         this.zone.run (() =>
         {
           appSettings.setString("pumpStan", "WZNOW POMPE");
@@ -345,7 +354,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     clearInterval(appSettings.getNumber(("interv")));
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
-      this.pumpData = appSettings.getString("pumpData");
+      this.pumpData = appSettings.getString("autostop", " ") + appSettings.getString("pumpData");
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
       //console.log("551");

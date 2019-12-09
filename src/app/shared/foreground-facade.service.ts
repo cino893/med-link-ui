@@ -25,7 +25,7 @@ export class ForegroundFacadeService {
       //this.belka = wynik.toString() + new Date();
       const foregroundNotificationIntent = new android.content.Intent();
       foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
-      foregroundNotificationIntent.putExtra('title', wynik.toString());
+      foregroundNotificationIntent.putExtra('title', 'BG: ' + wynik.toString());
       app.android.context.startService(foregroundNotificationIntent);
       //nm.notify(app.android.context, foregroundNotificationIntent);
     });

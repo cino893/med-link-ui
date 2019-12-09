@@ -16,7 +16,7 @@
     </ListView>
   <StackLayout orientation="horizontal">
 
-    <Label id="lbl2" text="URUCHOM, I ZAAKCEPTUJ WARUNKI: " textWrap="true" class="label"margin="1" width="250"></Label>
+    <Label id="lbl2" text="URUCHOM I ZAAKCEPTUJ WARUNKI: " textWrap="true" class="label"margin="1" width="250"></Label>
     <Switch checked="{{ bool2 }}" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
   </StackLayout>
   <ActivityIndicator [busy]="isBusy"></ActivityIndicator>

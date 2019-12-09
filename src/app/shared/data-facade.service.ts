@@ -387,7 +387,31 @@ export class DataFacadeService {
       , 400);
   }
 
-  // hujnia z grzybnią 2
+  preventLowSugar(a: number, b: string) {
+    if (appSettings.getBoolean('auto', false) && a <= appSettings.getNumber('range', 75) && !(a === 10) && b.toLowerCase().includes('normal')){
+      console.log("AKT WOJNY" + a + b + appSettings.getBoolean('auto', false));
+      this.scanAndConnectStop().then(() => {
+        console.log("Pompa wyl");
+        appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA ZATRZYMANA PRZEZ FUNKCJE AUTO STOP\n\n" );
+      }, () => console.log("BADD ASS nie wylaczona"));
+    }
+    else {
+      console.log("AKT WOJNY2" + a + b.toLowerCase());
+      if (appSettings.getBoolean('auto', false) && a > appSettings.getNumber('range', 75) && !(a === 10)  && b.toLowerCase().includes('suspend')){
+        console.log("AKT WOJNY3" + a + b);
+        this.scanAndConnectStop().then(() => {
+          console.log("Pompa wlaczona");
+          appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA WZNOWIONA PRZEZ FUNKCJE AUTO START\n\n");
+        }, () => console.log("BADD ASS 2 nie wylaczona"));
+      }
+      else {
+        console.log("Nie uzywam auto stop/start" + a + b);
+        this.pumpBluetoothApiService.disconnect();
+      }
+
+    }
+
+  }
   transferDataFromPumpThenToApi() {
     setTimeout(() => this.pumpBluetoothApiService.sendCommand2("s"), 400);
     setTimeout(() => {
@@ -407,12 +431,14 @@ export class DataFacadeService {
             .then(() => this.databaseService.updateTreatments())
             .then(() => this.sendDatatoNightscout4())
             .then(() => this.databaseService.updateTempBasal())
+            .then(() => this.preventLowSugar(parsedDate.bloodGlucose.value, parsedDate.statusPump.toString()))
+
           //.then(() => this.wakeFacadeService.snoozeScreenByCall())
           .catch(error => {
             console.log(error);
             //this.wakeFacadeService.snoozeScreenByCall()
           });
-        this.pumpBluetoothApiService.disconnect();
+        //this.pumpBluetoothApiService.disconnect();
       });
     }, 400);
   }
