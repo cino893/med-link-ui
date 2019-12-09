@@ -388,7 +388,7 @@ export class DataFacadeService {
   }
 
   preventLowSugar(a: number, b: string) {
-    if (appSettings.getBoolean('auto', false) && a <= appSettings.getNumber('range', 75) && !(a === 10) && b.toLowerCase().includes('normal')){
+    if (appSettings.getBoolean('auto', false) && a <= appSettings.getNumber('range', 75) && !(a === 0) && b.toLowerCase().includes('normal')){
       console.log("AKT WOJNY" + a + b + appSettings.getBoolean('auto', false));
       this.scanAndConnectStop().then(() => {
         console.log("Pompa wyl");
@@ -397,7 +397,7 @@ export class DataFacadeService {
     }
     else {
       console.log("AKT WOJNY2" + a + b.toLowerCase());
-      if (appSettings.getBoolean('auto', false) && a > appSettings.getNumber('range', 75) && !(a === 10)  && b.toLowerCase().includes('suspend')){
+      if (appSettings.getBoolean('auto', false) && a > appSettings.getNumber('range', 75) && !(a === 0)  && b.toLowerCase().includes('suspend')){
         console.log("AKT WOJNY3" + a + b);
         this.scanAndConnectStop().then(() => {
           console.log("Pompa wlaczona");

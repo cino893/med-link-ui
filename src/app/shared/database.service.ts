@@ -132,7 +132,7 @@ export class DatabaseService {
   public getBG(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        "select * from (SELECT glucose, dateString, isSend, glucose - (select e2.glucose from entries e2 where e2.rowid = e1.rowid-1 and e2.dateString < e1.dateString  ORDER BY e2.dateString LIMIT 1 ) as a from entries e1) where isSend = 0 and glucose != 10"
+        "select * from (SELECT glucose, dateString, isSend, glucose - (select e2.glucose from entries e2 where e2.rowid = e1.rowid-1 and e2.dateString < e1.dateString  ORDER BY e2.dateString LIMIT 1 ) as a from entries e1) where isSend = 0 and glucose != 0"
       )
     );
   }
@@ -186,7 +186,7 @@ export class DatabaseService {
   public getLastBg(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        "select glucose, SUBSTR(dateString, 4, 18) from entries where glucose != 10 ORDER BY id DESC LIMIT 1"
+        "select glucose, SUBSTR(dateString, 4, 18) from entries where glucose != 0 ORDER BY id DESC LIMIT 1"
       )
     );
   }

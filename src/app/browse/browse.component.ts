@@ -354,7 +354,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     clearInterval(appSettings.getNumber(("interv")));
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
-      this.pumpData = appSettings.getString("autostop", " ") + appSettings.getString("pumpData");
+      this.pumpData = appSettings.getString("autostop", "") + appSettings.getString("pumpData", '');
       this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
       //console.log("551");

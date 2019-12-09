@@ -3,6 +3,9 @@ import { DataService } from "../shared/data.service";
 import { DatabaseService } from '~/app/shared/database.service';
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { WebView } from "tns-core-modules/ui/web-view";
+import { EventData } from "tns-core-modules/data/observable";
+import { isAndroid } from "tns-core-modules/platform";
 
 @Component({
   selector: "Home",
@@ -19,6 +22,23 @@ export class HomeComponent implements OnInit {
   }
   onRefresh(){
     this.sendDatatoNightscout7().then(() => console.log(this.webViewSrc + "ffffffffffffff111111"));
+  }
+  onWebViewLoaded(args: EventData) {
+    const webView = args.object as WebView;
+
+    const nativeWebView = webView.nativeView; // equal to webView.android or webView.ios (depending on the platform)
+
+    if (isAndroid) {
+      nativeWebView.getSettings().setAppCacheEnabled(true);
+      nativeWebView.getSettings().setCacheMode(android.webkit.WebSettings.LOAD_NORMAL);
+      nativeWebView.getSettings().setJavaScriptEnabled(true);
+      nativeWebView.getSettings().setDomStorageEnabled(true);
+      nativeWebView.getSettings().setDatabaseEnabled(true);
+      //nativeWebView.getSettings().setDatabasePath(dbpath); //check the documentation for info about dbpath
+      nativeWebView.getSettings().setMinimumFontSize(1);
+      nativeWebView.getSettings().setMinimumLogicalFontSize(1);
+      nativeWebView.setSupportZoom(true);
+    }
   }
 
   getNSData(): Observable<Array<{ http: string; secret: string; hash: string }>> {
