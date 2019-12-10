@@ -21,7 +21,7 @@
   </StackLayout>
   <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
   <Button class="btn btn-primary btn-active" isEnabled="{{ isCompleted }}" id="button3" [text]="pumpStan" (tap)="stop()" (longPress)="onLongPress($event)" [ngStyle]="{ 'background-color': color }"></Button>
-  <ScrollView orientation="vertical" row="1" col="0" height="500" backgroundColor="blue">
+  <ScrollView orientation="vertical" row="1" col="0" height="550" backgroundColor="blue">
     <StackLayout>
       <Label id="lbl3" class="h3 p-15" [text]="pumpData" textWrap="true" style="color:white;" ></Label>
     </StackLayout>
