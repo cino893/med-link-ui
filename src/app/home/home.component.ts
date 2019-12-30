@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
       //nativeWebView.getSettings().setDatabasePath(dbpath); //check the documentation for info about dbpath
       nativeWebView.getSettings().setMinimumFontSize(1);
       nativeWebView.getSettings().setMinimumLogicalFontSize(1);
-      nativeWebView.setSupportZoom(true);
+      //nativeWebView.setSupportZoom(true);
     }
   }
 

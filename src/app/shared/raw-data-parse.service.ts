@@ -66,11 +66,20 @@ export class RawDataService {
                 value: +lastBolusMatch[1].trim(),
                 date: this.dateHax(lastBolusMatch[2]),
             };
-            parsedData.temporaryBasalMethodPercentage = {
-                percentsOfBaseBasal: +temporaryBasalMethodPercentageM[1] - 100,
-                timeLeftInMinutes: +temporaryBasalMethodPercentageM[3] + 60 * +temporaryBasalMethodPercentageM[2],
-                timestamp: new Date(),
-            };
+            if(!temporaryBasalMethodPercentageM) {
+                parsedData.temporaryBasalMethodPercentage = {
+                    percentsOfBaseBasal: 100,
+                    timeLeftInMinutes: 0,
+                    timestamp: new Date(),
+                };
+            }
+            else {
+                parsedData.temporaryBasalMethodPercentage = {
+                    percentsOfBaseBasal: +temporaryBasalMethodPercentageM[1] - 100,
+                    timeLeftInMinutes: +temporaryBasalMethodPercentageM[3] + 60 * +temporaryBasalMethodPercentageM[2],
+                    timestamp: new Date(),
+                };
+            }
         }
         return parsedData;
     }

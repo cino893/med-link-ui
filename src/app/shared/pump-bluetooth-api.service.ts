@@ -150,7 +150,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('rea') || result.includes('zeka')) {
+          if (result.includes('rea') || result.includes('komunikacji')) {
             observer.complete();
           }
         },

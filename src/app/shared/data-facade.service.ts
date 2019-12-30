@@ -210,7 +210,7 @@ export class DataFacadeService {
           () =>
             setTimeout(
               () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
-              500
+              2500
             ),
           () => {
             console.log("zatem nie wyslam ok kona");
@@ -275,7 +275,7 @@ export class DataFacadeService {
           () =>
             setTimeout(
               () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
-              500
+              2500
             ),
           () => {
             console.log("zatem nie wyslam ok kona");
