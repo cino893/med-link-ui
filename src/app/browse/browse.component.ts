@@ -1,6 +1,7 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import * as Permissions from 'nativescript-permissions';
 import { DataFacadeService } from '~/app/shared/data-facade.service';
+import { WidgetFacadeService } from '~/app/shared/widget-facade';
 import { ForegroundFacadeService } from '~/app/shared/foreground-facade.service';
 import { PumpBluetoothApiService } from '~/app/shared/pump-bluetooth-api.service';
 import { RawDataService } from '~/app/shared/raw-data-parse.service';
@@ -38,6 +39,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   godzina: string;
 
   constructor(
+    private widgetFacadeService: WidgetFacadeService,
     private zone: NgZone,
     private rawDataParse: RawDataService,
     private fa: DataFacadeService,
@@ -53,6 +55,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.databaseService.insertMAC(this.uuid);
     this.isCompleted = true;
     appSettings.setBoolean("isCompleted", true);
+    this.widgetFacadeService.updateWidget();
   }
   ngOnDestroy(): void {
     clearInterval(appSettings.getNumber('interv'));

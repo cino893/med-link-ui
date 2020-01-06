@@ -43,7 +43,7 @@ export class WakeFacadeService {
       android.app.PendingIntent.FLAG_UPDATE_CURRENT);
 
     am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 5 * 60 * 1000, pendingIntent);
-    console.log("Idzie intent Pending :)" + am.getNextAlarmClock());
+    console.log("Idzie intent Pending  :)" + am.getNextAlarmClock());
     this.wakeScreenByCall();
 
   }

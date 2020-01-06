@@ -27,6 +27,7 @@ export class ForegroundFacadeService {
       foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
       foregroundNotificationIntent.putExtra('title', 'BG: ' + wynik.toString());
       app.android.context.startService(foregroundNotificationIntent);
+      appSettings.setString('BG', wynik.toString());
       //nm.notify(app.android.context, foregroundNotificationIntent);
     });
 
