@@ -55,7 +55,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.databaseService.insertMAC(this.uuid);
     this.isCompleted = true;
     appSettings.setBoolean("isCompleted", true);
-    this.widgetFacadeService.updateWidget();
+    //this.widgetFacadeService.updateWidget();
   }
   ngOnDestroy(): void {
     clearInterval(appSettings.getNumber('interv'));
