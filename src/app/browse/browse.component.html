@@ -1,8 +1,11 @@
 <ActionBar class="action-bar" >
   <NavigationButton icon="res://ic_arrow_back_black_24dp"></NavigationButton>
-  <ActionItem (tap)="onPlus()"
-              android.systemIcon="ic_menu_add" android.position="actionBar">
+  <ActionItem (tap)="addBolus()"
+              android.systemIcon="btn_plus" android.position="popup" text="Podaj bolus">
   </ActionItem>
+    <ActionItem (tap)="addProfile()"
+                android.systemIcon="btn_dropdown"  android.position="popup" text="Dodaj/usuń profil">
+    </ActionItem>
   <Label class="action-bar-title" text="Bluetooth"></Label>
 </ActionBar>
 <ScrollView>
@@ -15,7 +18,6 @@
       </ng-template>
     </ListView>
   <StackLayout orientation="horizontal">
-
     <Label id="lbl2" text="URUCHOM I ZAAKCEPTUJ WARUNKI: " textWrap="true" class="label"margin="1" width="250"></Label>
     <Switch checked="{{ bool2 }}" [(ngModel)]="bool" (checkedChange)="onCheckedChange($event)" isEnabled="{{ isCompleted }}" class="switch" margin="1" width="100"></Switch>
   </StackLayout>

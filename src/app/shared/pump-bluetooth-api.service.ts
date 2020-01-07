@@ -72,15 +72,15 @@ export class PumpBluetoothApiService {
     }
   sendCommand(command) {
     const buffer = [];
-    console.log('bede wysylal OK+KONN');
-    traceModule.write( "AAAAAAAAAAAAAAa  YYYYYunhandled-error", traceModule.categories.Debug, 2);
+    console.log('bede wysylal komunikat');
+    //traceModule.write( "AAAAAAAAAAAAAAa  YYYYYunhandled-error", traceModule.categories.Debug, 2);
     for (const char of command) {
       const charCode = char.charCodeAt(0);
       buffer.push(charCode);
     }
     if (buffer.length) {
       this.recursiveWrite(buffer);
-      console.log('udalo sie chyba to wsykacccc OK+KONN');
+      console.log('udalo sie chyba to wsykacccc komunikat');
     }
   }
   sendCommand2(command) {
@@ -192,7 +192,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('zatrzyman') || result.includes('uruchomion')) {
+          if (result.includes('zatrzyman') || result.includes('uruchomion') || result.includes('ustaw')) {
             observer.complete();
           }
         },
@@ -234,7 +234,7 @@ export class PumpBluetoothApiService {
 
           observer.next(result);
           console.log(result);
-          if (result.includes('zatrzyman')) {
+          if (result.includes('zatrzyman') || result.includes('ready')) {
             observer.complete();
           }
         },

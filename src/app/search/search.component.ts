@@ -64,7 +64,7 @@ export class SearchComponent implements OnInit {
     }).then(r => {
       console.log("Dialog closed!" + r.result + ", A TO TEKST:" + r.text);
       this.range = Number(r.text);
-      if(this.range <= 75 || this.range >= 110){
+      if(this.range < 75 || this.range > 110){
  dialogs.alert({message: "UWAGA WARTOŚC Z POZA ZAKRESU: 75 - 110 MG/DL", okButtonText: "OK"});
       }
       else {

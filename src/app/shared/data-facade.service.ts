@@ -234,7 +234,7 @@ export class DataFacadeService {
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
    scanAndConnectStop() {
-    this.wakeFacadeService.wakeScreenByCall();
+  //  this.wakeFacadeService.wakeScreenByCall();
      return new Promise((resolve, reject) => {
     try {
       this.pumpBluetoothApiService
@@ -319,7 +319,7 @@ export class DataFacadeService {
             console.log("zatem nie czekam na ready");
             this.errorPumpStan();
             reject();
-            this.wakeFacadeService.snoozeScreenByCall();
+    //        this.wakeFacadeService.snoozeScreenByCall();
           }
         )
     } catch {
@@ -330,6 +330,117 @@ export class DataFacadeService {
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   })
   }
+  scanAndConnectBOL(r) {
+    //  this.wakeFacadeService.wakeScreenByCall();
+    return new Promise((resolve, reject) => {
+      try {
+        this.pumpBluetoothApiService
+          .scanAndConnect()
+          .then(
+            uidBt => {
+              if (uidBt === "MED-LINK" || uidBt === "MED-LINK-2" || uidBt === "MED-LINK-3" || uidBt === "HMSoft") {
+                console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
+                return Promise.resolve(uidBt);
+              } else {
+                console.log(uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133");
+                return Promise.reject();
+              }
+            },
+            uidBt => {
+              console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
+              return this.pumpBluetoothApiService.scanAndConnect().then(
+                uidBt2 => {
+                  if (uidBt2 === "HMSoft") {
+                    console.log(uidBt2 + "BBBBBBBBBBBBBBBBBBBBB");
+                    return Promise.resolve(uidBt2);
+                  } else {
+                    console.log(
+                      uidBt2 + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+                    );
+                    return Promise.reject();
+                  }
+                  console.log("XaXaXaXaXa");
+                },
+                () => {
+                  console.log("jednak nie udalo sie za 2");
+                  return Promise.reject();
+                }
+              );
+            }
+          )
+          .then(
+            () =>
+              setTimeout(
+                () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
+                2500
+              ),
+            () => {
+              console.log("zatem nie wyslam ok kona");
+              return Promise.reject(console.log("adam23333333"));
+
+            }
+          )
+          .then(
+            () => {
+              const timeoutAlert = setTimeout(() => this.errorPumpStan(), 74 * 1000);
+              this.pumpBluetoothApiService.read().subscribe(() => {
+                this.pumpBluetoothApiService.sendCommand2("x");
+                setTimeout(() => this.pumpBluetoothApiService.read3()
+                    .subscribe( dane => {
+                      console.log("To jest wynik" + dane);
+                      if (dane.toString().includes("ustaw")){
+                        console.log("Taki bolus zostal nastawiony" + r);
+                        this.pumpBluetoothApiService.sendCommand("bolus  " + r);
+                        setTimeout( () => this.pumpBluetoothApiService.read5().subscribe(btdane => {
+                          console.log("btdane: !!!!!!!!!!!!!!!f!!!!!!!$%RSFD#WEF: //n" + btdane.toString());
+                          if (btdane.includes("uruchomiony")){
+                            this.successLog();
+                            clearTimeout(timeoutAlert);
+                          }
+                          else {
+                            const options = {
+                              title: "Błąd odpowiedzi z pompy:",
+                              message: btdane.toString(),
+                              okButtonText: "OK"
+                            };
+                            alert(options);
+                          }
+                          this.pumpBluetoothApiService.disconnect();
+                          clearTimeout(timeoutAlert);
+                          resolve();
+                        }), 500);
+                      } else
+                      {
+                        const options = {
+                          title: "Błąd odpowiedzi z pompy:",
+                          message: dane.toString(),
+                          okButtonText: "OK"
+                        };
+                        alert(options);
+                        console.log("Problem z bolusem!!!");
+                        this.pumpBluetoothApiService.disconnect();
+                        clearTimeout(timeoutAlert);
+                        resolve();
+                      }
+                    }, () => this.errorPumpStan())
+                  , 400);
+              }, () => this.errorPumpStan());
+            },
+            () => {
+              console.log("zatem nie czekam na ready");
+              this.errorPumpStan();
+              reject();
+              //        this.wakeFacadeService.snoozeScreenByCall();
+            }
+          )
+      } catch {
+        console.log("Totalna zsssajebka");
+        reject();
+      }
+      //const estimatedTimeToEndTask = 30 * 1000;
+      //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
+    })
+  }
   errorPumpStan(){
     appSettings.setBoolean("isBusy", false);
     appSettings.setString("pumpStan", "ZMIEN STAN POMPY");
@@ -337,6 +448,14 @@ export class DataFacadeService {
       title: "Cos poszło nie tak",
       message: "Sprawdz stan pompy!",
       okButtonText: "Przyjąłem do wiadomości"
+    };
+    alert(options);
+  }
+  successLog(){
+    const options = {
+      title: "Hurreeey!! :)",
+      message: "Udało się podać bolus!",
+      okButtonText: "OK"
     };
     alert(options);
   }

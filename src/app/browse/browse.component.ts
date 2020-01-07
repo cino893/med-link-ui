@@ -61,7 +61,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     clearInterval(appSettings.getNumber('interv'));
   }
 
-  onPlus() {
+  addProfile() {
     dialogs.confirm({
       title: "Chcesz dodać lub usunąć profil użytkownia z pilota?",
       cancelButtonText: "Usun",
@@ -80,6 +80,58 @@ export class BrowseComponent implements OnInit, OnDestroy {
         }
       }
     )
+  }
+  addBolus() {
+    dialogs.action({
+      title: "Podaj Bolus",
+      message: "Wybierz rodzaj bolusa:",
+      cancelButtonText: "Cancel",
+      actions: ["ZWYKŁY", "Z KALKULATORA..."],
+    }).then(rc => {
+      if (rc.toString().includes("ZWYKŁY")) {
+
+
+        console.log("Dialog closed!" + rc + ", A TO TEKST1:");
+        dialogs.prompt({
+          title: "Podaj Bolus",
+          message: "Podaj ilość jednostek:",
+          okButtonText: "OK",
+          cancelButtonText: "Cancel",
+          inputType: dialogs.inputType.phone
+        }).then(r => {
+          if (r.result === true && r.text.match(/(^\d{1}).(\d{1})$/)){
+            appSettings.setBoolean("isBusy", true);
+            this.fa.scanAndConnectBOL(r.text.replace(',', '.'))
+              .then(() => appSettings.setBoolean("isBusy", false),
+                () => appSettings.setBoolean("isBusy", false));
+          }
+          else {
+            const options = {
+              title: "Ups!",
+              message: "Należy podać bolus w formacie: Libcza.Liczba",
+              okButtonText: "OK"
+            };
+            alert(options);
+          }
+          console.log("Dialog closed!" + r.result + ", A TO TEKST2sdfsdfsdfsdfsdfsdfsdfsdfsd:" + r.text.replace(',', '.'));
+
+        });
+      }
+      if (rc.toString().includes("KALKULATORA")) {
+        console.log("Dialog closed!" + rc + ", A TO TEKST1:");
+        dialogs.prompt({
+          title: "Podaj Bolus",
+          message: "Podaj ilość węglowodanów:",
+          okButtonText: "OK",
+          cancelButtonText: "Cancel",
+          inputType: dialogs.inputType.number
+        }).then(r => {
+          console.log("Dialog closed!" + r.result + ", A TO TEKST2:" + r.text);
+          //this.pumpBluetoothApiService.sendCommand3(r.text);
+        });
+      }
+    });
+
   }
 
   addUser() {
