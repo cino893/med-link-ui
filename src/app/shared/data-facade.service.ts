@@ -14,9 +14,13 @@ import * as appSettings from "application-settings";
 })
 export class DataFacadeService {
   btData: string;
+  math2: [];
   int0: number;
   stanPump: string = "W TRAKCIE...";
-
+  ww = /zakres\s(\d{1}):\s(.\W\d{3})\sJ\/WW\sstart\sgodz.\s(\d{2}:\d{2})/g;
+  ww2 = /zakres\s(\d{1}):\s(.\W\d{3})\sJ\/WW\sstart\sgodz.\s(\d{2}:\d{2})/;
+  isf = /zakres\s(\d{1}):\s\s?(\d{2,3})mg.dl\sstart\sgodz.\s(\d{2}:\d{2})/g;
+  bgRange = /zakres\s(\d{1}):\s?(\d{2,3}-.\d{2,3})\sstart\sgodz.\s(\d{2}:\d{2})/g;
   constructor(
     private databaseService: DatabaseService,
     private zone: NgZone,
@@ -37,6 +41,9 @@ export class DataFacadeService {
 
   sendDataToLocalDb2(pumpStatus: IBasicSettings) {
     return this.databaseService.insertTreatments(pumpStatus.lastBolus);
+  }
+  sendCalcToLacalDB(pumpStatus: IBasicSettings) {
+    return this.databaseService.insertCalc(new Date().toString(), pumpStatus.calc.idVal, pumpStatus.calc.value, pumpStatus.calc.hours, pumpStatus.calc.category);
   }
 
   sendDataToLocalDb3(pumpStatus: IBasicSettings) {
@@ -76,6 +83,19 @@ export class DataFacadeService {
         return rows.map(a => ({
           value: +a[0],
           date: new Date(a[1])
+        }));
+      })
+    );
+  }
+  getCalcfromLocalDb(): Observable<Array<{ idVal: number; category: string; dateString: string; value: string; hour: string; }>> {
+    return this.databaseService.getCalc().pipe(
+      map(rows => {
+        return rows.map(a => ({
+          idVal: +a[0],
+          category: a[1],
+          dateString: a[2],
+          value: a[3],
+          hour: a[4]
         }));
       })
     );
@@ -234,7 +254,6 @@ export class DataFacadeService {
     //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   }
    scanAndConnectStop() {
-  //  this.wakeFacadeService.wakeScreenByCall();
      return new Promise((resolve, reject) => {
     try {
       this.pumpBluetoothApiService
@@ -319,15 +338,12 @@ export class DataFacadeService {
             console.log("zatem nie czekam na ready");
             this.errorPumpStan();
             reject();
-    //        this.wakeFacadeService.snoozeScreenByCall();
           }
         )
     } catch {
       console.log("Totalna zsssajebka");
       reject();
     }
-    //const estimatedTimeToEndTask = 30 * 1000;
-    //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
   })
   }
   scanAndConnectBOL(r) {
@@ -359,7 +375,6 @@ export class DataFacadeService {
                     );
                     return Promise.reject();
                   }
-                  console.log("XaXaXaXaXa");
                 },
                 () => {
                   console.log("jednak nie udalo sie za 2");
@@ -377,7 +392,6 @@ export class DataFacadeService {
             () => {
               console.log("zatem nie wyslam ok kona");
               return Promise.reject(console.log("adam23333333"));
-
             }
           )
           .then(
@@ -430,17 +444,114 @@ export class DataFacadeService {
               console.log("zatem nie czekam na ready");
               this.errorPumpStan();
               reject();
-              //        this.wakeFacadeService.snoozeScreenByCall();
             }
           )
       } catch {
         console.log("Totalna zsssajebka");
         reject();
       }
-      //const estimatedTimeToEndTask = 30 * 1000;
-      //setTimeout(() => this.wakeFacadeService.snoozeScreenByCall(), estimatedTimeToEndTask);
     })
   }
+  getCalcData() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.pumpBluetoothApiService
+          .scanAndConnect()
+          .then(
+            uidBt => {
+              if (uidBt === "MED-LINK" || uidBt === "MED-LINK-2" || uidBt === "MED-LINK-3" || uidBt === "HMSoft") {
+                console.log(uidBt + "BBBBBBBBBBBBBBBBBBBBB");
+                return Promise.resolve(uidBt);
+              } else {
+                console.log(uidBt + "Nie udalo sie polaczyc booooooo oooooooo status 133");
+                return Promise.reject();
+              }
+            },
+            uidBt => {
+              console.log("poszedł prawdziwy reject11!!!!!" + uidBt + "       d");
+              return this.pumpBluetoothApiService.scanAndConnect().then(
+                uidBt2 => {
+                  if (uidBt2 === "HMSoft") {
+                    console.log(uidBt2 + "BBBBBBBBBBBBBBBBBBBBB");
+                    return Promise.resolve(uidBt2);
+                  } else {
+                    console.log(
+                      uidBt2 + "Nie udalo sie polaczyc booooooo oooooooo status 133"
+                    );
+                    return Promise.reject();
+                  }
+                  console.log("XaXaXaXaXa");
+                },
+                () => {
+                  console.log("jednak nie udalo sie za 2");
+                  return Promise.reject();
+                }
+              );
+            }
+          )
+          .then(
+            () =>
+              setTimeout(
+                () => this.pumpBluetoothApiService.sendCommand("OK+CONN"),
+                2500
+              ),
+            () => {
+              console.log("zatem nie wyslam ok kona");
+              return Promise.reject(console.log("adam23333333"));
+
+            }
+          )
+          .then(
+            () => {
+              this.pumpBluetoothApiService.read().subscribe(() => {
+                this.pumpBluetoothApiService.sendCommand2("f");
+                setTimeout(() => this.pumpBluetoothApiService.read()
+                    .subscribe( dane => {
+                      console.log("WWWW" + dane);
+                      const matchData =  dane.match(this.ww);
+                      console.log("WWWW2" + matchData[1], matchData.length);
+
+                      for(let i = 0; i < Number(matchData.length); i++){
+                        const adam3 = this.ww2.exec(matchData[i]);
+                        console.log("To jest wynik:2222222 " + adam3.toString());
+                        const parsedDate22 = this.rawDataService.parseData(adam3.toString());
+                        console.log("To jest wynik:2222222 " + parsedDate22);
+                        this.sendCalcToLacalDB(parsedDate22);
+                      }
+                      //console.log("To jest wynik: " + matchData[0], matchData[1], matchData.length);
+                      //matchData.forEach(element => {const adam = element.match(this.ww2); console.log("To jest wynik:2 " + adam);  });
+                      //matchData.forEach(this.myFunction);
+                      //const parsedDate2 = this.rawDataService.parseData(dane);
+                      //this.sendCalcToLacalDB(parsedDate2);
+                      this.getCalcfromLocalDb().subscribe(d => console.log(d));
+                      this.pumpBluetoothApiService.disconnect();
+                      resolve();
+                    }, () => this.errorPumpStan())
+                  , 200);
+              }, () => this.errorPumpStan());
+            },
+            () => {
+              console.log("zatem nie czekam na ready");
+              this.errorPumpStan();
+              reject();
+            }
+          )
+      } catch {
+        console.log("Totalna zsssajebka");
+        reject();
+      }
+    });
+}
+
+myFunction(item, index) {
+    console.log("ALO :" + item, index);
+
+    const match2 = item[index].match(this.ww);
+    console.log("To jest wynik: 0 " + match2);
+    //const match3 = item.match(this.ww);
+    //console.log("Tasdadsa  YYYYYYYYYYYYYYYYnik: 0001 " + match3.toString());
+  }
+
   errorPumpStan(){
     appSettings.setBoolean("isBusy", false);
     appSettings.setString("pumpStan", "ZMIEN STAN POMPY");

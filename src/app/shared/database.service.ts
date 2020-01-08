@@ -58,6 +58,11 @@ export class DatabaseService {
               "CREATE TABLE IF NOT EXISTS DEBUG (dateString TEXT DEFAULT SYSDATE, messageType TEXT, message TEXT, category TEXT);"
             )
           )
+          .then(db6 =>
+            db.execSQL(
+              "CREATE TABLE IF NOT EXISTS CALC (id INTEGER  primary key autoincrement, idVal INTEGER, dateString TEXT DEFAULT SYSDATE, value TEXT, hour TEXT, category TEXT);"
+            )
+          )
           .then(
             id => {
               this.database = db;
@@ -208,6 +213,26 @@ export class DatabaseService {
     return this.database.execSQL(
       "INSERT INTO DEBUG (dateString, messageType, message, category) VALUES (?, ?, ?, ?)",
       [date, message, messageType, category]
+    );
+  }
+
+  public insertCalc(
+    date: string,
+    idVal: number,
+    value: string,
+    hour: string,
+    category: string
+  ) {
+    return this.database.execSQL(
+      "INSERT INTO CALC (dateString, idVal, value, hour, category) VALUES (?, ?, ?, ?, ?)",
+      [date, idVal, value, hour, category]
+    );
+  }
+  public getCalc(): Observable<Array<Array<string>>> {
+    return from(
+      this.database.all(
+        "select idVal, category, dateString, value, hour  from CALC where idVal != 0 ORDER BY id DESC LIMIT 16"
+      )
     );
   }
 

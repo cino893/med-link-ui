@@ -59,6 +59,7 @@ export class WakeFacadeService {
       android.app.PendingIntent.FLAG_UPDATE_CURRENT);
     am.cancel(pendingIntent);
     console.log("Wylaczony alarm");
+    this.snoozeScreenByCall();
   }
 
   snoozeActivityScreen() {

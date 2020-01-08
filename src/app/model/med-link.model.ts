@@ -48,4 +48,10 @@ export interface IBasicSettings {
     units: number;
   };
   statusPump: string;
+  calc: {
+    idVal: number;
+    value: string;
+    hours: string;
+    category: string;
+  };
 }

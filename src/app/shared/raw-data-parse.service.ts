@@ -22,6 +22,9 @@ export class RawDataService {
         const pumpDataMatch = rawData.match(this.pumpDataRegex);
         const statusPumpMatch = rawData.match(this.stanPumpRegex);
         const temporaryBasalMethodPercentageM = rawData.match(this.temporaryBasalMethodPercentage);
+        const wwMatch = rawData.match(this.ww);
+        const bgrangeMatch = rawData.match(this.bgRange);
+        const isfMatch = rawData.match(this.isf);
         if (!insulinInPompLeftMatch || !batteryVoltageMatch || !pumpDataMatch || !statusPumpMatch) {
             console.log(rawData.toString());
             parsedData.batteryVoltage = 1.99;
@@ -53,6 +56,55 @@ export class RawDataService {
             parsedData.bloodGlucose = {
                 value: +bloodGlucoseMatch[1].trim(),
                 date: this.dateHax(bloodGlucoseMatch[2]),
+            };
+        }
+
+        if (!bgrangeMatch) {
+            parsedData.calc = {
+                idVal: 0,
+                value: '',
+                hours: '',
+                category: ''
+            };
+        } else {
+            console.log('BBBBBBa   ' + +bgrangeMatch[1].trim() + bgrangeMatch[2] + bgrangeMatch[3]);
+            parsedData.calc = {
+                idVal: Number(bgrangeMatch[1]),
+                value: bgrangeMatch[2],
+                hours: bgrangeMatch[3],
+                category: 'bgrange'
+            };
+        }
+        if (!isfMatch) {
+            parsedData.calc = {
+                idVal: 0,
+                value: '',
+                hours: '',
+                category: ''
+            };
+        } else {
+            console.log('BBBBBB c  ' + +isfMatch[1].trim() + isfMatch[2] + isfMatch[3]);
+            parsedData.calc = {
+                idVal: Number(isfMatch[1]),
+                value: isfMatch[2],
+                hours: isfMatch[3],
+                category: 'isf'
+            };
+        }
+        if (!wwMatch) {
+            parsedData.calc = {
+                idVal: 0,
+                value: '',
+                hours: '',
+                category: ''
+            };
+        } else {
+            console.log('BBBBBB 1  ' + +wwMatch + wwMatch[2] + wwMatch[3]);
+            parsedData.calc = {
+                idVal: Number(wwMatch[1]),
+                value: wwMatch[2],
+                hours: wwMatch[3],
+                category: 'jnaww'
             };
         }
         if (!lastBolusMatch) {
@@ -97,6 +149,9 @@ export class RawDataService {
         }
         return new Date(dateDay.join('-') + ' ' + dateHour.join(':'));
     }
+    CalcdataLoop(){
+
+    }
     pumpDataRegex = /(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{1,3})%/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
     lastBolusRegex = /BL:([\d\.]+?)\s(\d{2}-\d{2}-\d{2}\s+?\d{1,2}:\d{2})/;
@@ -117,4 +172,8 @@ export class RawDataService {
     insulinSensitiveFactorSettingsRegex = /Wsp\.insulin:\s(\d+?)(\w+\/\w+)\n/;
     insulinToCabRatioRegex = /Wsp\.weglowod:\s(\d+?)(\w+\/\w+)/;
     stanPumpRegex = /Stan pompy: (\S+)/;
+    ww = /zakres\s(\d{1}):\s(.\W\d{3})\sJ\/WW\sstart\sgodz.\s(\d{2}:\d{2})/;
+    isf = /zakres\s(\d{1}):\s\s?(\d{2,3})mg.dl\sstart\sgodz.\s(\d{2}:\d{2})/;
+    bgRange = /zakres\s(\d{1}):\s?(\d{2,3}-.\d{2,3})\sstart\sgodz.\s(\d{2}:\d{2})/;
+
 }

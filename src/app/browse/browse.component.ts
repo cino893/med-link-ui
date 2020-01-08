@@ -86,7 +86,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
       title: "Podaj Bolus",
       message: "Wybierz rodzaj bolusa:",
       cancelButtonText: "Cancel",
-      actions: ["ZWYKŁY", "Z KALKULATORA..."],
+      actions: ["BOLUS ZWYKŁY", "Z KALKULATORA BOLUSA"],
     }).then(rc => {
       if (rc.toString().includes("ZWYKŁY")) {
 
@@ -104,8 +104,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
             this.fa.scanAndConnectBOL(r.text.replace(',', '.'))
               .then(() => appSettings.setBoolean("isBusy", false),
                 () => appSettings.setBoolean("isBusy", false));
-          }
-          else {
+          } else {
             const options = {
               title: "Ups!",
               message: "Należy podać bolus w formacie: Libcza.Liczba",
@@ -114,7 +113,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
             alert(options);
           }
           console.log("Dialog closed!" + r.result + ", A TO TEKST2sdfsdfsdfsdfsdfsdfsdfsdfsd:" + r.text.replace(',', '.'));
-
         });
       }
       if (rc.toString().includes("KALKULATORA")) {
@@ -132,6 +130,15 @@ export class BrowseComponent implements OnInit, OnDestroy {
       }
     });
 
+  }
+  refreshCalc() {
+    dialogs.confirm({
+      title: "Zostaną pobrane dane do ustawienia kalkulatora bolusa",
+      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczyniik wrażliwości na insulinę i Przelicznik WW",
+      okButtonText: "OK",
+    }).then( () => {
+      this.fa.getCalcData();
+    });
   }
 
   addUser() {
@@ -153,7 +160,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
           cancelButtonText: "Cancel",
           inputType: dialogs.inputType.text
         }).then(rr => {
-          appSettings.setBoolean("isBusy", false);
             this.pumpBluetoothApiService.sendCommand3(rr.text);
             this.zone.run(() => appSettings.setBoolean("isBusy", false));
           }
