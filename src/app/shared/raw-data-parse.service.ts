@@ -25,6 +25,13 @@ export class RawDataService {
         const wwMatch = rawData.match(this.ww);
         const bgrangeMatch = rawData.match(this.bgRange);
         const isfMatch = rawData.match(this.isf);
+        const incrementStepMatch = rawData.match(this.incrementStepSettingRegex);
+        const maximumBasalMatch = rawData.match(this.maximumBolusSettingRegex);
+        if (incrementStepMatch && maximumBasalMatch) {
+            console.log('BBBBBB aaaaa  ' + +maximumBasalMatch[1].trim() + incrementStepMatch[1]);
+            parsedData.incrementStepSetting = incrementStepMatch[1];
+            parsedData.maximumBolusSetting = maximumBasalMatch[1];
+        }
         if (!insulinInPompLeftMatch || !batteryVoltageMatch || !pumpDataMatch || !statusPumpMatch) {
             console.log(rawData.toString());
             parsedData.batteryVoltage = 1.99;
@@ -36,7 +43,7 @@ export class RawDataService {
             parsedData.statusPump = 'BLAD ODCZYTU BT';
         } else {
             console.log(rawData.toString());
-            console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]) + ' Y ' + this.dateHax(pumpDataMatch[1]) + ' Z ' + Number(pumpDataMatch[2]))
+            console.log('CC' + Number(batteryVoltageMatch[1]) + 'X' + Number(insulinInPompLeftMatch[1]) + ' Y ' + this.dateHax(pumpDataMatch[1]) + ' Z ' + Number(pumpDataMatch[2]));
             parsedData.batteryVoltage = Number(batteryVoltageMatch[1]);
             parsedData.insulinInPompLeft = Number(insulinInPompLeftMatch[1]);
             parsedData.data = {
@@ -48,7 +55,7 @@ export class RawDataService {
         if (!bloodGlucoseMatch) {
 
             parsedData.bloodGlucose = {
-                value: 0,
+                value: 150,
                 date: new Date(),
             };
         } else {
@@ -59,14 +66,7 @@ export class RawDataService {
             };
         }
 
-        if (!bgrangeMatch) {
-            parsedData.calc = {
-                idVal: 0,
-                value: '',
-                hours: '',
-                category: ''
-            };
-        } else {
+        if (bgrangeMatch) {
             console.log('BBBBBBa   ' + +bgrangeMatch[1].trim() + bgrangeMatch[2] + bgrangeMatch[3]);
             parsedData.calc = {
                 idVal: Number(bgrangeMatch[1]),
@@ -75,14 +75,16 @@ export class RawDataService {
                 category: 'bgrange'
             };
         }
-        if (!isfMatch) {
-            parsedData.calc = {
-                idVal: 0,
-                value: '',
-                hours: '',
-                category: ''
-            };
-        } else {
+        if (wwMatch) {
+          console.log('BBBBBB 1  ' + +wwMatch + wwMatch[2] + wwMatch[3]);
+          parsedData.calc = {
+            idVal: Number(wwMatch[1]),
+            value: wwMatch[2],
+            hours: wwMatch[3],
+            category: 'jnaww'
+          };
+        }
+        if (isfMatch) {
             console.log('BBBBBB c  ' + +isfMatch[1].trim() + isfMatch[2] + isfMatch[3]);
             parsedData.calc = {
                 idVal: Number(isfMatch[1]),
@@ -91,22 +93,7 @@ export class RawDataService {
                 category: 'isf'
             };
         }
-        if (!wwMatch) {
-            parsedData.calc = {
-                idVal: 0,
-                value: '',
-                hours: '',
-                category: ''
-            };
-        } else {
-            console.log('BBBBBB 1  ' + +wwMatch + wwMatch[2] + wwMatch[3]);
-            parsedData.calc = {
-                idVal: Number(wwMatch[1]),
-                value: wwMatch[2],
-                hours: wwMatch[3],
-                category: 'jnaww'
-            };
-        }
+
         if (!lastBolusMatch) {
             parsedData.lastBolus = {
                 value: 0,
@@ -165,8 +152,8 @@ export class RawDataService {
     temporaryBasalMethodPercentage = /TDP:\s+?(\d+)%\s+?(\d+).+?(\d+)m/;
     totalInsulinGivenTodayRegex = /Dawka\sdziasiaj:([\d\.]+)J\n/;
     totalInsulinGivenYesterdayRegex = /Dawka\swczoraj:\s([\d\.]+)J\n/;
-    maximumBolusSettingRegex = /Max\sbolus:\s([\d\.]+)U\n/;
-    incrementStepSettingRegex = /Krok\sbolusa:\s([\d\.]+)U\n/;
+    maximumBolusSettingRegex = /maksymalny bolus:\s\s([\d\.]+)/;
+    incrementStepSettingRegex = /krok\sbolusa:\s([\d\.]+)/;
     maximumBasalSettingsRegex = /Max\.\sbaza:\s([\d\.]+)J\/h\n/;
     insulinWorkTimeSettingsRegex = /Czas\sinsuliny:\s(\d+)h\n/;
     insulinSensitiveFactorSettingsRegex = /Wsp\.insulin:\s(\d+?)(\w+\/\w+)\n/;

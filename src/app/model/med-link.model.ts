@@ -35,8 +35,8 @@ export interface IBasicSettings {
   };
   totalInsulinGivenToday: number;
   totalInsulinGivenYesterday: number;
-  maximumBolusSetting: number;
-  incrementStepSetting: number;
+  maximumBolusSetting: string;
+  incrementStepSetting: string;
   maximumBasalSettings: number;
   insulinWorkTime: number;
   insulinSensitiveFactor: {

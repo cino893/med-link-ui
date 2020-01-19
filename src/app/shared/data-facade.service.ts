@@ -14,13 +14,14 @@ import * as appSettings from "application-settings";
 })
 export class DataFacadeService {
   btData: string;
-  math2: [];
   int0: number;
   stanPump: string = "W TRAKCIE...";
   ww = /zakres\s(\d{1}):\s(.\W\d{3})\sJ\/WW\sstart\sgodz.\s(\d{2}:\d{2})/g;
   ww2 = /zakres\s(\d{1}):\s(.\W\d{3})\sJ\/WW\sstart\sgodz.\s(\d{2}:\d{2})/;
   isf = /zakres\s(\d{1}):\s\s?(\d{2,3})mg.dl\sstart\sgodz.\s(\d{2}:\d{2})/g;
+  isf2 = /zakres\s(\d{1}):\s\s?(\d{2,3})mg.dl\sstart\sgodz.\s(\d{2}:\d{2})/;
   bgRange = /zakres\s(\d{1}):\s?(\d{2,3}-.\d{2,3})\sstart\sgodz.\s(\d{2}:\d{2})/g;
+  bgRange2 = /zakres\s(\d{1}):\s?(\d{2,3}-.\d{2,3})\sstart\sgodz.\s(\d{2}:\d{2})/;
   constructor(
     private databaseService: DatabaseService,
     private zone: NgZone,
@@ -44,6 +45,12 @@ export class DataFacadeService {
   }
   sendCalcToLacalDB(pumpStatus: IBasicSettings) {
     return this.databaseService.insertCalc(new Date().toString(), pumpStatus.calc.idVal, pumpStatus.calc.value, pumpStatus.calc.hours, pumpStatus.calc.category);
+  }
+  sendCalcToLacalDbMax(pumpStatus: IBasicSettings) {
+    return this.databaseService.insertCalc(new Date().toString(), 1, pumpStatus.maximumBolusSetting, '00:00', 'max');
+  }
+  sendCalcToLacalDbstep(pumpStatus: IBasicSettings) {
+    return this.databaseService.insertCalc(new Date().toString(), 1, pumpStatus.incrementStepSetting, '00:00', 'step');
   }
 
   sendDataToLocalDb3(pumpStatus: IBasicSettings) {
@@ -396,7 +403,7 @@ export class DataFacadeService {
           )
           .then(
             () => {
-              const timeoutAlert = setTimeout(() => this.errorPumpStan(), 74 * 1000);
+              const timeoutAlert = setTimeout(() => this.errorPumpStan(), 68 * 1000);
               this.pumpBluetoothApiService.read().subscribe(() => {
                 this.pumpBluetoothApiService.sendCommand2("x");
                 setTimeout(() => this.pumpBluetoothApiService.read3()
@@ -407,13 +414,13 @@ export class DataFacadeService {
                         this.pumpBluetoothApiService.sendCommand("bolus  " + r);
                         setTimeout( () => this.pumpBluetoothApiService.read5().subscribe(btdane => {
                           console.log("btdane: !!!!!!!!!!!!!!!f!!!!!!!$%RSFD#WEF: //n" + btdane.toString());
-                          if (btdane.includes("uruchomiony")){
+                          if (btdane.includes("pompa podaje") &&  btdane.includes("BL: " + r.toString())){
                             this.successLog();
                             clearTimeout(timeoutAlert);
                           }
                           else {
                             const options = {
-                              title: "Błąd odpowiedzi z pompy:",
+                              title: "Odpowiedzi z pompy:",
                               message: btdane.toString(),
                               okButtonText: "OK"
                             };
@@ -431,7 +438,6 @@ export class DataFacadeService {
                           okButtonText: "OK"
                         };
                         alert(options);
-                        console.log("Problem z bolusem!!!");
                         this.pumpBluetoothApiService.disconnect();
                         clearTimeout(timeoutAlert);
                         resolve();
@@ -480,7 +486,6 @@ export class DataFacadeService {
                     );
                     return Promise.reject();
                   }
-                  console.log("XaXaXaXaXa");
                 },
                 () => {
                   console.log("jednak nie udalo sie za 2");
@@ -498,7 +503,6 @@ export class DataFacadeService {
             () => {
               console.log("zatem nie wyslam ok kona");
               return Promise.reject(console.log("adam23333333"));
-
             }
           )
           .then(
@@ -507,23 +511,43 @@ export class DataFacadeService {
                 this.pumpBluetoothApiService.sendCommand2("f");
                 setTimeout(() => this.pumpBluetoothApiService.read()
                     .subscribe( dane => {
-                      console.log("WWWW" + dane);
-                      const matchData =  dane.match(this.ww);
-                      console.log("WWWW2" + matchData[1], matchData.length);
-
-                      for(let i = 0; i < Number(matchData.length); i++){
-                        const adam3 = this.ww2.exec(matchData[i]);
-                        console.log("To jest wynik:2222222 " + adam3.toString());
+                      const matchDataww =  dane.match(this.ww);
+                      const matchDataisf =  dane.match(this.isf);
+                      const matchDatabgrange =  dane.match(this.bgRange);
+                      console.log("WWWW2" + matchDataww[1], matchDataww.length);
+                      console.log("WWWW3" + matchDataisf[1], matchDataisf.length);
+                      console.log("WWWW4" + matchDatabgrange[1], matchDatabgrange.length);
+                      for(let i = 0; i < Number(matchDataww.length); i++){
+                        const adam3 = this.ww2.exec(matchDataww[i]);
+                        console.log("To jest wynik:111111 " + adam3.toString());
                         const parsedDate22 = this.rawDataService.parseData(adam3.toString());
-                        console.log("To jest wynik:2222222 " + parsedDate22);
                         this.sendCalcToLacalDB(parsedDate22);
                       }
-                      //console.log("To jest wynik: " + matchData[0], matchData[1], matchData.length);
-                      //matchData.forEach(element => {const adam = element.match(this.ww2); console.log("To jest wynik:2 " + adam);  });
-                      //matchData.forEach(this.myFunction);
-                      //const parsedDate2 = this.rawDataService.parseData(dane);
+                      for(let i = 0; i < Number(matchDataisf.length); i++){
+                        const adam3 = this.isf2.exec(matchDataisf[i]);
+                        console.log("To jest wynik:222222 " + adam3.toString());
+                        const parsedDate22 = this.rawDataService.parseData(adam3.toString());
+                        this.sendCalcToLacalDB(parsedDate22);
+                      }
+                      for(let i = 0; i < Number(matchDatabgrange.length); i++){
+                        const adam3 = this.bgRange2.exec(matchDatabgrange[i]);
+                        console.log("To jest wynik:3333333 " + adam3.toString());
+                        const parsedDate22 = this.rawDataService.parseData(adam3.toString());
+                        this.sendCalcToLacalDB(parsedDate22);
+                      }
+                      const parsedDate2 = this.rawDataService.parseData(dane);
                       //this.sendCalcToLacalDB(parsedDate2);
-                      this.getCalcfromLocalDb().subscribe(d => console.log(d));
+                      this.sendCalcToLacalDbMax(parsedDate2);
+                      this.sendCalcToLacalDbstep(parsedDate2);
+                      const options = {
+                        title: "Ustawienia kalkulatora bolusa zostały zapisane do bazy danych",
+                        message: dane.toString(),
+                        okButtonText: "OK"
+                      };
+                      alert(options);
+                      this.getCalcfromLocalDb().subscribe(d => {
+                        console.log(d);
+                      });
                       this.pumpBluetoothApiService.disconnect();
                       resolve();
                     }, () => this.errorPumpStan())
@@ -543,14 +567,6 @@ export class DataFacadeService {
     });
 }
 
-myFunction(item, index) {
-    console.log("ALO :" + item, index);
-
-    const match2 = item[index].match(this.ww);
-    console.log("To jest wynik: 0 " + match2);
-    //const match3 = item.match(this.ww);
-    //console.log("Tasdadsa  YYYYYYYYYYYYYYYYnik: 0001 " + match3.toString());
-  }
 
   errorPumpStan(){
     appSettings.setBoolean("isBusy", false);

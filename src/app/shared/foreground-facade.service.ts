@@ -65,6 +65,7 @@ export class ForegroundFacadeService {
     foregroundNotificationIntent.setClassName(app.android.context, 'com.tns.ForegroundService');
     console.log("stop freground");
     app.android.context.stopService(foregroundNotificationIntent);
+    //app.android.context.stopService(true);
   }
   startCountdown(seconds){
     this.counter = seconds;

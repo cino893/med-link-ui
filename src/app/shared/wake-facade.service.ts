@@ -59,7 +59,7 @@ export class WakeFacadeService {
       android.app.PendingIntent.FLAG_UPDATE_CURRENT);
     am.cancel(pendingIntent);
     console.log("Wylaczony alarm");
-    this.snoozeScreenByCall();
+    //this.snoozeScreenByCall();
   }
 
   snoozeActivityScreen() {
@@ -94,7 +94,7 @@ export class WakeFacadeService {
     ) as android.os.PowerManager.WakeLock;
     this.wakeLock.acquire();
     const window = Application.android.foregroundActivity;
-    console.log('udalo sie wlaczyc ekran');
+    console.log('udalo sie wlaczyc procesor');
   }
 
   snoozeScreenByCall() {

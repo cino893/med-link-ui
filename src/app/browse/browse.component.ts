@@ -19,6 +19,16 @@ import { GestureEventData } from "tns-core-modules/ui/gestures";
   templateUrl: './browse.component.html'
 })
 export class BrowseComponent implements OnInit, OnDestroy {
+  lastBgDate: string;
+  setBolValStep: number;
+  setBolVal: number;
+  stepBol: string;
+  bgRange: string;
+  isf: string;
+  tjnaww: string;
+  maxBolus: string;
+  lastBg: string;
+  dateRefresh: string;
   text = '';
   isBusy: boolean = appSettings.getBoolean("isBusy", false);
   output = '';
@@ -89,8 +99,6 @@ export class BrowseComponent implements OnInit, OnDestroy {
       actions: ["BOLUS ZWYKŁY", "Z KALKULATORA BOLUSA"],
     }).then(rc => {
       if (rc.toString().includes("ZWYKŁY")) {
-
-
         console.log("Dialog closed!" + rc + ", A TO TEKST1:");
         dialogs.prompt({
           title: "Podaj Bolus",
@@ -117,27 +125,85 @@ export class BrowseComponent implements OnInit, OnDestroy {
       }
       if (rc.toString().includes("KALKULATORA")) {
         console.log("Dialog closed!" + rc + ", A TO TEKST1:");
+        this.fa.getCalcfromLocalDb().subscribe(category => {
+          this.maxBolus = category[0].value;
+          this.dateRefresh = category[0].dateString;
+        });
+        this.databaseService.getCalcisf().subscribe(a => this.isf = a[0][3]);
+        this.databaseService.getCalcjnaww().subscribe(a => this.tjnaww = a);
+        this.databaseService.getCalcStep().subscribe(a => this.stepBol = a);
+        this.databaseService.getCalcBgRange().subscribe(a => this.bgRange = a.toString());
+        this.databaseService.getLastBg15().subscribe(bg => {
+          //bg.toString().split('-')[0];
+          console.log("Sugar: " , bg.toString().split(',')[0]);
+          this.lastBg = bg.toString().split(',')[0];
+          this.lastBgDate = bg.toString().split(',')[1];
+          if (this.lastBg.length < 1){
+            console.log("shuga:" + this.lastBg);
+            this.lastBg = ((Number(this.bgRange.split('-')[0].trim()) + Number(this.bgRange.split('-')[1].trim())) / 2).toString();
+          }
+        });
+
+
         dialogs.prompt({
           title: "Podaj Bolus",
-          message: "Podaj ilość węglowodanów:",
+          message: "UWAGA! KALKULATOR NIE UWZGLĘDNIA AKTYWNEJ INSULINY" + "\n\nPodaj ilość węglowodanów w gramach: ",
           okButtonText: "OK",
+          cancelable: false,
           cancelButtonText: "Cancel",
           inputType: dialogs.inputType.number
         }).then(r => {
-          console.log("Dialog closed!" + r.result + ", A TO TEKST2:" + r.text);
-          //this.pumpBluetoothApiService.sendCommand3(r.text);
+          if(r.result === true && this.maxBolus.length > 0){
+          console.log(this.bgRange.split('-')[0]);
+          this.setBolVal = (Number(r.text) / 10 * Number(this.tjnaww)) + (Number(this.lastBg) - (Number(this.bgRange.split('-')[0].trim()) + Number(this.bgRange.split('-')[1].trim())) / 2) / Number(this.isf);
+          this.setBolValStep = Math.round(this.setBolVal / Number(this.stepBol)) * Number(this.stepBol);
+          console.log("setBolValStep" , Math.round(this.setBolVal / Number(this.stepBol)) * Number(this.stepBol));
+            dialogs.prompt({
+            title: "Podaj Bolus",
+            message: "\nCukier: " + this.lastBg + ' ' + this.lastBgDate + "\nRefresh: " + this.dateRefresh.substring(3, 21) + "\nPrzelicznik WW: " + this.tjnaww + "\nWspółczynnik wrażliwości: " + this.isf + "\nZakres oczekiwany: " + this.bgRange + "\nKrok Bolusa: " + this.stepBol + "\nMax bolus: " + this.maxBolus + "\nSugerowany bolus: " + this.setBolVal.toFixed(1) + "\nSUGEROWANY BOLUS PO UWZGLĘDNIENIU 'KROKU BOLUSA': ",
+            okButtonText: "OK",
+            defaultText: this.setBolValStep.toFixed(1).toString(),
+            cancelButtonText: "Cancel",
+            inputType: dialogs.inputType.phone
+          }).then(rr => {
+            if (rr.result === true && rr.text.match(/(^\d{1}).(\d{1})$/) && Number(rr.text) <= Number(this.maxBolus)) {
+              appSettings.setBoolean("isBusy", true);
+              this.fa.scanAndConnectBOL(rr.text.replace(',', '.'))
+                .then(() => appSettings.setBoolean("isBusy", false),
+                  () => appSettings.setBoolean("isBusy", false));
+            } else {
+              const options = {
+                title: "Ups!",
+                message: "Należy podać bolus w formacie: Libcza.Liczba który jest mniejszy od Max Bolus",
+                okButtonText: "OK"
+              };
+              alert(options);
+            }
+            console.log("Dialog closed!" + r.result + ", A TO TEKST2sdfsdfsdfsdfsdfsdfsdfsdfsd:" + r.text.replace(',', '.'));
+          });
+          }
+          else {
+            const options = {
+              title: "Brak danych z kalkulatora bolusa",
+              message: "Należy z menu wybrać opcję 'Odśwież ustawienia kalkulatora bolusa'",
+              okButtonText: "OK"
+            };
+            alert(options);
+          }
         });
       }
     });
-
   }
+
+
   refreshCalc() {
     dialogs.confirm({
       title: "Zostaną pobrane dane do ustawienia kalkulatora bolusa",
-      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczyniik wrażliwości na insulinę i Przelicznik WW",
+      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczyniik wrażliwości na insulinę, Przeliczniki WW, Krok bolusa i Maksymalny bolus",
       okButtonText: "OK",
     }).then( () => {
-      this.fa.getCalcData();
+      appSettings.setBoolean("isBusy", true);
+      this.fa.getCalcData().then(() => appSettings.setBoolean("isBusy", false), () => appSettings.setBoolean("isBusy", false));
     });
   }
 

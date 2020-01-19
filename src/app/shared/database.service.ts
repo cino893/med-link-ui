@@ -195,6 +195,13 @@ export class DatabaseService {
       )
     );
   }
+  public getLastBg15(): Observable<Array<Array<string>>> {
+    return from(
+      this.database.all(
+        "select glucose, datetime(substr(dateString,12,4) || '-' || case substr(dateString,5,3) when 'Jan' then '01' when 'Feb' then '02' when 'Mar' then '03' when 'Apr' then '04' when 'May' then '05' when 'Jun' then '06' when 'Jul' then '07' when 'Aug' then '08' when 'Sep' then '09' when 'Oct' then '10' when 'Nov' then '11' when 'Dec' then '12' else '01' end || '-' || substr(dateString,9,2) || ' ' || substr(dateString,17,8))  from entries where glucose != 0 and datetime(substr(dateString,12,4) || '-' || case substr(dateString,5,3) when 'Jan' then '01' when 'Feb' then '02' when 'Mar' then '03' when 'Apr' then '04' when 'May' then '05' when 'Jun' then '06' when 'Jul' then '07' when 'Aug' then '08' when 'Sep' then '09' when 'Oct' then '10' when 'Nov' then '11' when 'Dec' then '12' else '01' end || '-' || substr(dateString,9,2) || ' ' || substr(dateString,17,8)) >= datetime('now', '-1 minute', 'localtime') ORDER BY id DESC LIMIT 1"
+      )
+    );
+  }
 
   public getTempBasal(): Observable<Array<Array<string>>> {
     return from(
@@ -231,7 +238,40 @@ export class DatabaseService {
   public getCalc(): Observable<Array<Array<string>>> {
     return from(
       this.database.all(
-        "select idVal, category, dateString, value, hour  from CALC where idVal != 0 ORDER BY id DESC LIMIT 16"
+        "select c.idVal, c.category, c.dateString, c.value, c.hour  from CALC c where (dateString) =" +
+        " (select calc2.dateString from CALC as calc2 where c.idVal != 0 order by id desc limit 1) and REPLACE(c.hour, ':', '') <= strftime('%H%M','now', 'localtime') and category = 'max' ORDER BY id DESC Limit 1"
+      )
+    );
+  }
+  public getCalcjnaww(): Observable<string> {
+    return from(
+      this.database.all(
+        "select c.value from CALC c where (dateString) =" +
+        " (select calc2.dateString from CALC as calc2 where c.idVal != 0 order by id desc limit 1) and REPLACE(c.hour, ':', '') <= strftime('%H%M','now', 'localtime') and category = 'jnaww' ORDER BY id DESC Limit 1"
+      )
+    );
+  }
+  public getCalcisf(): Observable<Array<Array<string>>> {
+    return from(
+      this.database.all(
+        "select c.idVal, c.category, c.dateString, c.value, c.hour  from CALC c where (dateString) =" +
+        " (select calc2.dateString from CALC as calc2 where c.idVal != 0 order by id desc limit 1) and REPLACE(c.hour, ':', '') <= strftime('%H%M','now', 'localtime') and category = 'isf' ORDER BY id DESC Limit 1"
+      )
+    );
+  }
+  public getCalcBgRange(): Observable<string> {
+    return from(
+      this.database.all(
+        "select c.value from CALC c where (dateString) =" +
+        " (select calc2.dateString from CALC as calc2 where c.idVal != 0 order by id desc limit 1) and REPLACE(c.hour, ':', '') <= strftime('%H%M','now', 'localtime') and category = 'bgrange' ORDER BY id DESC Limit 1"
+      )
+    );
+  }
+  public getCalcStep(): Observable<string> {
+    return from(
+      this.database.all(
+        "select c.value from CALC c where (dateString) =" +
+        " (select calc2.dateString from CALC as calc2 where c.idVal != 0 order by id desc limit 1) and REPLACE(c.hour, ':', '') <= strftime('%H%M','now', 'localtime') and category = 'step' ORDER BY id DESC Limit 1"
       )
     );
   }
