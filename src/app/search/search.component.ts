@@ -31,6 +31,7 @@ export class SearchComponent implements OnInit {
   pending = false;
   aReduced2: string;
   auto: boolean;
+  bgSource: boolean;
   range: number;
   rangeText: string = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75);
 
@@ -44,6 +45,7 @@ export class SearchComponent implements OnInit {
   }
   ngOnInit(): void {
     this.auto = appSettings.getBoolean('auto', false);
+    this.bgSource = appSettings.getBoolean('bgsource', false);
     this.rangeText = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75) + "MG/DL";
     this.traceWriterService.subscribe(
       ({ message, date, category, messageType }) => {
@@ -141,6 +143,18 @@ export class SearchComponent implements OnInit {
       this.auto = appSettings.getBoolean('auto');
     }
     }
+  onCheckedChangeSource(args: EventData) {
+    const mySwitch = args.object as Switch;
+    const isChecked = mySwitch.checked; // boolean
+    if (isChecked === true) {
+      appSettings.setBoolean("bgsource", true);
+      this.bgSource = appSettings.getBoolean('bgsource');
+    }
+    else {
+      appSettings.setBoolean("bgsource", false);
+      this.bgSource = appSettings.getBoolean('bgsource');
+    }
+  }
   sendDatatoNightscout6() {
     return new Promise((resolve, reject) => {
       this.getNSData().subscribe(g => {

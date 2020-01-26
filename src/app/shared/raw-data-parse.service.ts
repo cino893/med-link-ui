@@ -55,7 +55,7 @@ export class RawDataService {
         if (!bloodGlucoseMatch) {
 
             parsedData.bloodGlucose = {
-                value: 150,
+                value: 0,
                 date: new Date(),
             };
         } else {
@@ -135,9 +135,6 @@ export class RawDataService {
             dateHour[0] = dateHour[0].substring(1,2);
         }
         return new Date(dateDay.join('-') + ' ' + dateHour.join(':'));
-    }
-    CalcdataLoop(){
-
     }
     pumpDataRegex = /(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2})\s+?(\d{1,3})%/;
     bloodGlucoseRegex = /BG:(\s?\d+?)\s(\d{2}-\d{2}-\d{2}\s\d{2}:\d{2})/;
