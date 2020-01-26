@@ -138,9 +138,13 @@ export class BrowseComponent implements OnInit, OnDestroy {
           console.log("Sugar: " , bg.toString().split(',')[0]);
           this.lastBg = bg.toString().split(',')[0];
           this.lastBgDate = bg.toString().split(',')[1];
-          if (this.lastBg.length < 1){
+          if (this.lastBg.length < 1 && this.bgRange.length >= 1){
             console.log("shuga:" + this.lastBg);
+            //srednia z bg range
             this.lastBg = ((Number(this.bgRange.split('-')[0].trim()) + Number(this.bgRange.split('-')[1].trim())) / 2).toString();
+          }
+          else {
+            console.log("Brak infomracji o cukrze z 15 min i kalkulatorze bolusa")
           }
         });
 
@@ -199,7 +203,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   refreshCalc() {
     dialogs.confirm({
       title: "Zostaną pobrane dane do ustawienia kalkulatora bolusa",
-      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczyniik wrażliwości na insulinę, Przeliczniki WW, Krok bolusa i Maksymalny bolus",
+      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczynik wrażliwości na insulinę, Przeliczniki WW, Krok bolusa i Maksymalny bolus",
       okButtonText: "OK",
     }).then( () => {
       appSettings.setBoolean("isBusy", true);
@@ -407,6 +411,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   }
 
   scan() {
+    //this.fa.getDataFromNightscout();
     this.bool = appSettings.getBoolean("someBoolean", false);
     appSettings.setBoolean("someBoolean", this.bool);
     Permissions.requestPermission(

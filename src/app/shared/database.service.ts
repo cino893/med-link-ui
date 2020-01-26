@@ -78,10 +78,16 @@ export class DatabaseService {
     );
   }
 
-  public insertBG(bloodGlucose: { value: number; date: Date }) {
+  public insertBG(bloodGlucose: { value: number; date: Date; }) {
     return this.database.execSQL(
       "INSERT INTO entries (glucose, dateString) VALUES (?, ?)",
       [+bloodGlucose.value, bloodGlucose.date.toString()]
+    );
+  }
+  public insertBGfromNs(value,  date, isSend) {
+    return this.database.execSQL(
+      "INSERT INTO entries (glucose, dateString, isSend) VALUES (?, ?, ?)",
+      [value, date, isSend]
     );
   }
 

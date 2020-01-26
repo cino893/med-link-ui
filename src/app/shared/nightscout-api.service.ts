@@ -84,6 +84,11 @@ export class NightscoutApiService {
           }))).subscribe(resolve, reject);
     });
   }
+  getBGfromNs() {
+    return new Promise((resolve, reject) => {
+      this.getConfig().then(() => this.httpClient.get(this.http + '/api/v1/entries.json?count=1').subscribe(resolve, reject))
+    });
+  }
 
   sendNewTempBasal(tempbasal: Array<{ percentsOfBasal: number; minutes: number; dateString: Date }>) {
     return new Promise((resolve, reject) => {

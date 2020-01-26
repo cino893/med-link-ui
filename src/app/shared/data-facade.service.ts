@@ -182,6 +182,14 @@ export class DataFacadeService {
       });
     });
   }
+  getDataFromNightscout() {
+    this.nightscoutApiService.getBGfromNs().then(svg => {console.log( "TAAAAAAAAAAK2: " + JSON.stringify(svg));
+    const obj = JSON.parse(JSON.stringify(svg[0]));
+    console.log(obj.sgv, svg[0]);
+    this.databaseService.insertBGfromNs(obj.sgv, new Date(obj.dateString), 1);
+     // this.databaseService.insertBG(JSON.stringify(svg))
+    });
+  }
 
   sendDatatoNightscout4() {
     return new Promise((resolve, reject) => {
@@ -677,7 +685,28 @@ export class DataFacadeService {
             .then(() => this.databaseService.updateTreatments())
             .then(() => this.sendDatatoNightscout4())
             .then(() => this.databaseService.updateTempBasal())
-            .then(() => this.preventLowSugar(parsedDate.bloodGlucose.value, parsedDate.statusPump.toString()))
+            .then(() => {
+              if (appSettings.getBoolean('bgsource', false) === true) {
+                this.nightscoutApiService.getBGfromNs().then(svg => {console.log( "TAAAAAAAAAAK2: " + JSON.stringify(svg));
+                  const obj = JSON.parse(JSON.stringify(svg[0]));
+                  console.log(obj.sgv, svg[0]);
+                  this.databaseService.insertBGfromNs(obj.sgv, new Date(obj.dateString), 1);
+                  const d = new Date();
+                  d.setMinutes(d.getMinutes() - 16);
+                  if (new Date(obj.dateString) > d){
+                    this.preventLowSugar(obj.sgv, parsedDate.statusPump.toString());
+                  }
+                  else{
+                    console.log("Stary cukier z NS");
+                  }
+
+                  // this.databaseService.insertBG(JSON.stringify(svg))
+                });
+
+              } else {
+                this.preventLowSugar(parsedDate.bloodGlucose.value, parsedDate.statusPump.toString());
+              }
+            })
 
           //.then(() => this.wakeFacadeService.snoozeScreenByCall())
           .catch(error => {

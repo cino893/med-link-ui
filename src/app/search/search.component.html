@@ -1,7 +1,7 @@
 <ActionBar class="action-bar">
     <Label class="action-bar-title" text="Dane Nightscout"></Label>
 </ActionBar>
-
+<ScrollView>
 <StackLayout class="page page-content">
     <StackLayout col="0">
     <TextField #nsUrl class="input input-border"
@@ -18,11 +18,16 @@
     <Label id="lbl2" text="" textWrap="true" textAlignment="center" class="label" margin="1" width="300"></Label>
     <StackLayout orientation="horizontal">
 
-        <Label id="lbl2" text="WŁĄCZ AUTO STOP" textWrap="true" textAlignment="center" class="p-15" margin="1" width="300"></Label>
+        <Label id="lbl2" text="WŁĄCZ AUTO STOP" textWrap="true" textAlignment="center" class="p-15" margin="1" width="200"></Label>
         <Switch checked="{{ auto }}" (checkedChange)="onCheckedChangeAuto($event)" class="switch" margin="1" width="100"></Switch>
     </StackLayout>
     <StackLayout>
         <Button class="btn btn-primary btn-active" id="button3" [text]="rangeText" (tap)="getBGRange()" isEnabled="{{ auto }}" ></Button>
+    </StackLayout>
+    <StackLayout orientation="horizontal">
+        <Label id="lbl3" text="ŹRÓDŁO BG: POMPA / NS" textWrap="true" textAlignment="center" class="p-15" margin="1" width="200"></Label>
+        <Switch checked="{{ bgSource }}" (checkedChange)="onCheckedChangeSource($event)" class="switch" margin="1" width="100"></Switch>
+
     </StackLayout>
     <StackLayout>
         <Button class="btn btn-primary btn-active" id="button2" text="Wyślij logi" (tap)="sendLogs()"></Button>
@@ -33,4 +38,4 @@
     </StackLayout>
     </ScrollView>
 </StackLayout>
-
+    </ScrollView>
