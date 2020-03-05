@@ -578,17 +578,17 @@ export class DataFacadeService {
 
   errorPumpStan(){
     appSettings.setBoolean("isBusy", false);
-    appSettings.setString("pumpStan", "ZMIEN STAN POMPY");
+    appSettings.setString("pumpStan", "ZMIEŃ STAN POMPY");
     const options = {
-      title: "Cos poszło nie tak",
-      message: "Sprawdz stan pompy!",
+      title: "Coś poszło nie tak",
+      message: "Sprawdź stan pompy!",
       okButtonText: "Przyjąłem do wiadomości"
     };
     alert(options);
   }
   successLog(){
     const options = {
-      title: "Hurreeey!! :)",
+      title: "Brawo!",
       message: "Udało się podać bolus!",
       okButtonText: "OK"
     };
@@ -626,7 +626,7 @@ export class DataFacadeService {
             console.log("STOP POMPA");
             this.pumpBluetoothApiService.sendCommand("stop");
             setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
-              this.zone.run (() => this.stanPump = "WYLACZ POMPE");
+              this.zone.run (() => this.stanPump = "WYŁĄCZ POMPĘ");
               this.pumpBluetoothApiService.disconnect();
             }), 500);
           } else
@@ -634,7 +634,7 @@ export class DataFacadeService {
             console.log("START POMPA!!!");
             this.pumpBluetoothApiService.sendCommand("start");
             setTimeout( () => this.pumpBluetoothApiService.read3().subscribe(() => {
-              this.zone.run (() => this.stanPump = "WLACZ POMPE");
+              this.zone.run (() => this.stanPump = "WŁĄCZ POMPĘ");
               this.pumpBluetoothApiService.disconnect()}), 500);
           }
         })
@@ -646,7 +646,7 @@ export class DataFacadeService {
       console.log("AKT WOJNY" + a + b + appSettings.getBoolean('auto', false));
       this.scanAndConnectStop().then(() => {
         console.log("Pompa wyl");
-        appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA ZATRZYMANA PRZEZ FUNKCJE AUTO STOP\n\n" );
+        appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA ZATRZYMANA PRZEZ FUNKCJĘ AUTO STOP\n\n" );
       }, () => console.log("BADD ASS nie wylaczona"));
     }
     else {
@@ -655,7 +655,7 @@ export class DataFacadeService {
         console.log("AKT WOJNY3" + a + b);
         this.scanAndConnectStop().then(() => {
           console.log("Pompa wlaczona");
-          appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA WZNOWIONA PRZEZ FUNKCJE AUTO START\n\n");
+          appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA WZNOWIONA PRZEZ FUNKCJĘ AUTO START\n\n");
         }, () => console.log("BADD ASS 2 nie wylaczona"));
       }
       else {
