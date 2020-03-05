@@ -74,7 +74,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   addProfile() {
     dialogs.confirm({
       title: "Chcesz dodać lub usunąć profil użytkownia z pilota?",
-      cancelButtonText: "Usun",
+      cancelButtonText: "Usuń",
       okButtonText: "Dodaj",
       neutralButtonText: "Anuluj"
     }).then(t => {
@@ -95,7 +95,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     dialogs.action({
       title: "Podaj Bolus",
       message: "Wybierz rodzaj bolusa:",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Anuluj",
       actions: ["BOLUS ZWYKŁY", "Z KALKULATORA BOLUSA"],
     }).then(rc => {
       if (rc.toString().includes("ZWYKŁY")) {
@@ -104,7 +104,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           title: "Podaj Bolus",
           message: "Podaj ilość jednostek:",
           okButtonText: "OK",
-          cancelButtonText: "Cancel",
+          cancelButtonText: "Anuluj",
           inputType: dialogs.inputType.phone
         }).then(r => {
           if (r.result === true && r.text.match(/(^\d{1}).(\d{1})$/)){
@@ -115,7 +115,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           } else {
             const options = {
               title: "Ups!",
-              message: "Należy podać bolus w formacie: Libcza.Liczba",
+              message: "Należy podać bolus w formacie: cyfra.cyfra",
               okButtonText: "OK"
             };
             alert(options);
@@ -154,7 +154,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           message: "UWAGA! KALKULATOR NIE UWZGLĘDNIA AKTYWNEJ INSULINY" + "\n\nPodaj ilość węglowodanów w gramach: ",
           okButtonText: "OK",
           cancelable: false,
-          cancelButtonText: "Cancel",
+          cancelButtonText: "Anuluj",
           inputType: dialogs.inputType.number
         }).then(r => {
           if(r.result === true && this.maxBolus.length > 0){
@@ -167,7 +167,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
             message: "\nCukier: " + this.lastBg + ' ' + this.lastBgDate + "\nRefresh: " + this.dateRefresh.substring(3, 21) + "\nPrzelicznik WW: " + this.tjnaww + "\nWspółczynnik wrażliwości: " + this.isf + "\nZakres oczekiwany: " + this.bgRange + "\nKrok Bolusa: " + this.stepBol + "\nMax bolus: " + this.maxBolus + "\nSugerowany bolus: " + this.setBolVal.toFixed(1) + "\nSUGEROWANY BOLUS PO UWZGLĘDNIENIU 'KROKU BOLUSA': ",
             okButtonText: "OK",
             defaultText: this.setBolValStep.toFixed(1).toString(),
-            cancelButtonText: "Cancel",
+            cancelButtonText: "Anuluj",
             inputType: dialogs.inputType.phone
           }).then(rr => {
             if (rr.result === true && rr.text.match(/(^\d{1}).(\d{1})$/) && Number(rr.text) <= Number(this.maxBolus)) {
@@ -178,7 +178,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
             } else {
               const options = {
                 title: "Ups!",
-                message: "Należy podać bolus w formacie: Libcza.Liczba który jest mniejszy od Max Bolus",
+                message: "Należy podać bolus w formacie: cyfra.cyfra który jest mniejszy od max. bolus",
                 okButtonText: "OK"
               };
               alert(options);
@@ -203,7 +203,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
   refreshCalc() {
     dialogs.confirm({
       title: "Zostaną pobrane dane do ustawienia kalkulatora bolusa",
-      message: "Zostaną pobrane dane takie jak: zakres docelwy glikemii, współczynik wrażliwości na insulinę, Przeliczniki WW, Krok bolusa i Maksymalny bolus",
+      message: "Zostaną pobrane dane takie jak: zakres docelowy glikemii, współczynnik wrażliwości na insulinę, przeliczniki WW, krok bolusa i maksymalny bolus",
       okButtonText: "OK",
     }).then( () => {
       appSettings.setBoolean("isBusy", true);
@@ -215,19 +215,19 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.pumpBluetoothApiService.scanAndConnect().then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
       dialogs.prompt({
         title: "Podaj nr pompy",
-        message: "Twoj nr pompy to:",
+        message: "Twój nr pompy to:",
         okButtonText: "OK",
-        cancelButtonText: "Cancel",
+        cancelButtonText: "Anuluj",
         inputType: dialogs.inputType.number
       }).then(r => {
         console.log("Dialog closed!" + r.result + ", A TO TEKST:" + r.text);
         this.pumpBluetoothApiService.sendCommand3(r.text);
       }).then(() => this.pumpBluetoothApiService.read2().subscribe(() =>
         dialogs.prompt({
-          title: "IMIE I NAZWISKO",
-          message: "Podaj imie i nazwisko",
+          title: "IMIĘ I NAZWISKO",
+          message: "Podaj imię i nazwisko",
           okButtonText: "OK",
-          cancelButtonText: "Cancel",
+          cancelButtonText: "Anuluj",
           inputType: dialogs.inputType.text
         }).then(rr => {
             this.pumpBluetoothApiService.sendCommand3(rr.text);
@@ -237,13 +237,13 @@ export class BrowseComponent implements OnInit, OnDestroy {
     ));
   }
   onLongPress(args: GestureEventData) {
-    if (this.pumpStan === "ZAWIES POMPE"){
+    if (this.pumpStan === "ZAWIEŚ POMPĘ"){
       dialogs.action({
-        title: "ZATRZYMAJ POMPE NA: ",
-        cancelButtonText: "Cancel",
+        title: "ZATRZYMAJ POMPĘ NA: ",
+        cancelButtonText: "Anuluj",
         actions: ["10 MIN", "15 MIN", "20 MIN", "30 MIN", "60 MIN"]
       }).then(r => {
-        if(r.toString() !== 'Cancel') {
+        if(r.toString() !== 'Anuluj') {
           console.log("Evsent name: " + args.eventName + r.length + "asdasd    " + r.toString());
 
           appSettings.setBoolean("isBusy", true);
@@ -269,7 +269,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           ), () => {
             this.zone.run(() => {
               appSettings.setBoolean("isBusy", false);
-              this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
+              this.pumpStan = "Sprawdź stan pompy. Coś poszło nie tak";
             })
           });
 
@@ -278,15 +278,15 @@ export class BrowseComponent implements OnInit, OnDestroy {
     }
     else { if(this.pumpStan.toString().includes("WZNOWIENIE")) {
       dialogs.confirm({
-        title: "Czy chcesz anulować pozniejsze właczenie pompy?",
+        title: "Czy chcesz anulować późniejsze włączenie pompy?",
         message: "Pompa musi zostać uruchomiona ręcznie",
         okButtonText: "OK",
-        cancelButtonText: "Cancel"
+        cancelButtonText: "Anuluj"
       }).then(r => {
           if (r) {
             console.log("AAAAAAAAAAAAAAAA");
             clearTimeout(appSettings.getNumber('stopPeriodPump'));
-            appSettings.setString('pumpStan', 'WZNOW POMPE');
+            appSettings.setString('pumpStan', 'WZNÓW POMPĘ');
             appSettings.setBoolean("isBusy", false);
           }
         }
@@ -302,7 +302,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
         title: "USUWANIE PROFILU",
         message: "Czy na pewno chcesz usunąć profil użytkownika?",
         okButtonText: "OK",
-        cancelButtonText: "Cancel"
+        cancelButtonText: "Anuluj"
       }).then(r => {
         if (r) {
           this.pumpBluetoothApiService.sendCommand3("KASUJ");
@@ -321,7 +321,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
         message: "Przyjmuję do wiadomości i wyrażam zgodę, że:\n" +
           "1) Produkt nie stanowi zatwierdzonego wyrobu medycznego, stanowi jedynie narzędzie\n" +
           "badawcze i pomocnicze dla pacjentów z cukrzycą;\n" +
-          "2) udostępnienie i korzystanie Produktu następuje wyłącznie w celach informacyjnych i\n" +
+          "2) udostępnienie i korzystanie z Produktu następuje wyłącznie w celach informacyjnych i\n" +
           "szkoleniowych;\n" +
           "3) Produkt jest dostarczany bez jakiejkolwiek gwarancji (wyrażonej ani domniemanej);\n" +
           "4) oprogramowanie zawarte w Produkcie działa na licencji open source, a korzystanie z\n" +
@@ -361,7 +361,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
           mySwitch.checked = false;
           this.databaseService.insertStan(false);
         }
-      }, () => console.log("MAM CIE"));
+      }, () => console.log("MAM CIĘ"));
 
     } else {
       this.foregroundUtilService.stopForeground();
@@ -369,11 +369,11 @@ export class BrowseComponent implements OnInit, OnDestroy {
     }
   }
   changeColorButton(){
-    if (this.pumpStan === "WZNOW POMPE")
+    if (this.pumpStan === "WZNÓW POMPĘ")
     {
       this.color = 'GREEN'
     } else {
-      if (this.pumpStan === "ZAWIES POMPE") {
+      if (this.pumpStan === "ZAWIEŚ POMPĘ") {
         this.color = 'RED'
       } else {
         this.color = '#3d5afe'
@@ -386,13 +386,13 @@ export class BrowseComponent implements OnInit, OnDestroy {
     appSettings.setString("pumpStan", "Proszę czekać...");
     this.fa.scanAndConnectStop().then(() => this.zone.run(() =>
       {
-        this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+        this.pumpStan = appSettings.getString("pumpStan", "ZMIEŃ STAN POMPY");
         appSettings.setBoolean("isBusy", false);
       }
     ), () => {
       this.zone.run(() => {
         appSettings.setBoolean("isBusy", false);
-        this.pumpStan = "Sprawdz stan pompy. Coś poszło nie tak";
+        this.pumpStan = "Sprawdź stan pompy. Coś poszło nie tak";
       })
     });
   }
@@ -407,7 +407,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
       } else {
         appSettings.setBoolean("isBusy", false);
       }
-    }).then(() => console.log("CIEKAWE MIESJCE !@EWDSFSRER"))
+    }).then(() => console.log("CIEKAWE MIEJSCE !@EWDSFSRER"))
   }
 
   scan() {
@@ -418,7 +418,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
       android.Manifest.permission.ACCESS_COARSE_LOCATION
     ).then(() =>
       this.pumpBluetoothApiService.scanAndConnect2().subscribe(a => {
-        console.log("TO Jest Wynik skanowania: " + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
+        console.log("To Jest Wynik skanowania: " + this.pumpBluetoothApiService.targetBluDeviceUUID + a);
         this.items = this.pumpBluetoothApiService.targetBluDeviceUUID2;
       }));
   }
@@ -459,24 +459,24 @@ export class BrowseComponent implements OnInit, OnDestroy {
       console.log("%%%%%%%%%%%%%%%%%%%%%%           :" + this.fa.btData);
       appSettings.setString("pumpData", this.fa.btData);
       this.foregroundUtilService.updateForeground();
-      if (wynik.toString().endsWith('suspend') && !appSettings.getString('pumpStan', "ZMIEN STAN POMPY").toString().includes("WZNOWIENIE")){
+      if (wynik.toString().endsWith('suspend') && !appSettings.getString('pumpStan', "ZMIEŃ STAN POMPY").toString().includes("WZNOWIENIE")){
         this.zone.run (() =>
         {
-          appSettings.setString("pumpStan", "WZNOW POMPE");
+          appSettings.setString("pumpStan", "WZNÓW POMPĘ");
           this.pumpStan = appSettings.getString("pumpStan");
           this.changeColorButton();
-          console.log("ANO MAMY POMPE ZAWIESZONA: " + wynik.toString().endsWith('suspend') + this.pumpStan);
+          console.log("ANO MAMY POMPĘ ZAWIESZONĄ: " + wynik.toString().endsWith('suspend') + this.pumpStan);
         });
 
       }
       if (wynik.toString().endsWith('normal'))
       {
         this.zone.run (() => {
-          appSettings.setString("pumpStan", "ZAWIES POMPE");
+          appSettings.setString("pumpStan", "ZAWIEŚ POMPĘ");
           this.pumpStan = appSettings.getString("pumpStan");
           this.changeColorButton();
           clearTimeout(appSettings.getNumber('stopPeriodPump'));
-          console.log("ANO MAMY POMPE URUCHOMIONA: " + wynik.toString().endsWith('normal') + this.pumpStan);
+          console.log("ANO MAMY POMPĘ URUCHOMIONĄ: " + wynik.toString().endsWith('normal') + this.pumpStan);
         });
       }
     });
@@ -487,7 +487,7 @@ export class BrowseComponent implements OnInit, OnDestroy {
     this.interv = setInterval(() => {
       this.uuid = appSettings.getString("counter");
       this.pumpData = appSettings.getString("autostop", "") + appSettings.getString("pumpData", '');
-      this.pumpStan = appSettings.getString("pumpStan", "ZMIEN STAN POMPY");
+      this.pumpStan = appSettings.getString("pumpStan", "ZMIEŃ STAN POMPY");
       this.isBusy = appSettings.getBoolean("isBusy");
       //console.log("551");
       this.changeColorButton();
