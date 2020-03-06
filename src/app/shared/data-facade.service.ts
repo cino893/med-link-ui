@@ -329,7 +329,7 @@ export class DataFacadeService {
                       console.log("STOP POMPA");
                       this.pumpBluetoothApiService.sendCommand("stop");
                       setTimeout( () => this.pumpBluetoothApiService.read5().subscribe(() => {
-                        this.zone.run (() => appSettings.setString("pumpStan", "WZNOW POMPE"));
+                        this.zone.run (() => appSettings.setString("pumpStan", "WZNÓW POMPĘ"));
                         this.pumpBluetoothApiService.disconnect();
                         clearTimeout(timeoutAlert);
                         resolve();
@@ -339,7 +339,7 @@ export class DataFacadeService {
                       console.log("START POMPA!!!");
                       this.pumpBluetoothApiService.sendCommand("start");
                       setTimeout( () => this.pumpBluetoothApiService.read4().subscribe(() => {
-                        this.zone.run (() => appSettings.setString("pumpStan", "ZAWIES POMPE"));
+                        this.zone.run (() => appSettings.setString("pumpStan", "ZAWIEś POMPĘ"));
                         this.pumpBluetoothApiService.disconnect();
                         clearTimeout(timeoutAlert);
                         resolve();
@@ -646,7 +646,7 @@ export class DataFacadeService {
       console.log("AKT WOJNY" + a + b + appSettings.getBoolean('auto', false));
       this.scanAndConnectStop().then(() => {
         console.log("Pompa wyl");
-        appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA ZATRZYMANA PRZEZ FUNKCJĘ AUTO STOP\n\n" );
+        appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA! POMPA ZATRZYMANA PRZEZ FUNKCJĘ AUTO STOP\n\n" );
       }, () => console.log("BADD ASS nie wylaczona"));
     }
     else {
@@ -655,7 +655,7 @@ export class DataFacadeService {
         console.log("AKT WOJNY3" + a + b);
         this.scanAndConnectStop().then(() => {
           console.log("Pompa wlaczona");
-          appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA POMPA WZNOWIONA PRZEZ FUNKCJĘ AUTO START\n\n");
+          appSettings.setString("autostop", new Date().toString().substring(3, 21) + " UWAGA! POMPA WZNOWIONA PRZEZ FUNKCJĘ AUTO START\n\n");
         }, () => console.log("BADD ASS 2 nie wylaczona"));
       }
       else {
