@@ -3,7 +3,7 @@ npm-debug.log
 
 *.js.map
 vendor*.ts
-*.js
+!src/app/*.js
 !tools/*.js
 !hooks/after-createProject/*.js
 tsconfig.json

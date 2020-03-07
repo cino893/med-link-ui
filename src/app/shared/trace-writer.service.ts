@@ -70,7 +70,7 @@ class TimestampConsoleWriter {
         break;
       case messageType.warn:
         this.array.next({
-          messageType: "warning",
+          messageType: "warnings",
           date: new Date().toISOString(),
           message: JSON.stringify(message),
           category: JSON.stringify(category)
