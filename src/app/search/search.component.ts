@@ -33,7 +33,7 @@ export class SearchComponent implements OnInit {
   auto: boolean;
   bgSource: boolean;
   range: number;
-  rangeText: string = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75);
+  rangeText: string = "AUTO STOP PRZY WARTOŚCI: " + appSettings.getNumber('range', 75);
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -46,7 +46,7 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     this.auto = appSettings.getBoolean('auto', false);
     this.bgSource = appSettings.getBoolean('bgsource', false);
-    this.rangeText = "AUTO STOP PRZY WARTOSCI: " + appSettings.getNumber('range', 75) + "MG/DL";
+    this.rangeText = "AUTO STOP PRZY WARTOŚCI: " + appSettings.getNumber('range', 75) + "MG/DL";
     this.traceWriterService.subscribe(
       ({ message, date, category, messageType }) => {
         this.databaseService.insertLogs(date, message, messageType, category);
@@ -61,13 +61,13 @@ export class SearchComponent implements OnInit {
       title: "Podaj wartość przy jakiej ma zostać wyłączona pompa",
       message: "Wartość graniczna to:",
       okButtonText: "OK",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Anuluj",
       inputType: dialogs.inputType.number
     }).then(r => {
       console.log("Dialog closed!" + r.result + ", A TO TEKST:" + r.text);
       this.range = Number(r.text);
       if(this.range < 75 || this.range > 110){
- dialogs.alert({message: "UWAGA WARTOŚC Z POZA ZAKRESU: 75 - 110 MG/DL", okButtonText: "OK"});
+ dialogs.alert({message: "UWAGA WARTOŚĆ SPOZA ZAKRESU: 75 - 110 MG/DL", okButtonText: "OK"});
       }
       else {
         appSettings.setNumber('range', this.range);
